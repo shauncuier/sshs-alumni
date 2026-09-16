@@ -328,6 +328,29 @@ App\Services\Communication\
 - A Unicode SMS segment is **70 characters**, against 160 for GSM-7 Latin. A Bangla message therefore costs roughly 2.3x more per character. `SmsManager` computes and displays the segment count and estimated cost **before** an admin sends a campaign.
 - `TemplateRenderer` picks `body_bn` or `body` by the recipient's `users.locale`, and the channel selects `type` from the rendered content, not from a global setting.
 
+**OTP messages — a vendor content rule, not a style choice:**
+
+BulkSMSBD mandates the body format for one-time passwords:
+
+```
+Your {Brand/Company Name} OTP is XXXX
+```
+
+A message that does not match is rejected or blocked at the gateway, so the format is enforced in `Sms\OtpMessage` rather than left to an editable template.
+
+Two consequences follow:
+
+1. **The OTP body is English and stays English.** It is deliberately *not* passed through the translator — a Bangla OTP breaks the required format. This is the single user-facing string in the platform that is not localised, and that is intentional, not an oversight. A test asserts it stays English even when the active locale is `bn`.
+2. **Because it is Latin-only it is GSM-7**, billing at 160 characters per segment rather than Unicode's 70. A correctly formatted OTP is therefore also the cheapest message the platform sends.
+
+`SMS_OTP_BRAND` must be Latin-script. A Bangla brand name would push the message to Unicode and break the format, so `OtpMessage` sanitises the brand and throws if nothing usable remains — loudly, at build time, rather than having the gateway reject every OTP in production.
+
+**Number normalisation:**
+
+Recipients are normalised to the vendor's format — `88` followed by the full local 11-digit number *including its trunk zero*: `8801712345678`. Bangladesh's calling code is +880, so `880`+`1712345678` and `88`+`01712345678` spell the same number; the vendor documents the latter.
+
+Accepted inputs: `01712345678`, `8801712345678`, `+8801712345678`, `1712345678`, and spaced or hyphenated variants. Anything that is not `01[3-9]` followed by eight digits is **failed locally and never dispatched** — the platform does not pay to send to a number that cannot be valid.
+
 **Operational rules:**
 
 - Phone numbers are normalized to `88` + 11 digits before sending; malformed numbers are marked `failed` locally and never dispatched.

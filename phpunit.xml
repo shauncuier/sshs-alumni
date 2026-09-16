@@ -28,6 +28,18 @@
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
+        <!--
+            No test run may reach the real SMS gateway or spend real balance.
+            Pinned here as well as defaulted in config/sms.php, so overriding
+            one of them is not enough to start sending.
+        -->
+        <env name="SMS_DRIVER" value="log"/>
+        <env name="SMS_ENABLED" value="true"/>
+        <env name="BULKSMSBD_API_KEY" value=""/>
+        <env name="BULKSMSBD_SENDER_ID" value="TESTSENDER"/>
+        <env name="SMS_OTP_BRAND" value="SSHS Alumni"/>
+        <env name="APP_LOCALE" value="en"/>
+        <env name="APP_FALLBACK_LOCALE" value="en"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>

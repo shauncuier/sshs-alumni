@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Communication\Contracts\SmsChannel;
+use App\Services\Communication\SmsManager;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +17,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(SmsManager::class);
+
+        // Resolving the contract gives the configured driver, so callers type
+        // hint SmsChannel and never name a vendor.
+        $this->app->bind(
+            SmsChannel::class,
+            fn ($app): SmsChannel => $app->make(SmsManager::class)->driver(),
+        );
     }
 
     /**

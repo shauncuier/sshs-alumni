@@ -199,6 +199,25 @@ Mail notifications are queued — see §4.
 
 Check, in order: `SMS_ENABLED=true` · `SMS_DRIVER=bulksmsbd` (it is `log` by default outside production) · a queue worker is running · `SMS_DAILY_CAP` not already reached.
 
+### OTP messages are rejected or never arrive
+
+BulkSMSBD requires the exact body format:
+
+```
+Your {Brand/Company Name} OTP is XXXX
+```
+
+Anything else is blocked at the gateway. `Sms\OtpMessage` builds it, so this should not happen — but if it does, check `SMS_OTP_BRAND`:
+
+- It must be **Latin-script**. A Bangla brand makes the message Unicode and breaks the format; `OtpMessage` throws rather than sending.
+- It must contain at least one letter or digit after sanitisation (only `A–Z a–z 0–9 space . & -` survive).
+
+Never localise the OTP body. It is the one user-facing string in the platform that stays English by design.
+
+### Numbers are reported invalid before sending
+
+The platform normalises to `88` + the full local 11-digit number (`8801712345678`) and rejects anything that is not `01[3-9]` followed by eight digits. A rejected number is failed locally and never dispatched, so it costs nothing — check the stored number rather than the gateway.
+
 ### SMS costs more than expected
 
 Bangla is Unicode: 70 characters per segment, not 160. A 200-character Bangla message is **3 segments**. The campaign screen shows the segment count before sending — check it there.

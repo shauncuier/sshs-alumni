@@ -101,6 +101,11 @@ BULKSMSBD_BASE_URL=http://bulksmsbd.net/api
 BULKSMSBD_TIMEOUT=15
 SMS_ENABLED=false                     # master kill switch
 SMS_DAILY_CAP=2000                    # spend guard — blocks runaway sends
+SMS_COUNTRY_CODE=88
+
+SMS_OTP_BRAND="SSHS Alumni"           # MUST be Latin-script
+SMS_OTP_LENGTH=6
+SMS_OTP_TTL=300
 ```
 
 | Variable | Meaning |
@@ -110,7 +115,9 @@ SMS_DAILY_CAP=2000                    # spend guard — blocks runaway sends
 | `BULKSMSBD_SENDER_ID` | must be **pre-approved by the vendor**. An unapproved sender ID returns error `1002` and every message fails. |
 | `BULKSMSBD_BASE_URL` | vendor endpoints: `/smsapi`, `/smsapimany`, `/getBalanceApi` |
 | `SMS_ENABLED` | hard off switch, independent of the driver |
-| `SMS_DAILY_CAP` | maximum messages per calendar day; exceeding it halts the campaign and alerts an admin |
+| `SMS_DAILY_CAP` | maximum **segments** per calendar day; exceeding it halts the campaign and alerts an admin |
+| `SMS_OTP_BRAND` | the brand name inside the vendor-mandated OTP body, `Your {Brand} OTP is XXXX`. **Latin-script only** — a Bangla brand pushes the message to Unicode and the gateway rejects it. |
+| `SMS_OTP_LENGTH` / `SMS_OTP_TTL` | OTP digits, and how long a code stays valid (seconds) |
 
 **Cost note.** Bangla must be sent as `type=unicode`, and a Unicode SMS segment is 70 characters against 160 for Latin — roughly 2.3x the cost per character. The campaign screen shows the segment count and estimated cost before sending. See [05-modules.md §13](05-modules.md).
 
