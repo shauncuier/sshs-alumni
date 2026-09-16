@@ -35,7 +35,7 @@ Actions: `view`, `create`, `edit`, `delete`, plus module-specific verbs (`verify
 | `audit` | `audit.view` |
 | `settings` | `settings.manage` |
 
-**60 permissions.**
+**47 permissions.**
 
 ## 3. Roles
 
@@ -183,7 +183,7 @@ This hides UI. It does not protect anything.
 
 ## 7. Seeding
 
-`RolePermissionSeeder` creates all 60 permissions and all 11 roles idempotently (`firstOrCreate`), so re-running after adding a permission is safe.
+`RolePermissionSeeder` creates all 47 permissions and all 11 roles idempotently (`firstOrCreate`), so re-running after adding a permission is safe.
 
 `DemoSeeder` — **development only**, refuses to run when `app()->isProduction()` — creates:
 

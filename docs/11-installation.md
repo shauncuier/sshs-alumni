@@ -116,7 +116,7 @@ Prompts for name, email and password, creates the user, verifies the email and a
 
 | Seeder | Creates | Production-safe |
 |---|---|---|
-| `RolePermissionSeeder` | 60 permissions, 11 roles | ✅ yes — required |
+| `RolePermissionSeeder` | 47 permissions, 11 roles | ✅ yes — required |
 | `SettingsSeeder` | all setting groups with defaults | ✅ yes — required |
 | `BatchSeeder` | SSC 1981 → current year | ✅ yes — required |
 | `SchoolHistorySeeder` | milestone **1976 — school journey begins** | ✅ yes — required |

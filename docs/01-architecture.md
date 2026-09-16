@@ -65,7 +65,7 @@ Only four. Each is justified; nothing else is added without asking.
 
 | Package | Why it is necessary |
 |---|---|
-| `spatie/laravel-permission` | 11 roles x ~60 permissions with per-request caching, Gate integration and middleware. Hand-rolling this correctly (cache invalidation, wildcard resolution, scoping) is a week of work on a security-sensitive surface. |
+| `spatie/laravel-permission` | 11 roles x 47 permissions with per-request caching, Gate integration and middleware. Hand-rolling this correctly (cache invalidation, wildcard resolution, scoping) is a week of work on a security-sensitive surface. |
 | `bacon/bacon-qr-code` | Sections 27/28 require QR membership cards and event check-in passes. Pure PHP, SVG output, no GD/Imagick dependency. There is no framework alternative. |
 | `intervention/image` | Section 40 requires thumbnails and variants for profile photos, gallery, banners and sponsor logos. Laravel ships no image processing. |
 | `barryvdh/laravel-dompdf` | Sections 15/29 require PDF receipts, invoices and reports. **Caveat:** Bengali conjunct shaping in dompdf is unreliable — see [16-troubleshooting.md](16-troubleshooting.md). Latin-script documents only until proven otherwise. |

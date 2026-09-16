@@ -38,7 +38,7 @@ Its first major use is the **Golden Jubilee 2026**, but it is built to serve the
 | **Community** | posts · comments · reactions · moderation |
 | **Content** | news · announcements · gallery · alumni stories · school history · pages · FAQs |
 | **Communication** | email campaigns · **SMS via BulkSMSBD** · in-app notifications |
-| **Operations** | 11 roles / 60 permissions · audit logs · 11 reports with export · global search |
+| **Operations** | 11 roles / 47 permissions · audit logs · 11 reports with export · global search |
 
 ---
 
@@ -108,7 +108,7 @@ Specifications and usage rules: [docs/07-branding-ui.md §1–2](docs/07-brandin
 | [01 — Architecture](docs/01-architecture.md) | modular monolith, directory trees, cross-cutting patterns |
 | [02 — Database Schema](docs/02-database-schema.md) | 61 tables, ERD, indexes, deviations from the original spec |
 | [03 — Routes](docs/03-routes.md) | every route, name, middleware, rate limit |
-| [04 — Roles & Permissions](docs/04-roles-permissions.md) | 11 roles × 60 permissions, full matrix |
+| [04 — Roles & Permissions](docs/04-roles-permissions.md) | 11 roles × 47 permissions, full matrix |
 | [05 — Modules](docs/05-modules.md) | functional spec per module, incl. BulkSMSBD integration |
 | [06 — Localization](docs/06-localization.md) | বাংলা/English architecture, fonts, numerals |
 | [07 — Branding & UI](docs/07-branding-ui.md) | design system, components, accessibility |
