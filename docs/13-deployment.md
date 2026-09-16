@@ -296,6 +296,7 @@ Optional Redis for cache and queue once membership passes ~10,000 — `CACHE_STO
 - [ ] `storage:link` created; uploads work end to end
 - [ ] Mail provider configured; SPF, DKIM and DMARC published; test mail received
 - [ ] `BULKSMSBD_SENDER_ID` approved by the vendor; `SMS_DAILY_CAP` set; test SMS received
+- [ ] **The production server's outbound IP whitelisted in the BulkSMSBD panel** (Phonebook). The send endpoint enforces this, the balance endpoint does not — so a working balance check is NOT proof that sending works. Verify with `php artisan sms:test <number>` from the server itself.
 - [ ] **Every demo account deleted or re-passworded** (`php artisan demo:purge`)
 - [ ] Real Super Admin created via `php artisan make:admin`
 - [ ] Official logo, favicon and cover installed at `public/brand/`

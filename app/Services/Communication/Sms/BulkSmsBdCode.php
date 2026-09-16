@@ -42,6 +42,19 @@ final class BulkSmsBdCode
     public const BANGLA_MASKING_REQUIRED = '1012';
 
     /**
+     * Undocumented by the vendor — their published table stops at 1021 — but
+     * returned in practice as:
+     *
+     *   "Your ip <address> not Whitelisted. Please whitelist ip from Phonebook"
+     *
+     * The send endpoint enforces IP whitelisting; the balance endpoint does
+     * not. A working API key is therefore NOT proof that sending will work,
+     * and every server that sends (including each deploy target) must have its
+     * outbound IP whitelisted in the BulkSMSBD panel.
+     */
+    public const IP_NOT_WHITELISTED = '1032';
+
+    /**
      * Transient vendor-side faults worth retrying.
      *
      * @var array<int, string>
@@ -64,6 +77,7 @@ final class BulkSmsBdCode
         self::BALANCE_VALIDITY_UNAVAILABLE,
         self::INSUFFICIENT_BALANCE,
         self::USER_NOT_FOUND,
+        self::IP_NOT_WHITELISTED,
         '1013', '1014', '1015', '1016', '1017',
         '1018', '1019', '1020', '1021',
     ];

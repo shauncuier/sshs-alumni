@@ -194,6 +194,26 @@ Mail notifications are queued — see §4.
 | `1011` | User ID not found | `BULKSMSBD_API_KEY` is wrong |
 | `1012` | Bengali masking required | resend as `type=unicode` |
 | `1013`–`1021` | Gateway / pricing / account configuration | vendor-side configuration; the raw code is surfaced to the admin |
+| **`1032`** | **IP not whitelisted** — undocumented by the vendor | **halt**; whitelist the server's outbound IP (see below) |
+
+### Code 1032 — "Your ip ... not Whitelisted"
+
+**This is not in the vendor's published code table**, which stops at 1021. It is returned when the calling server's outbound IP is not whitelisted on the BulkSMSBD account.
+
+The important trap: **the balance endpoint does not enforce whitelisting, but the send endpoint does.** A successful `php artisan sms:balance` therefore proves the API key works and proves nothing about whether sending will work.
+
+Fix:
+
+1. Find the server's **public** outbound IP — not its LAN address:
+
+```bash
+curl -s https://api.ipify.org
+```
+
+2. Add it in the BulkSMSBD panel under **Phonebook → whitelist IP**.
+3. Re-run `php artisan sms:test <number>`.
+
+Every environment that sends needs its own entry: the developer machine, staging, and production. On a home or office connection the public IP is usually dynamic and will change, so keep SMS sending on the server rather than a workstation.
 
 ### No SMS sent at all
 

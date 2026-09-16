@@ -136,7 +136,7 @@ final class BulkSmsBdChannel implements SmsChannel
             );
         }
 
-        [$code, $providerMessageId] = $this->parse($response->body());
+        [$code, $providerMessageId, $providerMessage] = $this->parse($response->body());
 
         if (BulkSmsBdCode::isSuccess($code)) {
             return SmsResult::success($sms->to, $sms->segments, $providerMessageId);
@@ -145,7 +145,11 @@ final class BulkSmsBdChannel implements SmsChannel
         return SmsResult::failure(
             to: $sms->to,
             code: $code,
-            message: BulkSmsBdCode::describe($code),
+            // The vendor's own error_message is preferred over our lookup
+            // table: their published code list is incomplete (1032, "IP not
+            // whitelisted", is absent from it), and the text they return names
+            // the actual problem — including the specific IP to whitelist.
+            message: $providerMessage ?? BulkSmsBdCode::describe($code),
             retryable: BulkSmsBdCode::isRetryable($code),
             halt: BulkSmsBdCode::shouldHalt($code),
         );
@@ -155,7 +159,7 @@ final class BulkSmsBdChannel implements SmsChannel
      * The vendor returns JSON in the documented case and a bare code in
      * others, so both shapes are handled.
      *
-     * @return array{0: string|null, 1: string|null}
+     * @return array{0: string|null, 1: string|null, 2: string|null}
      */
     private function parse(string $body): array
     {
@@ -165,18 +169,20 @@ final class BulkSmsBdChannel implements SmsChannel
         if (is_array($json)) {
             $code = $json['response_code'] ?? null;
             $messageId = $json['message_id'] ?? null;
+            $error = $json['error_message'] ?? null;
 
             return [
                 $code === null ? null : (string) $code,
                 $messageId === null ? null : (string) $messageId,
+                is_string($error) && $error !== '' ? $error : null,
             ];
         }
 
         if (preg_match('/\b(202|1\d{3})\b/', $body, $match) === 1) {
-            return [$match[1], null];
+            return [$match[1], null, null];
         }
 
-        return [null, null];
+        return [null, null, null];
     }
 
     private function client(): PendingRequest

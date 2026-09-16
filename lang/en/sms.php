@@ -23,6 +23,7 @@ return [
         '1019' => 'The sender type price of this account is disabled',
         '1020' => 'The parent of this account was not found',
         '1021' => 'The parent active sender type price was not found',
+        '1032' => 'Your server IP is not whitelisted — add it in the BulkSMSBD panel under Phonebook',
 
         'unknown' => 'No response code returned by the SMS provider',
         'unknown_code' => 'Unrecognised SMS provider code: :code',

@@ -155,6 +155,43 @@ describe('the BulkSMSBD driver', function (): void {
         expect($results)->toHaveCount(1);
     });
 
+    it('halts on 1032, the undocumented IP-not-whitelisted code', function (): void {
+        // The vendor's published table stops at 1021. 1032 is returned in
+        // practice when the calling server's IP is not whitelisted, and the
+        // send endpoint enforces this while the balance endpoint does not —
+        // so a working API key is not proof that sending works.
+        Http::fake(['bulksmsbd.net/*' => Http::response([
+            'response_code' => 1032,
+            'error_message' => 'Your ip 1.2.3.4 not Whitelisted. Please whitelist ip from Phonebook',
+        ], 200)]);
+
+        $result = (new SmsManager)->send('01712345678', 'Hello');
+
+        expect($result->ok)->toBeFalse()
+            ->and($result->code)->toBe('1032')
+            ->and($result->halt)->toBeTrue()
+            ->and($result->retryable)->toBeFalse();
+    });
+
+    it('surfaces the provider error message rather than only a code', function (): void {
+        // The vendor's text names the actual problem, including the specific
+        // IP to whitelist. Discarding it is what made 1032 hard to diagnose.
+        Http::fake(['bulksmsbd.net/*' => Http::response([
+            'response_code' => 1032,
+            'error_message' => 'Your ip 1.2.3.4 not Whitelisted. Please whitelist ip from Phonebook',
+        ], 200)]);
+
+        expect((new SmsManager)->send('01712345678', 'Hello')->message)
+            ->toContain('1.2.3.4');
+    });
+
+    it('falls back to the lookup table when no provider message is given', function (): void {
+        Http::fake(['bulksmsbd.net/*' => Http::response(['response_code' => 1007], 200)]);
+
+        expect((new SmsManager)->send('01712345678', 'Hello')->message)
+            ->toContain('Insufficient balance');
+    });
+
     it('parses a bare response code as well as JSON', function (): void {
         Http::fake(['bulksmsbd.net/*' => Http::response('202', 200)]);
 
