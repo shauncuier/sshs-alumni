@@ -10,19 +10,19 @@ The platform should read as a **prestigious academic institution**, not a SaaS p
 
 This distinction governs the copy on every page. Getting it wrong misstates the history of both bodies.
 
-| | বাংলা | English | Established |
-|---|---|---|---|
-| **The school** | সবুজ শিক্ষায়তন সরকারি উচ্চ বিদ্যালয় | **Sabuj Shikshayatan Government High School** | **১৯৭৬ / 1976** |
-| **The association** | প্রাক্তন ছাত্র-ছাত্রী পরিষদ | Former Students Association | **২০১৫ / 2015** |
+|                     | বাংলা                                 | English                                       | Established     |
+| ------------------- | ------------------------------------- | --------------------------------------------- | --------------- |
+| **The school**      | সবুজ শিক্ষায়তন সরকারি উচ্চ বিদ্যালয় | **Sabuj Shikshayatan Government High School** | **১৯৭৬ / 1976** |
+| **The association** | প্রাক্তন ছাত্র-ছাত্রী পরিষদ           | Former Students Association                   | **২০১৫ / 2015** |
 
-> **English spelling is fixed by the school's own official site** ([sabujsghs.edu.bd](https://sabujsghs.edu.bd)): *Sabuj **Shikshayatan** Government High School* — not "Shikshyatan", and not "Govt. … High School" as the original brief had it. This exact string is used in page titles, SEO metadata, email templates and PDF documents. Verified facts are in [00-overview.md §3](00-overview.md).
+> **English spelling is fixed by the school's own official site** ([sabujsghs.edu.bd](https://sabujsghs.edu.bd)): _Sabuj **Shikshayatan** Government High School_ — not "Shikshyatan", and not "Govt. … High School" as the original brief had it. This exact string is used in page titles, SEO metadata, email templates and PDF documents. Verified facts are in [00-overview.md §3](00-overview.md).
 
-| | |
-|---|---|
-| Event | সুবর্ণজয়ন্তী ২০২৬ / Golden Jubilee 2026 |
+|           |                                            |
+| --------- | ------------------------------------------ |
+| Event     | সুবর্ণজয়ন্তী ২০২৬ / Golden Jubilee 2026   |
 | Milestone | ১৯৭৬ — ২০২৬ — **the school's fifty years** |
-| Theme | ৫০ বছরের গৌরবময় পথচলা |
-| Organiser | প্রাক্তন ছাত্র-ছাত্রী পরিষদ |
+| Theme     | ৫০ বছরের গৌরবময় পথচলা                     |
+| Organiser | প্রাক্তন ছাত্র-ছাত্রী পরিষদ                |
 
 **The fifty years belong to the school.** The association, founded in 2015, is the body organising the celebration. Hero and Jubilee copy credits the school's milestone and names the association as organiser. The association's own ২০১৫ founding appears on the About page and as a milestone in the school-history timeline. See [17-golden-jubilee.md](17-golden-jubilee.md).
 
@@ -30,14 +30,14 @@ This distinction governs the copy on every page. Getting it wrong misstates the 
 
 Both official marks have been supplied by the association. **No AI-generated logo is produced or substituted.**
 
-| Slot | Path | Source |
-|---|---|---|
-| **Association logo** | `public/brand/logo-association.png` | supplied — primary site identity |
-| **School logo** | `public/brand/logo-school.png` | supplied — school pages, history, footer pairing |
-| Favicon | `public/brand/favicon.svg` + `.ico` | derived from the association mark: 32 / 180 / 192 / 512 |
-| Cover image | `public/brand/cover.jpg` | 1920×640 |
-| OG image | `public/brand/og.jpg` | 1200×630 |
-| Jubilee banner | `public/brand/jubilee-banner.jpg` | 1920×800 |
+| Slot                 | Path                                | Source                                                  |
+| -------------------- | ----------------------------------- | ------------------------------------------------------- |
+| **Association logo** | `public/brand/logo-association.png` | supplied — primary site identity                        |
+| **School logo**      | `public/brand/logo-school.png`      | supplied — school pages, history, footer pairing        |
+| Favicon              | `public/brand/favicon.svg` + `.ico` | derived from the association mark: 32 / 180 / 192 / 512 |
+| Cover image          | `public/brand/cover.jpg`            | 1920×640                                                |
+| OG image             | `public/brand/og.jpg`               | 1200×630                                                |
+| Jubilee banner       | `public/brand/jubilee-banner.jpg`   | 1920×800                                                |
 
 #### Description of the supplied marks
 
@@ -65,26 +65,26 @@ Both official marks have been supplied by the association. **No AI-generated log
 /* resources/css/app.css — inside @theme */
 
 /* Green — from the school mark and the association's laurel */
---brand-green-900: #08532A;   /* deepest — footer, hero overlay */
---brand-green-800: #0E7A3C;   /* PRIMARY — headers, buttons, links */
---brand-green-600: #14934A;   /* hover */
---brand-green-100: #E6F3EC;   /* tint — section backgrounds */
+--brand-green-900: #08532a; /* deepest — footer, hero overlay */
+--brand-green-800: #0e7a3c; /* PRIMARY — headers, buttons, links */
+--brand-green-600: #14934a; /* hover */
+--brand-green-100: #e6f3ec; /* tint — section backgrounds */
 
 /* Purple — from the association ring */
---brand-purple-700: #7E3D7B;  /* purple text on light */
---brand-purple-600: #9B4D97;  /* ACCENT — association identity, highlights */
---brand-purple-100: #F3E8F2;  /* tint */
+--brand-purple-700: #7e3d7b; /* purple text on light */
+--brand-purple-600: #9b4d97; /* ACCENT — association identity, highlights */
+--brand-purple-100: #f3e8f2; /* tint */
 
 /* Red — from the stars on both marks */
---brand-red-700:   #B81C24;   /* alerts, destructive */
---brand-red-100:   #FBE9EA;
+--brand-red-700: #b81c24; /* alerts, destructive */
+--brand-red-100: #fbe9ea;
 
 /* Gold — সুবর্ণজয়ন্তী ONLY. Appears on neither logo. */
---brand-gold-500:  #C9A227;   /* jubilee accents on dark */
---brand-gold-600:  #A8871C;   /* jubilee text on light */
+--brand-gold-500: #c9a227; /* jubilee accents on dark */
+--brand-gold-600: #a8871c; /* jubilee text on light */
 
---brand-cream:     #FBF8F1;   /* public section background */
---brand-ink:       #1A1A1A;   /* body text */
+--brand-cream: #fbf8f1; /* public section background */
+--brand-ink: #1a1a1a; /* body text */
 ```
 
 > Values are read from the supplied raster logos and are accurate to within a shade. They are re-sampled exactly from `public/brand/*.png` when the assets are installed, and this table is updated if they move.
@@ -95,16 +95,16 @@ Gold appears on neither official mark. It is therefore **restricted to the স�
 
 ### Contrast rules
 
-| Combination | Ratio | Use |
-|---|---|---|
-| `green-800` on white | ~5.4:1 ✅ AA | body links, primary buttons |
-| white on `green-800` | ~5.4:1 ✅ AA | header, footer, primary button label |
-| `purple-600` on white | ~5.4:1 ✅ AA | association accent text, badges |
-| white on `purple-600` | ~5.4:1 ✅ AA | accent buttons |
-| `red-700` on white | ✅ AA | alerts, destructive actions |
-| `gold-600` on white | ✅ AA | jubilee **text** on light |
-| `gold-500` on `green-900` | ✅ AA | jubilee text on dark |
-| `gold-500` on white | ❌ fails | **never used for text on light** — surfaces and borders only |
+| Combination               | Ratio        | Use                                                          |
+| ------------------------- | ------------ | ------------------------------------------------------------ |
+| `green-800` on white      | ~5.4:1 ✅ AA | body links, primary buttons                                  |
+| white on `green-800`      | ~5.4:1 ✅ AA | header, footer, primary button label                         |
+| `purple-600` on white     | ~5.4:1 ✅ AA | association accent text, badges                              |
+| white on `purple-600`     | ~5.4:1 ✅ AA | accent buttons                                               |
+| `red-700` on white        | ✅ AA        | alerts, destructive actions                                  |
+| `gold-600` on white       | ✅ AA        | jubilee **text** on light                                    |
+| `gold-500` on `green-900` | ✅ AA        | jubilee text on dark                                         |
+| `gold-500` on white       | ❌ fails     | **never used for text on light** — surfaces and borders only |
 
 Every pairing above is verified, not assumed. New combinations are checked before use.
 
@@ -116,33 +116,33 @@ Dark mode applies to the **member and admin surfaces**. The public site renders 
 
 ## 3. Typography
 
-| Script | Family | Source |
-|---|---|---|
-| Bangla | Noto Sans Bengali | self-hosted |
-| Latin | Instrument Sans | existing (bunny fonts, already in `vite.config.ts`) |
+| Script | Family            | Source                                              |
+| ------ | ----------------- | --------------------------------------------------- |
+| Bangla | Noto Sans Bengali | self-hosted                                         |
+| Latin  | Instrument Sans   | existing (bunny fonts, already in `vite.config.ts`) |
 
 Bangla line-height is 1.8 for body, 1.4 minimum for headings. See [06-localization.md §6](06-localization.md).
 
 ### Scale
 
-| Element | Size | Weight |
-|---|---|---|
-| Hero headline | `clamp(2rem, 5vw, 3.5rem)` | 700 |
-| Page title | `1.875rem` | 600 |
-| Section heading | `1.5rem` | 600 |
-| Card title | `1.125rem` | 600 |
-| Body | `1rem` | 400 |
-| Meta / caption | `0.875rem` | 400 |
+| Element         | Size                       | Weight |
+| --------------- | -------------------------- | ------ |
+| Hero headline   | `clamp(2rem, 5vw, 3.5rem)` | 700    |
+| Page title      | `1.875rem`                 | 600    |
+| Section heading | `1.5rem`                   | 600    |
+| Card title      | `1.125rem`                 | 600    |
+| Body            | `1rem`                     | 400    |
+| Meta / caption  | `0.875rem`                 | 400    |
 
 ## 4. Surface treatments
 
 Three distinct visual registers so pages do not read as one long template:
 
-| Register | Where | Treatment |
-|---|---|---|
-| **Institutional** | About, committees, history, pages | cream background, generous whitespace, serif-weight headings, thin gold rules |
-| **Editorial** | News, stories, gallery, achievements | white, image-led, asymmetric grids |
-| **Ceremonial** | Golden Jubilee microsite | `green-900` → `green-800` gradient, gold typography and rules, centered composition, the 1976–2026 milestone as a hero element |
+| Register          | Where                                | Treatment                                                                                                                      |
+| ----------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Institutional** | About, committees, history, pages    | cream background, generous whitespace, serif-weight headings, thin gold rules                                                  |
+| **Editorial**     | News, stories, gallery, achievements | white, image-led, asymmetric grids                                                                                             |
+| **Ceremonial**    | Golden Jubilee microsite             | `green-900` → `green-800` gradient, gold typography and rules, centered composition, the 1976–2026 milestone as a hero element |
 
 Admin and member surfaces use the neutral shadcn palette with green as the accent — a CRM should be quiet.
 
@@ -212,14 +212,14 @@ Each item is hidden when the user lacks the permission — via `usePermission()`
 
 Mobile-first. Breakpoints are Tailwind defaults: `sm` 640 · `md` 768 · `lg` 1024 · `xl` 1280.
 
-| Surface | Mobile behaviour |
-|---|---|
-| Public nav | sheet drawer |
-| Hero | stacked, reduced height, headline `clamp()` floor |
-| Directory | single-column cards; filters in a drawer |
-| Admin tables | horizontal scroll with a sticky first column; card view under `md` |
-| Check-in scanner | full-screen, large tap targets — it is used one-handed at a gate |
-| Membership card | fixed aspect ratio, always legible |
+| Surface          | Mobile behaviour                                                   |
+| ---------------- | ------------------------------------------------------------------ |
+| Public nav       | sheet drawer                                                       |
+| Hero             | stacked, reduced height, headline `clamp()` floor                  |
+| Directory        | single-column cards; filters in a drawer                           |
+| Admin tables     | horizontal scroll with a sticky first column; card view under `md` |
+| Check-in scanner | full-screen, large tap targets — it is used one-handed at a gate   |
+| Membership card  | fixed aspect ratio, always legible                                 |
 
 Every page is verified at 375px with no horizontal page scroll.
 
@@ -227,12 +227,12 @@ Every page is verified at 375px with no horizontal page scroll.
 
 Every list and every form implements all four. This is a review checklist item, not a suggestion.
 
-| State | Treatment |
-|---|---|
+| State       | Treatment                                                                                           |
+| ----------- | --------------------------------------------------------------------------------------------------- |
 | **Loading** | skeleton matching the final layout (`components/ui/skeleton.tsx`), never a bare spinner for content |
-| **Empty** | illustration + specific message + the action that resolves it |
-| **Error** | what failed, in plain language, and what to do next |
-| **Success** | toast via the existing `use-flash-toast` + `sonner` |
+| **Empty**   | illustration + specific message + the action that resolves it                                       |
+| **Error**   | what failed, in plain language, and what to do next                                                 |
+| **Success** | toast via the existing `use-flash-toast` + `sonner`                                                 |
 
 Destructive actions go through `confirm-dialog` naming the specific record ("Reject Md. Karim's membership application?"), never a generic "Are you sure?".
 

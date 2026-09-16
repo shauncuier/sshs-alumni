@@ -10,13 +10,13 @@ One section per module: what it does, the rules that govern it, and what "done" 
 
 Public multi-step form at `/join`. Five steps, each validated on submit, draft persisted in the session so a refresh does not lose work.
 
-| Step | Fields |
-|---|---|
-| **1. Basic** | full name, name in Bangla, profile photo, date of birth, gender, blood group, mobile, WhatsApp, email, relationship to school |
-| **2. Academic** | batch (SSC year), student ID, admission year, group/stream, section, house, higher education |
-| **3. Professional** | occupation, organization, job title, industry, business information |
-| **4. Location** | country, division, district, city, current address, emergency contact name + phone |
-| **5. Review** | bio, skills, interests, social links, **privacy controls**, review everything, submit |
+| Step                | Fields                                                                                                                        |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **1. Basic**        | full name, name in Bangla, profile photo, date of birth, gender, blood group, mobile, WhatsApp, email, relationship to school |
+| **2. Academic**     | batch (SSC year), student ID, admission year, group/stream, section, house, higher education                                  |
+| **3. Professional** | occupation, organization, job title, industry, business information                                                           |
+| **4. Location**     | country, division, district, city, current address, emergency contact name + phone                                            |
+| **5. Review**       | bio, skills, interests, social links, **privacy controls**, review everything, submit                                         |
 
 ### Rules
 
@@ -256,15 +256,15 @@ Members report content with a reason. Moderators work a report queue and can hid
 
 ## 12. Content management
 
-| Type | Notes |
-|---|---|
-| Pages | Privacy policy and terms are `is_system` and cannot be deleted |
-| News | Featured flag, categories, view counter, SEO fields |
+| Type                    | Notes                                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Pages                   | Privacy policy and terms are `is_system` and cannot be deleted                                               |
+| News                    | Featured flag, categories, view counter, SEO fields                                                          |
 | Announcements / Notices | One table, `kind` column. Audience: public, members, batch, role. Time-windowed with `starts_at` / `ends_at` |
-| Gallery | Albums with images, optionally tied to an event or batch |
-| Alumni stories | Member-submitted, admin-reviewed (`pending` → `published`), featured flag |
-| School history | Unlimited milestones: year, title, description, image, order. Seeded with **1976 — school journey begins** |
-| FAQs | Grouped: general, jubilee, membership, payment, event |
+| Gallery                 | Albums with images, optionally tied to an event or batch                                                     |
+| Alumni stories          | Member-submitted, admin-reviewed (`pending` → `published`), featured flag                                    |
+| School history          | Unlimited milestones: year, title, description, image, order. Seeded with **1976 — school journey begins**   |
+| FAQs                    | Grouped: general, jubilee, membership, payment, event                                                        |
 
 Rich text editing and a shared media library serve all of them.
 
@@ -274,12 +274,12 @@ Rich text editing and a shared media library serve all of them.
 
 ### Channels
 
-| Channel | Implementation | Status |
-|---|---|---|
-| `database` | Laravel notifications | in-app notification centre |
-| `mail` | Laravel Mail, provider-agnostic | `log` driver in dev; SES/Postmark/Mailgun in prod |
-| **`sms`** | **BulkSMSBD** (`bulksmsbd.net`) | first concrete SMS driver |
-| `whatsapp` | — | architected, not implemented |
+| Channel    | Implementation                  | Status                                            |
+| ---------- | ------------------------------- | ------------------------------------------------- |
+| `database` | Laravel notifications           | in-app notification centre                        |
+| `mail`     | Laravel Mail, provider-agnostic | `log` driver in dev; SES/Postmark/Mailgun in prod |
+| **`sms`**  | **BulkSMSBD** (`bulksmsbd.net`) | first concrete SMS driver                         |
+| `whatsapp` | —                               | architected, not implemented                      |
 
 ### SMS — BulkSMSBD integration
 
@@ -300,27 +300,27 @@ App\Services\Communication\
 
 **Endpoints** (per the vendor's developer documentation):
 
-| Purpose | URL |
-|---|---|
-| Single / comma-separated recipients | `http://bulksmsbd.net/api/smsapi` |
-| Many (different message per recipient) | `http://bulksmsbd.net/api/smsapimany` |
-| Balance | `http://bulksmsbd.net/api/getBalanceApi` |
+| Purpose                                | URL                                      |
+| -------------------------------------- | ---------------------------------------- |
+| Single / comma-separated recipients    | `http://bulksmsbd.net/api/smsapi`        |
+| Many (different message per recipient) | `http://bulksmsbd.net/api/smsapimany`    |
+| Balance                                | `http://bulksmsbd.net/api/getBalanceApi` |
 
 **Parameters:** `api_key`, `senderid` (must be pre-approved by the vendor), `number` (`88017XXXXXXXX`, comma-separated for several), `message` (URL-encoded), `type` (`text` | `unicode`).
 
 **Response codes handled:**
 
-| Code | Meaning | Handling |
-|---|---|---|
-| `202` | Submitted successfully | mark recipient `sent` |
-| `1002` | Sender ID invalid or disabled | fail the campaign, alert admin — configuration error |
-| `1003` | Missing required fields | fail fast, log as a bug |
-| `1005` | Internal error | retry with backoff |
-| `1006` | Balance validity unavailable | fail the campaign, alert admin |
-| `1007` | Insufficient balance | **halt the campaign**, alert admin, do not burn retries |
-| `1011` | User ID not found | configuration error |
-| `1012` | Bengali masking required | retry as `type=unicode` |
-| `1013`–`1021` | Gateway / pricing / account configuration errors | fail the campaign, surface the raw code to the admin |
+| Code          | Meaning                                          | Handling                                                |
+| ------------- | ------------------------------------------------ | ------------------------------------------------------- |
+| `202`         | Submitted successfully                           | mark recipient `sent`                                   |
+| `1002`        | Sender ID invalid or disabled                    | fail the campaign, alert admin — configuration error    |
+| `1003`        | Missing required fields                          | fail fast, log as a bug                                 |
+| `1005`        | Internal error                                   | retry with backoff                                      |
+| `1006`        | Balance validity unavailable                     | fail the campaign, alert admin                          |
+| `1007`        | Insufficient balance                             | **halt the campaign**, alert admin, do not burn retries |
+| `1011`        | User ID not found                                | configuration error                                     |
+| `1012`        | Bengali masking required                         | retry as `type=unicode`                                 |
+| `1013`–`1021` | Gateway / pricing / account configuration errors | fail the campaign, surface the raw code to the admin    |
 
 **Bangla SMS rules — important for cost and correctness:**
 
@@ -340,14 +340,14 @@ A message that does not match is rejected or blocked at the gateway, so the form
 
 Two consequences follow:
 
-1. **The OTP body is English and stays English.** It is deliberately *not* passed through the translator — a Bangla OTP breaks the required format. This is the single user-facing string in the platform that is not localised, and that is intentional, not an oversight. A test asserts it stays English even when the active locale is `bn`.
+1. **The OTP body is English and stays English.** It is deliberately _not_ passed through the translator — a Bangla OTP breaks the required format. This is the single user-facing string in the platform that is not localised, and that is intentional, not an oversight. A test asserts it stays English even when the active locale is `bn`.
 2. **Because it is Latin-only it is GSM-7**, billing at 160 characters per segment rather than Unicode's 70. A correctly formatted OTP is therefore also the cheapest message the platform sends.
 
 `SMS_OTP_BRAND` must be Latin-script. A Bangla brand name would push the message to Unicode and break the format, so `OtpMessage` sanitises the brand and throws if nothing usable remains — loudly, at build time, rather than having the gateway reject every OTP in production.
 
 **Number normalisation:**
 
-Recipients are normalised to the vendor's format — `88` followed by the full local 11-digit number *including its trunk zero*: `8801712345678`. Bangladesh's calling code is +880, so `880`+`1712345678` and `88`+`01712345678` spell the same number; the vendor documents the latter.
+Recipients are normalised to the vendor's format — `88` followed by the full local 11-digit number _including its trunk zero_: `8801712345678`. Bangladesh's calling code is +880, so `880`+`1712345678` and `88`+`01712345678` spell the same number; the vendor documents the latter.
 
 Accepted inputs: `01712345678`, `8801712345678`, `+8801712345678`, `1712345678`, and spaced or hyphenated variants. Anything that is not `01[3-9]` followed by eight digits is **failed locally and never dispatched** — the platform does not pay to send to a number that cannot be valid.
 
@@ -426,20 +426,20 @@ The public verification page returns **name, Bangla name, batch, membership numb
 
 Grouped, cached, edited from `/admin/settings/{group}`:
 
-| Group | Contents |
-|---|---|
-| `organization` | association Bangla/English name, **established year (2015)**, association logo, favicon, cover image |
-| `school` | school Bangla/English name, **established year (1976)**, **EIIN**, address, phone, email, website, education board, head teacher, সভাপতি, school logo — *office-holder names live here, not in `.env`, so they can change without a redeploy* |
-| `contact` | association email, phone, address, map |
-| `social` | Facebook, YouTube, LinkedIn, X, website |
-| `registration` | open/closed, require approval, duplicate warning threshold |
-| `membership` | number format, fee amounts, fee periods |
-| `event` | default currency, registration defaults |
-| `jubilee` | theme line, hero copy, organizer block, countdown toggle, date announcement |
-| `notification` | which events notify whom, on which channels |
-| `seo` | default meta title, description, OG image |
-| `privacy` | `public_directory` toggle, default privacy flags for new members |
-| `system` | default language, timezone, footer content |
+| Group          | Contents                                                                                                                                                                                                                                      |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `organization` | association Bangla/English name, **established year (2015)**, association logo, favicon, cover image                                                                                                                                          |
+| `school`       | school Bangla/English name, **established year (1976)**, **EIIN**, address, phone, email, website, education board, head teacher, সভাপতি, school logo — _office-holder names live here, not in `.env`, so they can change without a redeploy_ |
+| `contact`      | association email, phone, address, map                                                                                                                                                                                                        |
+| `social`       | Facebook, YouTube, LinkedIn, X, website                                                                                                                                                                                                       |
+| `registration` | open/closed, require approval, duplicate warning threshold                                                                                                                                                                                    |
+| `membership`   | number format, fee amounts, fee periods                                                                                                                                                                                                       |
+| `event`        | default currency, registration defaults                                                                                                                                                                                                       |
+| `jubilee`      | theme line, hero copy, organizer block, countdown toggle, date announcement                                                                                                                                                                   |
+| `notification` | which events notify whom, on which channels                                                                                                                                                                                                   |
+| `seo`          | default meta title, description, OG image                                                                                                                                                                                                     |
+| `privacy`      | `public_directory` toggle, default privacy flags for new members                                                                                                                                                                              |
+| `system`       | default language, timezone, footer content                                                                                                                                                                                                    |
 
 `is_public` settings are shared to the frontend through Inertia. The rest never leave the server.
 

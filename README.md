@@ -1,14 +1,15 @@
 <div align="center">
 
 # প্রাক্তন ছাত্র-ছাত্রী পরিষদ
+
 ### সবুজ শিক্ষায়তন সরকারি উচ্চ বিদ্যালয়
 
-**Former Students Association** *(est. 2015)*
-**Sabuj Shikshayatan Government High School** *(est. 1976 · EIIN 105070 · Sitakunda, Chattogram)*
+**Former Students Association** _(est. 2015)_
+**Sabuj Shikshayatan Government High School** _(est. 1976 · EIIN 105070 · Sitakunda, Chattogram)_
 
 সুবর্ণজয়ন্তী ২০২৬ · Golden Jubilee 2026 · ১৯৭৬ — ২০২৬
 
-*৫০ বছরের গৌরবময় পথচলা*
+_৫০ বছরের গৌরবময় পথচলা_
 
 </div>
 
@@ -16,7 +17,7 @@
 
 A permanent bilingual (বাংলা / English) digital platform for the alumni association: a public community website, a member area, and an administrative CRM.
 
-Its first major use is the **Golden Jubilee 2026**, but it is built to serve the association for decades afterwards. The Jubilee is modelled as the first *flagship event* inside a general-purpose event system — not as a special subsystem that becomes dead code in 2027.
+Its first major use is the **Golden Jubilee 2026**, but it is built to serve the association for decades afterwards. The Jubilee is modelled as the first _flagship event_ inside a general-purpose event system — not as a special subsystem that becomes dead code in 2027.
 
 > **Two organizations, two founding dates.** The **school** was established in **1976** — the fifty years being celebrated are its. The **association** was established in **2015** and is the body organising the celebration. The platform keeps these separate everywhere. See [docs/00-overview.md §3](docs/00-overview.md).
 
@@ -26,19 +27,19 @@ Its first major use is the **Golden Jubilee 2026**, but it is built to serve the
 
 ## What it does
 
-| | |
-|---|---|
-| **Membership** | multi-step registration · verification workflow · membership numbers · digital QR membership card |
-| **Directory** | searchable alumni directory with per-field privacy controls (members-only) |
-| **Batches** | batch pages by SSC year · coordinators · batch discussions |
-| **Events** | reusable event system · tickets · registration · QR check-in · Golden Jubilee microsite |
-| **CRM** | contacts · pipeline · polymorphic activity timeline · tasks · tags |
-| **Money** | membership fees · donations · sponsorships · offline payment recording · receipts |
-| **People** | volunteers & teams · committees |
-| **Community** | posts · comments · reactions · moderation |
-| **Content** | news · announcements · gallery · alumni stories · school history · pages · FAQs |
-| **Communication** | email campaigns · **SMS via BulkSMSBD** · in-app notifications |
-| **Operations** | 11 roles / 47 permissions · audit logs · 11 reports with export · global search |
+|                   |                                                                                                   |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| **Membership**    | multi-step registration · verification workflow · membership numbers · digital QR membership card |
+| **Directory**     | searchable alumni directory with per-field privacy controls (members-only)                        |
+| **Batches**       | batch pages by SSC year · coordinators · batch discussions                                        |
+| **Events**        | reusable event system · tickets · registration · QR check-in · Golden Jubilee microsite           |
+| **CRM**           | contacts · pipeline · polymorphic activity timeline · tasks · tags                                |
+| **Money**         | membership fees · donations · sponsorships · offline payment recording · receipts                 |
+| **People**        | volunteers & teams · committees                                                                   |
+| **Community**     | posts · comments · reactions · moderation                                                         |
+| **Content**       | news · announcements · gallery · alumni stories · school history · pages · FAQs                   |
+| **Communication** | email campaigns · **SMS via BulkSMSBD** · in-app notifications                                    |
+| **Operations**    | 11 roles / 47 permissions · audit logs · 11 reports with export · global search                   |
 
 ---
 
@@ -67,11 +68,11 @@ Full instructions, prerequisites and required PHP extensions: **[docs/11-install
 
 ### Demo credentials — development only
 
-| Email | Password | Role |
-|---|---|---|
-| `admin@example.test` | `ChangeMe123!` | Super Admin |
-| `member@example.test` | `ChangeMe123!` | Member (approved) |
-| `pending@example.test` | `ChangeMe123!` | Member (pending) |
+| Email                  | Password       | Role              |
+| ---------------------- | -------------- | ----------------- |
+| `admin@example.test`   | `ChangeMe123!` | Super Admin       |
+| `member@example.test`  | `ChangeMe123!` | Member (approved) |
+| `pending@example.test` | `ChangeMe123!` | Member (pending)  |
 
 > ### ⚠️ This password must be changed before production.
 >
@@ -83,11 +84,11 @@ Full instructions, prerequisites and required PHP extensions: **[docs/11-install
 
 Both official marks have been supplied by the association. **No AI-generated logo is used or substituted.**
 
-| Asset | Path |
-|---|---|
-| Association logo | `public/brand/logo-association.png` |
-| School logo | `public/brand/logo-school.png` |
-| Favicon | `public/brand/favicon.svg` + `.ico` |
+| Asset                       | Path                                                       |
+| --------------------------- | ---------------------------------------------------------- |
+| Association logo            | `public/brand/logo-association.png`                        |
+| School logo                 | `public/brand/logo-school.png`                             |
+| Favicon                     | `public/brand/favicon.svg` + `.ico`                        |
 | Cover / OG / Jubilee banner | `public/brand/cover.jpg` · `og.jpg` · `jubilee-banner.jpg` |
 
 Palette is derived from the marks — **green primary, association purple accent, red for alerts**. Gold is restricted to the সুবর্ণজয়ন্তী pages, since it appears on neither logo.
@@ -102,26 +103,26 @@ Specifications and usage rules: [docs/07-branding-ui.md §1–2](docs/07-brandin
 
 ## Documentation
 
-| Doc | Contents |
-|---|---|
-| [00 — Overview](docs/00-overview.md) | product scope, Golden Jubilee context, bn/en glossary |
-| [01 — Architecture](docs/01-architecture.md) | modular monolith, directory trees, cross-cutting patterns |
-| [02 — Database Schema](docs/02-database-schema.md) | 61 tables, ERD, indexes, deviations from the original spec |
-| [03 — Routes](docs/03-routes.md) | every route, name, middleware, rate limit |
-| [04 — Roles & Permissions](docs/04-roles-permissions.md) | 11 roles × 47 permissions, full matrix |
-| [05 — Modules](docs/05-modules.md) | functional spec per module, incl. BulkSMSBD integration |
-| [06 — Localization](docs/06-localization.md) | বাংলা/English architecture, fonts, numerals |
-| [07 — Branding & UI](docs/07-branding-ui.md) | design system, components, accessibility |
-| [08 — Security & Privacy](docs/08-security-privacy.md) | threat model, privacy enforcement, required tests |
-| [09 — Payments](docs/09-payments.md) | gateway abstraction, offline recording, receipts |
-| [10 — API](docs/10-api.md) | versioned API plan, mobile readiness |
-| [11 — Installation](docs/11-installation.md) | local setup |
-| [12 — Environment](docs/12-environment.md) | every env var, dev vs prod |
-| [13 — Deployment](docs/13-deployment.md) | Linux, Nginx, MySQL, queue, scheduler, backup |
-| [14 — Testing](docs/14-testing.md) | strategy, mandatory security tests, CI |
-| [15 — Roadmap](docs/15-roadmap.md) | post-2026 extensibility |
-| [16 — Troubleshooting](docs/16-troubleshooting.md) | Bangla rendering, queues, SMS codes, deploys |
-| [17 — Golden Jubilee](docs/17-golden-jubilee.md) | microsite, the TBA date rule, event-day operations |
+| Doc                                                      | Contents                                                   |
+| -------------------------------------------------------- | ---------------------------------------------------------- |
+| [00 — Overview](docs/00-overview.md)                     | product scope, Golden Jubilee context, bn/en glossary      |
+| [01 — Architecture](docs/01-architecture.md)             | modular monolith, directory trees, cross-cutting patterns  |
+| [02 — Database Schema](docs/02-database-schema.md)       | 61 tables, ERD, indexes, deviations from the original spec |
+| [03 — Routes](docs/03-routes.md)                         | every route, name, middleware, rate limit                  |
+| [04 — Roles & Permissions](docs/04-roles-permissions.md) | 11 roles × 47 permissions, full matrix                     |
+| [05 — Modules](docs/05-modules.md)                       | functional spec per module, incl. BulkSMSBD integration    |
+| [06 — Localization](docs/06-localization.md)             | বাংলা/English architecture, fonts, numerals                |
+| [07 — Branding & UI](docs/07-branding-ui.md)             | design system, components, accessibility                   |
+| [08 — Security & Privacy](docs/08-security-privacy.md)   | threat model, privacy enforcement, required tests          |
+| [09 — Payments](docs/09-payments.md)                     | gateway abstraction, offline recording, receipts           |
+| [10 — API](docs/10-api.md)                               | versioned API plan, mobile readiness                       |
+| [11 — Installation](docs/11-installation.md)             | local setup                                                |
+| [12 — Environment](docs/12-environment.md)               | every env var, dev vs prod                                 |
+| [13 — Deployment](docs/13-deployment.md)                 | Linux, Nginx, MySQL, queue, scheduler, backup              |
+| [14 — Testing](docs/14-testing.md)                       | strategy, mandatory security tests, CI                     |
+| [15 — Roadmap](docs/15-roadmap.md)                       | post-2026 extensibility                                    |
+| [16 — Troubleshooting](docs/16-troubleshooting.md)       | Bangla rendering, queues, SMS codes, deploys               |
+| [17 — Golden Jubilee](docs/17-golden-jubilee.md)         | microsite, the TBA date rule, event-day operations         |
 
 ---
 
@@ -141,7 +142,7 @@ Project conventions live in `CLAUDE.md` / `AGENTS.md`, and domain skills in `.cl
 
 ## Core principles
 
-1. **Privacy before features.** A private field is *absent from the response payload* — not blanked, not hidden with CSS. Enforced once, in the API Resource layer, so it cannot drift between the web app and a future API.
+1. **Privacy before features.** A private field is _absent from the response payload_ — not blanked, not hidden with CSS. Enforced once, in the API Resource layer, so it cannot drift between the web app and a future API.
 2. **Server-side authorization, always.** The frontend receives a permission list purely to hide buttons. Policies and middleware decide.
 3. **Bilingual from the first line.** No user-facing string is hard-coded in a component.
 4. **Auditability.** Every administrative action touching a person, money or published content leaves an audit row.
@@ -161,7 +162,7 @@ Before going live, work through [docs/13-deployment.md §12](docs/13-deployment.
 - Scheduler cron entry installed
 - Every demo account deleted or re-passworded
 - SPF / DKIM / DMARC published for the sending domain
-- Backup script installed *and a restore drill completed*
+- Backup script installed _and a restore drill completed_
 
 ---
 

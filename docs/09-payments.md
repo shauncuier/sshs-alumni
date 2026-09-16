@@ -8,12 +8,12 @@
 
 Four things, one ledger:
 
-| Payable | Source |
-|---|---|
-| `MembershipFee` | annual or life membership |
-| `EventRegistration` | event / reunion ticket |
-| `Donation` | public or member donation, optionally campaign-tagged |
-| `Sponsor` | sponsorship package purchase |
+| Payable             | Source                                                |
+| ------------------- | ----------------------------------------------------- |
+| `MembershipFee`     | annual or life membership                             |
+| `EventRegistration` | event / reunion ticket                                |
+| `Donation`          | public or member donation, optionally campaign-tagged |
+| `Sponsor`           | sponsorship package purchase                          |
 
 `payments.payable_type` / `payable_id` is polymorphic. Every report, every dashboard figure and every receipt reads from the same table, so income can never disagree with itself.
 
@@ -98,13 +98,13 @@ pending ──> paid ──> refunded
    └──> cancelled
 ```
 
-| Status | Meaning |
-|---|---|
-| `pending` | created, money not confirmed |
-| `paid` | confirmed; receipt issued; payable activated |
-| `failed` | gateway declined |
-| `cancelled` | abandoned or withdrawn before payment |
-| `refunded` | returned; original row preserved |
+| Status      | Meaning                                      |
+| ----------- | -------------------------------------------- |
+| `pending`   | created, money not confirmed                 |
+| `paid`      | confirmed; receipt issued; payable activated |
+| `failed`    | gateway declined                             |
+| `cancelled` | abandoned or withdrawn before payment        |
+| `refunded`  | returned; original row preserved             |
 
 **Payments are never soft-deleted and never edited into a different amount.** A mistake is corrected by refunding and re-recording. Both actions are audited. This is what makes the ledger trustworthy.
 

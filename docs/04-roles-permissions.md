@@ -14,98 +14,98 @@ Actions: `view`, `create`, `edit`, `delete`, plus module-specific verbs (`verify
 
 ## 2. Permission catalogue
 
-| Module | Permissions |
-|---|---|
-| `admin` | `admin.access` |
-| `members` | `members.view`, `members.create`, `members.edit`, `members.verify`, `members.delete`, `members.export` |
-| `crm` | `crm.view`, `crm.manage`, `crm.assign`, `crm.delete` |
-| `batches` | `batches.view`, `batches.create`, `batches.edit`, `batches.delete` |
-| `events` | `events.view`, `events.create`, `events.edit`, `events.publish`, `events.checkin`, `events.delete` |
-| `payments` | `payments.view`, `payments.create`, `payments.edit`, `payments.refund` |
-| `donations` | `donations.view`, `donations.manage` |
-| `sponsors` | `sponsors.view`, `sponsors.manage` |
-| `volunteers` | `volunteers.view`, `volunteers.manage` |
-| `committees` | `committees.view`, `committees.manage` |
-| `community` | `community.view`, `community.moderate`, `community.delete` |
-| `content` | `content.view`, `content.manage`, `content.publish` |
-| `campaigns` | `campaigns.manage`, `campaigns.send` |
-| `reports` | `reports.view`, `reports.export` |
-| `users` | `users.manage` |
-| `roles` | `roles.manage` |
-| `audit` | `audit.view` |
-| `settings` | `settings.manage` |
+| Module       | Permissions                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------ |
+| `admin`      | `admin.access`                                                                                         |
+| `members`    | `members.view`, `members.create`, `members.edit`, `members.verify`, `members.delete`, `members.export` |
+| `crm`        | `crm.view`, `crm.manage`, `crm.assign`, `crm.delete`                                                   |
+| `batches`    | `batches.view`, `batches.create`, `batches.edit`, `batches.delete`                                     |
+| `events`     | `events.view`, `events.create`, `events.edit`, `events.publish`, `events.checkin`, `events.delete`     |
+| `payments`   | `payments.view`, `payments.create`, `payments.edit`, `payments.refund`                                 |
+| `donations`  | `donations.view`, `donations.manage`                                                                   |
+| `sponsors`   | `sponsors.view`, `sponsors.manage`                                                                     |
+| `volunteers` | `volunteers.view`, `volunteers.manage`                                                                 |
+| `committees` | `committees.view`, `committees.manage`                                                                 |
+| `community`  | `community.view`, `community.moderate`, `community.delete`                                             |
+| `content`    | `content.view`, `content.manage`, `content.publish`                                                    |
+| `campaigns`  | `campaigns.manage`, `campaigns.send`                                                                   |
+| `reports`    | `reports.view`, `reports.export`                                                                       |
+| `users`      | `users.manage`                                                                                         |
+| `roles`      | `roles.manage`                                                                                         |
+| `audit`      | `audit.view`                                                                                           |
+| `settings`   | `settings.manage`                                                                                      |
 
 **47 permissions.**
 
 ## 3. Roles
 
-| Role | Purpose |
-|---|---|
-| **Super Admin** | Full system access. Bypasses all checks via `Gate::before`. At least one must always exist. |
-| **Admin** | Everything except role management edge cases; the day-to-day committee administrator. |
-| **CRM Manager** | Owns contacts, pipeline, activities, tasks, donor and sponsor relationships. |
-| **Membership Manager** | Owns the registration → verification → membership-number workflow and the batch structure. |
-| **Event Manager** | Owns events, tickets, registrations and check-in. |
-| **Finance Manager** | Owns payments, membership fees, donations, sponsorships and financial reports. |
-| **Content Manager** | Owns the CMS: news, announcements, gallery, pages, stories, school history, FAQs. |
-| **Moderator** | Owns community moderation and the report queue. |
-| **Batch Coordinator** | Limited management of **their own batch only**. |
-| **Volunteer Coordinator** | Owns volunteers, teams, assignments; can check in attendees. |
-| **Member** | Default role for every approved alumnus. No admin access. |
+| Role                      | Purpose                                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------------------- |
+| **Super Admin**           | Full system access. Bypasses all checks via `Gate::before`. At least one must always exist. |
+| **Admin**                 | Everything except role management edge cases; the day-to-day committee administrator.       |
+| **CRM Manager**           | Owns contacts, pipeline, activities, tasks, donor and sponsor relationships.                |
+| **Membership Manager**    | Owns the registration → verification → membership-number workflow and the batch structure.  |
+| **Event Manager**         | Owns events, tickets, registrations and check-in.                                           |
+| **Finance Manager**       | Owns payments, membership fees, donations, sponsorships and financial reports.              |
+| **Content Manager**       | Owns the CMS: news, announcements, gallery, pages, stories, school history, FAQs.           |
+| **Moderator**             | Owns community moderation and the report queue.                                             |
+| **Batch Coordinator**     | Limited management of **their own batch only**.                                             |
+| **Volunteer Coordinator** | Owns volunteers, teams, assignments; can check in attendees.                                |
+| **Member**                | Default role for every approved alumnus. No admin access.                                   |
 
 ## 4. Role → permission matrix
 
 `✔` = full set · `view` = read only · `–` = none · scoped entries explained in §5.
 
-| Permission group | Super Admin | Admin | CRM Mgr | Membership Mgr | Event Mgr | Finance Mgr | Content Mgr | Moderator | Batch Coord | Volunteer Coord | Member |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| `admin.access` | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | – |
-| `members.view` | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | – | ✔ | *batch* | ✔ | *own* |
-| `members.create` | ✔ | ✔ | – | ✔ | – | – | – | – | – | – | – |
-| `members.edit` | ✔ | ✔ | – | ✔ | – | – | – | – | – | – | *own* |
-| `members.verify` | ✔ | ✔ | – | ✔ | – | – | – | – | – | – | – |
-| `members.delete` | ✔ | ✔ | – | – | – | – | – | – | – | – | – |
-| `members.export` | ✔ | ✔ | ✔ | ✔ | – | – | – | – | – | – | – |
-| `crm.view` | ✔ | ✔ | ✔ | ✔ | – | ✔ | – | – | – | – | – |
-| `crm.manage` | ✔ | ✔ | ✔ | – | – | – | – | – | – | – | – |
-| `crm.assign` | ✔ | ✔ | ✔ | – | – | – | – | – | – | – | – |
-| `crm.delete` | ✔ | ✔ | – | – | – | – | – | – | – | – | – |
-| `batches.view` | ✔ | ✔ | ✔ | ✔ | ✔ | – | ✔ | ✔ | ✔ | ✔ | ✔ |
-| `batches.create` | ✔ | ✔ | – | ✔ | – | – | – | – | – | – | – |
-| `batches.edit` | ✔ | ✔ | – | ✔ | – | – | – | – | *own* | – | – |
-| `batches.delete` | ✔ | ✔ | – | – | – | – | – | – | – | – | – |
-| `events.view` | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | – | ✔ | ✔ | ✔ |
-| `events.create` | ✔ | ✔ | – | – | ✔ | – | – | – | – | – | – |
-| `events.edit` | ✔ | ✔ | – | – | ✔ | – | – | – | – | – | – |
-| `events.publish` | ✔ | ✔ | – | – | ✔ | – | – | – | – | – | – |
-| `events.checkin` | ✔ | ✔ | – | – | ✔ | – | – | – | – | ✔ | – |
-| `events.delete` | ✔ | ✔ | – | – | – | – | – | – | – | – | – |
-| `payments.view` | ✔ | ✔ | ✔ | – | ✔ | ✔ | – | – | – | – | *own* |
-| `payments.create` | ✔ | ✔ | – | – | – | ✔ | – | – | – | – | – |
-| `payments.edit` | ✔ | ✔ | – | – | – | ✔ | – | – | – | – | – |
-| `payments.refund` | ✔ | ✔ | – | – | – | ✔ | – | – | – | – | – |
-| `donations.view` | ✔ | ✔ | ✔ | – | – | ✔ | – | – | – | – | *own* |
-| `donations.manage` | ✔ | ✔ | ✔ | – | – | ✔ | – | – | – | – | – |
-| `sponsors.view` | ✔ | ✔ | ✔ | – | ✔ | ✔ | ✔ | – | – | – | – |
-| `sponsors.manage` | ✔ | ✔ | ✔ | – | – | ✔ | – | – | – | – | – |
-| `volunteers.view` | ✔ | ✔ | ✔ | – | ✔ | – | – | – | – | ✔ | *own* |
-| `volunteers.manage` | ✔ | ✔ | – | – | – | – | – | – | – | ✔ | – |
-| `committees.view` | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
-| `committees.manage` | ✔ | ✔ | – | – | – | – | ✔ | – | – | – | – |
-| `community.view` | ✔ | ✔ | – | – | – | – | ✔ | ✔ | ✔ | – | ✔ |
-| `community.moderate` | ✔ | ✔ | – | – | – | – | – | ✔ | *batch* | – | – |
-| `community.delete` | ✔ | ✔ | – | – | – | – | – | ✔ | – | – | – |
-| `content.view` | ✔ | ✔ | – | – | ✔ | – | ✔ | ✔ | ✔ | – | – |
-| `content.manage` | ✔ | ✔ | – | – | – | – | ✔ | – | *batch* | – | – |
-| `content.publish` | ✔ | ✔ | – | – | – | – | ✔ | – | – | – | – |
-| `campaigns.manage` | ✔ | ✔ | ✔ | ✔ | – | – | ✔ | – | – | – | – |
-| `campaigns.send` | ✔ | ✔ | – | – | – | – | – | – | – | – | – |
-| `reports.view` | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | – | – | – | – | – |
-| `reports.export` | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | – | – | – | – | – |
-| `users.manage` | ✔ | ✔ | – | – | – | – | – | – | – | – | – |
-| `roles.manage` | ✔ | ✔ | – | – | – | – | – | – | – | – | – |
-| `audit.view` | ✔ | ✔ | – | – | – | – | – | – | – | – | – |
-| `settings.manage` | ✔ | ✔ | – | – | – | – | – | – | – | – | – |
+| Permission group     | Super Admin | Admin | CRM Mgr | Membership Mgr | Event Mgr | Finance Mgr | Content Mgr | Moderator | Batch Coord | Volunteer Coord | Member |
+| -------------------- | :---------: | :---: | :-----: | :------------: | :-------: | :---------: | :---------: | :-------: | :---------: | :-------------: | :----: |
+| `admin.access`       |      ✔      |   ✔   |    ✔    |       ✔        |     ✔     |      ✔      |      ✔      |     ✔     |      ✔      |        ✔        |   –    |
+| `members.view`       |      ✔      |   ✔   |    ✔    |       ✔        |     ✔     |      ✔      |      –      |     ✔     |   _batch_   |        ✔        | _own_  |
+| `members.create`     |      ✔      |   ✔   |    –    |       ✔        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `members.edit`       |      ✔      |   ✔   |    –    |       ✔        |     –     |      –      |      –      |     –     |      –      |        –        | _own_  |
+| `members.verify`     |      ✔      |   ✔   |    –    |       ✔        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `members.delete`     |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `members.export`     |      ✔      |   ✔   |    ✔    |       ✔        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `crm.view`           |      ✔      |   ✔   |    ✔    |       ✔        |     –     |      ✔      |      –      |     –     |      –      |        –        |   –    |
+| `crm.manage`         |      ✔      |   ✔   |    ✔    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `crm.assign`         |      ✔      |   ✔   |    ✔    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `crm.delete`         |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `batches.view`       |      ✔      |   ✔   |    ✔    |       ✔        |     ✔     |      –      |      ✔      |     ✔     |      ✔      |        ✔        |   ✔    |
+| `batches.create`     |      ✔      |   ✔   |    –    |       ✔        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `batches.edit`       |      ✔      |   ✔   |    –    |       ✔        |     –     |      –      |      –      |     –     |    _own_    |        –        |   –    |
+| `batches.delete`     |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `events.view`        |      ✔      |   ✔   |    ✔    |       ✔        |     ✔     |      ✔      |      ✔      |     –     |      ✔      |        ✔        |   ✔    |
+| `events.create`      |      ✔      |   ✔   |    –    |       –        |     ✔     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `events.edit`        |      ✔      |   ✔   |    –    |       –        |     ✔     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `events.publish`     |      ✔      |   ✔   |    –    |       –        |     ✔     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `events.checkin`     |      ✔      |   ✔   |    –    |       –        |     ✔     |      –      |      –      |     –     |      –      |        ✔        |   –    |
+| `events.delete`      |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `payments.view`      |      ✔      |   ✔   |    ✔    |       –        |     ✔     |      ✔      |      –      |     –     |      –      |        –        | _own_  |
+| `payments.create`    |      ✔      |   ✔   |    –    |       –        |     –     |      ✔      |      –      |     –     |      –      |        –        |   –    |
+| `payments.edit`      |      ✔      |   ✔   |    –    |       –        |     –     |      ✔      |      –      |     –     |      –      |        –        |   –    |
+| `payments.refund`    |      ✔      |   ✔   |    –    |       –        |     –     |      ✔      |      –      |     –     |      –      |        –        |   –    |
+| `donations.view`     |      ✔      |   ✔   |    ✔    |       –        |     –     |      ✔      |      –      |     –     |      –      |        –        | _own_  |
+| `donations.manage`   |      ✔      |   ✔   |    ✔    |       –        |     –     |      ✔      |      –      |     –     |      –      |        –        |   –    |
+| `sponsors.view`      |      ✔      |   ✔   |    ✔    |       –        |     ✔     |      ✔      |      ✔      |     –     |      –      |        –        |   –    |
+| `sponsors.manage`    |      ✔      |   ✔   |    ✔    |       –        |     –     |      ✔      |      –      |     –     |      –      |        –        |   –    |
+| `volunteers.view`    |      ✔      |   ✔   |    ✔    |       –        |     ✔     |      –      |      –      |     –     |      –      |        ✔        | _own_  |
+| `volunteers.manage`  |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        ✔        |   –    |
+| `committees.view`    |      ✔      |   ✔   |    ✔    |       ✔        |     ✔     |      ✔      |      ✔      |     ✔     |      ✔      |        ✔        |   ✔    |
+| `committees.manage`  |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      ✔      |     –     |      –      |        –        |   –    |
+| `community.view`     |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      ✔      |     ✔     |      ✔      |        –        |   ✔    |
+| `community.moderate` |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     ✔     |   _batch_   |        –        |   –    |
+| `community.delete`   |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     ✔     |      –      |        –        |   –    |
+| `content.view`       |      ✔      |   ✔   |    –    |       –        |     ✔     |      –      |      ✔      |     ✔     |      ✔      |        –        |   –    |
+| `content.manage`     |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      ✔      |     –     |   _batch_   |        –        |   –    |
+| `content.publish`    |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      ✔      |     –     |      –      |        –        |   –    |
+| `campaigns.manage`   |      ✔      |   ✔   |    ✔    |       ✔        |     –     |      –      |      ✔      |     –     |      –      |        –        |   –    |
+| `campaigns.send`     |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `reports.view`       |      ✔      |   ✔   |    ✔    |       ✔        |     ✔     |      ✔      |      –      |     –     |      –      |        –        |   –    |
+| `reports.export`     |      ✔      |   ✔   |    ✔    |       ✔        |     ✔     |      ✔      |      –      |     –     |      –      |        –        |   –    |
+| `users.manage`       |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `roles.manage`       |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `audit.view`         |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
+| `settings.manage`    |      ✔      |   ✔   |    –    |       –        |     –     |      –      |      –      |     –     |      –      |        –        |   –    |
 
 ## 5. Scoped permissions
 
@@ -176,7 +176,9 @@ Every model with non-trivial access has a policy. Controllers call `$this->autho
 
 ```tsx
 const can = usePermission();
-{can('members.verify') && <ApproveButton />}
+{
+    can('members.verify') && <ApproveButton />;
+}
 ```
 
 This hides UI. It does not protect anything.
@@ -187,8 +189,8 @@ This hides UI. It does not protect anything.
 
 `DemoSeeder` — **development only**, refuses to run when `app()->isProduction()` — creates:
 
-| Email | Role | Password |
-|---|---|---|
+| Email                | Role        | Password       |
+| -------------------- | ----------- | -------------- |
 | `admin@example.test` | Super Admin | `ChangeMe123!` |
 
 > **This password must be changed before production.** See [11-installation.md](11-installation.md) and [13-deployment.md](13-deployment.md).

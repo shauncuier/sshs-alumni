@@ -4,14 +4,14 @@
 
 ## 1. Prerequisites
 
-| Requirement | Version | Notes |
-|---|---|---|
-| PHP | **8.3+** | 8.5 used in development |
-| Composer | 2.x | |
-| Node.js | **20+** | 22 LTS recommended |
-| npm | 10+ | |
-| SQLite | 3.35+ | bundled with PHP on most systems |
-| Git | any | |
+| Requirement | Version  | Notes                            |
+| ----------- | -------- | -------------------------------- |
+| PHP         | **8.3+** | 8.5 used in development          |
+| Composer    | 2.x      |                                  |
+| Node.js     | **20+**  | 22 LTS recommended               |
+| npm         | 10+      |                                  |
+| SQLite      | 3.35+    | bundled with PHP on most systems |
+| Git         | any      |                                  |
 
 ### Required PHP extensions
 
@@ -82,10 +82,10 @@ and open **http://sshs-alumni.test/**
 
 ## 4. Demo credentials — development only
 
-| Email | Password | Role |
-|---|---|---|
-| `admin@example.test` | `ChangeMe123!` | Super Admin |
-| `member@example.test` | `ChangeMe123!` | Member (approved) |
+| Email                  | Password       | Role                          |
+| ---------------------- | -------------- | ----------------------------- |
+| `admin@example.test`   | `ChangeMe123!` | Super Admin                   |
+| `member@example.test`  | `ChangeMe123!` | Member (approved)             |
 | `pending@example.test` | `ChangeMe123!` | Member (pending verification) |
 
 > ## ⚠️ Change this password before production
@@ -114,17 +114,17 @@ Prompts for name, email and password, creates the user, verifies the email and a
 
 `DatabaseSeeder` runs, in order:
 
-| Seeder | Creates | Production-safe |
-|---|---|---|
-| `RolePermissionSeeder` | 47 permissions, 11 roles | ✅ yes — required |
-| `SettingsSeeder` | all setting groups with defaults | ✅ yes — required |
-| `BatchSeeder` | SSC 1981 → current year | ✅ yes — required |
-| `SchoolHistorySeeder` | milestone **1976 — school journey begins** | ✅ yes — required |
-| `JubileeSeeder` | the flagship Golden Jubilee event, `date_status = tba` | ✅ yes — required |
-| `MessageTemplateSeeder` | system notification templates | ✅ yes — required |
-| `VolunteerTeamSeeder` | the nine standard teams | ✅ yes — required |
-| `SponsorshipPackageSeeder` | Title → Custom tiers | ✅ yes — required |
-| `DemoSeeder` | demo admins, ~200 members, events, CRM records, committees, volunteers, news, announcements | ❌ **dev only — blocked in production** |
+| Seeder                     | Creates                                                                                     | Production-safe                         |
+| -------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `RolePermissionSeeder`     | 47 permissions, 11 roles                                                                    | ✅ yes — required                       |
+| `SettingsSeeder`           | all setting groups with defaults                                                            | ✅ yes — required                       |
+| `BatchSeeder`              | SSC 1981 → current year                                                                     | ✅ yes — required                       |
+| `SchoolHistorySeeder`      | milestone **1976 — school journey begins**                                                  | ✅ yes — required                       |
+| `JubileeSeeder`            | the flagship Golden Jubilee event, `date_status = tba`                                      | ✅ yes — required                       |
+| `MessageTemplateSeeder`    | system notification templates                                                               | ✅ yes — required                       |
+| `VolunteerTeamSeeder`      | the nine standard teams                                                                     | ✅ yes — required                       |
+| `SponsorshipPackageSeeder` | Title → Custom tiers                                                                        | ✅ yes — required                       |
+| `DemoSeeder`               | demo admins, ~200 members, events, CRM records, committees, volunteers, news, announcements | ❌ **dev only — blocked in production** |
 
 Production seeding runs everything except `DemoSeeder`:
 
@@ -155,14 +155,14 @@ php artisan optimize:clear           # after editing lang/ or config/
 
 ## 8. Common first-run problems
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| `Unable to locate file in Vite manifest` | assets not built | `npm run build` or `npm run dev` |
-| `could not find driver` | missing `pdo_sqlite` | enable the extension |
-| Image upload fails silently | missing `gd` | enable `gd`, restart PHP |
-| Uploaded images 404 | no storage symlink | `php artisan storage:link` |
-| Bangla renders as boxes | fonts not built | `npm run build` |
-| Campaigns never send | no queue worker | `php artisan queue:work` |
-| Translation edits not showing | config/lang cached | `php artisan optimize:clear` |
+| Symptom                                  | Cause                | Fix                              |
+| ---------------------------------------- | -------------------- | -------------------------------- |
+| `Unable to locate file in Vite manifest` | assets not built     | `npm run build` or `npm run dev` |
+| `could not find driver`                  | missing `pdo_sqlite` | enable the extension             |
+| Image upload fails silently              | missing `gd`         | enable `gd`, restart PHP         |
+| Uploaded images 404                      | no storage symlink   | `php artisan storage:link`       |
+| Bangla renders as boxes                  | fonts not built      | `npm run build`                  |
+| Campaigns never send                     | no queue worker      | `php artisan queue:work`         |
+| Translation edits not showing            | config/lang cached   | `php artisan optimize:clear`     |
 
 Fuller coverage in [16-troubleshooting.md](16-troubleshooting.md).

@@ -6,14 +6,14 @@ The platform is built to be extended without rewriting its core. Nothing here is
 
 ## 1. Ready to switch on — no schema change
 
-| Feature | What exists | What is left |
-|---|---|---|
-| **Public alumni directory** | `settings.privacy.public_directory`; resources already handle an anonymous viewer | flip the setting; re-verify privacy tests |
-| **WhatsApp notifications** | `SmsChannel` contract, notification classes with `via()` | a `WhatsAppChannel` + Business API credentials |
-| **Phone verification** | `users.phone`, `phone_verified_at`, working BulkSMSBD channel | an OTP flow and rate limiting |
-| **Push notifications** | database notification classes | add a `broadcast`/FCM channel |
-| **S3 / object storage** | `MediaService` is disk-agnostic | set `FILESYSTEM_DISK=s3` |
-| **Redis** | cache, queue and session drivers are config | set the drivers |
+| Feature                     | What exists                                                                       | What is left                                   |
+| --------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------- |
+| **Public alumni directory** | `settings.privacy.public_directory`; resources already handle an anonymous viewer | flip the setting; re-verify privacy tests      |
+| **WhatsApp notifications**  | `SmsChannel` contract, notification classes with `via()`                          | a `WhatsAppChannel` + Business API credentials |
+| **Phone verification**      | `users.phone`, `phone_verified_at`, working BulkSMSBD channel                     | an OTP flow and rate limiting                  |
+| **Push notifications**      | database notification classes                                                     | add a `broadcast`/FCM channel                  |
+| **S3 / object storage**     | `MediaService` is disk-agnostic                                                   | set `FILESYSTEM_DISK=s3`                       |
+| **Redis**                   | cache, queue and session drivers are config                                       | set the drivers                                |
 
 ## 2. Needs a new driver class only
 
@@ -47,22 +47,22 @@ Everything server-side is already in place: ULIDs, QR tokens, privacy-filtered r
 
 Each is a new module beside the existing ones, not a change to them.
 
-| Feature | Builds on | Notes |
-|---|---|---|
-| **Alumni business directory** | `members.business_info`, industry, organization | a listing model + public pages; privacy flags already govern workplace visibility |
-| **Job board** | members + notifications + community moderation | jobs, applications; batch and industry targeting |
-| **Mentorship** | member skills, batches, CRM activities | mentor/mentee matching; the activity timeline already records interactions |
-| **Blood donor directory** | `members.blood_group` (already indexed) | **needs its own explicit consent flag** — `show_blood_group` must be opt-in and separate from other privacy flags, because this data is requested in emergencies and must not leak by default |
-| **Batch group chat** | posts, batch scoping | real-time requires broadcasting |
+| Feature                       | Builds on                                       | Notes                                                                                                                                                                                         |
+| ----------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Alumni business directory** | `members.business_info`, industry, organization | a listing model + public pages; privacy flags already govern workplace visibility                                                                                                             |
+| **Job board**                 | members + notifications + community moderation  | jobs, applications; batch and industry targeting                                                                                                                                              |
+| **Mentorship**                | member skills, batches, CRM activities          | mentor/mentee matching; the activity timeline already records interactions                                                                                                                    |
+| **Blood donor directory**     | `members.blood_group` (already indexed)         | **needs its own explicit consent flag** — `show_blood_group` must be opt-in and separate from other privacy flags, because this data is requested in emergencies and must not leak by default |
+| **Batch group chat**          | posts, batch scoping                            | real-time requires broadcasting                                                                                                                                                               |
 
 ## 5. Fundraising & recognition
 
-| Feature | Builds on |
-|---|---|
-| **Fundraising campaigns** | `donations.campaign` exists — needs goals, progress bars, campaign pages |
-| **Scholarship management** | new module: applications, review workflow, disbursement through the existing payments ledger |
-| **Recurring donations** | requires a real gateway with subscription support |
-| **Digital certificates** | the QR + `/verify/` pattern from membership cards generalizes to certificates of appreciation, committee service and volunteer recognition |
+| Feature                    | Builds on                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Fundraising campaigns**  | `donations.campaign` exists — needs goals, progress bars, campaign pages                                                                   |
+| **Scholarship management** | new module: applications, review workflow, disbursement through the existing payments ledger                                               |
+| **Recurring donations**    | requires a real gateway with subscription support                                                                                          |
+| **Digital certificates**   | the QR + `/verify/` pattern from membership cards generalizes to certificates of appreciation, committee service and volunteer recognition |
 
 ## 6. Analytics
 
@@ -90,14 +90,14 @@ The trait is the seam — **no controller, resource or component changes.** This
 
 Recorded so future maintainers do not spend effort on them:
 
-| Idea | Why not |
-|---|---|
-| Microservices | 61 tables with heavy cross-module relationships. Splitting would add network calls and distributed transactions to solve a problem this scale does not have. |
+| Idea                               | Why not                                                                                                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Microservices                      | 61 tables with heavy cross-module relationships. Splitting would add network calls and distributed transactions to solve a problem this scale does not have.        |
 | Separate React SPA with a REST API | Inertia already gives SPA behaviour with server-side routing and authorization. Splitting doubles the authorization surface — the classic way privacy leaks appear. |
-| A headless CMS | The content model is bilingual and tightly coupled to members, batches and events. An external CMS cannot express those relationships. |
-| GraphQL | One consumer, well-understood queries. Adds an authorization surface with no benefit. |
-| Multi-tenancy | One school, one association. |
-| Real-time everywhere | The community is discussion-paced, not chat-paced. Polling is sufficient; broadcasting adds infrastructure for a need that has not appeared. |
+| A headless CMS                     | The content model is bilingual and tightly coupled to members, batches and events. An external CMS cannot express those relationships.                              |
+| GraphQL                            | One consumer, well-understood queries. Adds an authorization surface with no benefit.                                                                               |
+| Multi-tenancy                      | One school, one association.                                                                                                                                        |
+| Real-time everywhere               | The community is discussion-paced, not chat-paced. Polling is sufficient; broadcasting adds infrastructure for a need that has not appeared.                        |
 
 ## 9. Suggested sequence after the Golden Jubilee
 

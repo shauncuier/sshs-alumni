@@ -13,6 +13,46 @@
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
+    /* Bengali. Applied via [lang='bn'] below, not globally, so Latin text
+       keeps its own face. */
+    --font-bangla:
+        'Noto Sans Bengali', 'Hind Siliguri', 'Instrument Sans', ui-sans-serif,
+        system-ui, sans-serif;
+
+    /* ── Brand ────────────────────────────────────────────────────────────
+       Derived from the two official logos, not invented.
+
+       Green is the anchor shared by both marks. Purple is the association's
+       own accent, from its outer ring. Red carries the stars.
+
+       Gold appears on NEITHER logo, so it is restricted to the সুবর্ণজয়ন্তী
+       pages where "golden jubilee" gives it meaning. It is never used in the
+       admin panel, the member area, or ordinary public pages.
+
+       Every pairing used for text is contrast-checked; see
+       docs/07-branding-ui.md section 2. */
+
+    --color-brand-green-900: #08532a; /* footer, hero overlay */
+    --color-brand-green-800: #0e7a3c; /* PRIMARY — 5.4:1 on white */
+    --color-brand-green-600: #14934a; /* hover */
+    --color-brand-green-100: #e6f3ec; /* section tint */
+
+    --color-brand-purple-700: #7e3d7b;
+    --color-brand-purple-600: #9b4d97; /* ACCENT — 5.4:1 on white */
+    --color-brand-purple-100: #f3e8f2;
+
+    --color-brand-red-700: #b81c24; /* alerts, destructive */
+    --color-brand-red-100: #fbe9ea;
+
+    /* Jubilee only. gold-500 FAILS contrast on white and is never used for
+       text on a light background — surfaces and borders only. */
+    --color-brand-gold-600: #a8871c; /* jubilee text on light */
+    --color-brand-gold-500: #c9a227; /* jubilee accent on dark */
+    --color-brand-gold-100: #f7efd4;
+
+    --color-brand-cream: #fbf8f1; /* public section background */
+    --color-brand-ink: #1a1a1a;
+
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
@@ -139,5 +179,30 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+
+    /* Bengali typography.
+       Bengali has tall ascenders, deep descenders and the matra headline, so
+       Latin-tuned line heights (1.4-1.5) clip and crowd it. Body gets 1.8;
+       headings never go below 1.4. */
+    :lang(bn),
+    [lang='bn'] {
+        font-family: var(--font-bangla);
+        line-height: 1.8;
+    }
+
+    [lang='bn'] h1,
+    [lang='bn'] h2,
+    [lang='bn'] h3,
+    [lang='bn'] h4 {
+        line-height: 1.4;
+    }
+
+    /* Bangla numerals are rendered by the server (BanglaNumber), never by a
+       font feature, so identifiers such as membership and receipt numbers stay
+       in Latin digits even inside Bangla text. */
+    .tabular-id {
+        font-family: var(--font-sans);
+        font-variant-numeric: tabular-nums;
     }
 }

@@ -42,33 +42,33 @@ Each surface has its own layout, its own controller namespace, its own Form Requ
 
 ## 3. Technology
 
-| Layer | Choice | Version |
-|---|---|---|
-| Runtime | PHP | 8.3+ (8.5 in dev) |
-| Framework | Laravel | 13.x |
-| Auth | Laravel Fortify | 1.37+ (2FA, passkeys, email verification, password reset) |
-| Frontend transport | Inertia.js | 3.x |
-| UI | React | 19.x |
-| Styling | Tailwind CSS | 4.x |
-| Components | shadcn/ui primitives (Radix) | already in repo |
-| Route typing | Laravel Wayfinder | 0.1.x |
-| Build | Vite / vite-plus | 8.x |
-| DB (dev) | SQLite | — |
-| DB (prod) | MySQL | 8.0+ |
-| Tests | Pest | 5.x |
-| Static analysis | Larastan | level 7 |
-| Formatting | Pint (laravel preset) + vite-plus fmt | — |
+| Layer              | Choice                                | Version                                                   |
+| ------------------ | ------------------------------------- | --------------------------------------------------------- |
+| Runtime            | PHP                                   | 8.3+ (8.5 in dev)                                         |
+| Framework          | Laravel                               | 13.x                                                      |
+| Auth               | Laravel Fortify                       | 1.37+ (2FA, passkeys, email verification, password reset) |
+| Frontend transport | Inertia.js                            | 3.x                                                       |
+| UI                 | React                                 | 19.x                                                      |
+| Styling            | Tailwind CSS                          | 4.x                                                       |
+| Components         | shadcn/ui primitives (Radix)          | already in repo                                           |
+| Route typing       | Laravel Wayfinder                     | 0.1.x                                                     |
+| Build              | Vite / vite-plus                      | 8.x                                                       |
+| DB (dev)           | SQLite                                | —                                                         |
+| DB (prod)          | MySQL                                 | 8.0+                                                      |
+| Tests              | Pest                                  | 5.x                                                       |
+| Static analysis    | Larastan                              | level 7                                                   |
+| Formatting         | Pint (laravel preset) + vite-plus fmt | —                                                         |
 
 ### Approved third-party packages
 
 Only four. Each is justified; nothing else is added without asking.
 
-| Package | Why it is necessary |
-|---|---|
-| `spatie/laravel-permission` | 11 roles x 47 permissions with per-request caching, Gate integration and middleware. Hand-rolling this correctly (cache invalidation, wildcard resolution, scoping) is a week of work on a security-sensitive surface. |
-| `bacon/bacon-qr-code` | Sections 27/28 require QR membership cards and event check-in passes. Pure PHP, SVG output, no GD/Imagick dependency. There is no framework alternative. |
-| `intervention/image` | Section 40 requires thumbnails and variants for profile photos, gallery, banners and sponsor logos. Laravel ships no image processing. |
-| `barryvdh/laravel-dompdf` | Sections 15/29 require PDF receipts, invoices and reports. **Caveat:** Bengali conjunct shaping in dompdf is unreliable — see [16-troubleshooting.md](16-troubleshooting.md). Latin-script documents only until proven otherwise. |
+| Package                     | Why it is necessary                                                                                                                                                                                                               |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `spatie/laravel-permission` | 11 roles x 47 permissions with per-request caching, Gate integration and middleware. Hand-rolling this correctly (cache invalidation, wildcard resolution, scoping) is a week of work on a security-sensitive surface.            |
+| `bacon/bacon-qr-code`       | Sections 27/28 require QR membership cards and event check-in passes. Pure PHP, SVG output, no GD/Imagick dependency. There is no framework alternative.                                                                          |
+| `intervention/image`        | Section 40 requires thumbnails and variants for profile photos, gallery, banners and sponsor logos. Laravel ships no image processing.                                                                                            |
+| `barryvdh/laravel-dompdf`   | Sections 15/29 require PDF receipts, invoices and reports. **Caveat:** Bengali conjunct shaping in dompdf is unreliable — see [16-troubleshooting.md](16-troubleshooting.md). Latin-script documents only until proven otherwise. |
 
 Everything else — RBAC UI, audit logging, media library, settings, localization, SEO, sitemap, search, CSV export, activity timeline — is written in-repo. Rationale: each is under ~300 lines and a package would impose schema we do not control.
 
@@ -255,18 +255,18 @@ resources/js/
 
 Nothing below is rewritten:
 
-| Asset | Reused for |
-|---|---|
-| `components/ui/*` (28 primitives) | every surface |
-| `components/app-sidebar.tsx`, `nav-main.tsx`, `nav-user.tsx` | admin sidebar |
-| `layouts/app-sidebar-layout.tsx` | admin layout base |
-| `layouts/auth-layout.tsx` + `pages/auth/*` | all authentication |
-| `hooks/use-flash-toast.ts` | all flash messaging |
-| `hooks/use-appearance.tsx` | dark mode |
-| `hooks/use-mobile.tsx`, `use-mobile-navigation.ts` | responsive nav |
-| `components/input-error.tsx` | all forms |
-| `components/ui/sonner.tsx` | all toasts |
-| `components/breadcrumbs.tsx` | admin + member |
+| Asset                                                        | Reused for          |
+| ------------------------------------------------------------ | ------------------- |
+| `components/ui/*` (28 primitives)                            | every surface       |
+| `components/app-sidebar.tsx`, `nav-main.tsx`, `nav-user.tsx` | admin sidebar       |
+| `layouts/app-sidebar-layout.tsx`                             | admin layout base   |
+| `layouts/auth-layout.tsx` + `pages/auth/*`                   | all authentication  |
+| `hooks/use-flash-toast.ts`                                   | all flash messaging |
+| `hooks/use-appearance.tsx`                                   | dark mode           |
+| `hooks/use-mobile.tsx`, `use-mobile-navigation.ts`           | responsive nav      |
+| `components/input-error.tsx`                                 | all forms           |
+| `components/ui/sonner.tsx`                                   | all toasts          |
+| `components/breadcrumbs.tsx`                                 | admin + member      |
 
 ## 6. Request lifecycle
 
@@ -365,13 +365,13 @@ The migration path from an existing SQLite dataset is in [13-deployment.md](13-d
 
 Each of these is an interface with one implementation today, so adding a second requires no changes to callers:
 
-| Interface | Today | Later |
-|---|---|---|
-| `Services\Payments\Contracts\PaymentGateway` | `ManualGateway` | bKash, Nagad, SSLCommerz, Stripe |
-| `Services\Search\Contracts\SearchDriver` | `DatabaseSearchDriver` | Scout + Meilisearch |
-| `Services\Communication\Contracts\MailChannel` | Laravel Mail | SES / Postmark / Mailgun |
-| `Services\Communication\Contracts\SmsChannel` | **`BulkSmsBdChannel`** (bulksmsbd.net) + `LogSmsChannel` for dev | other BD gateways, WhatsApp Business |
-| Laravel notification channels | `database`, `mail`, **`sms`** | `whatsapp`, `broadcast`, push |
-| `Services\Media\MediaService` disks | `public`, `local` | S3 / object storage |
+| Interface                                      | Today                                                            | Later                                |
+| ---------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------ |
+| `Services\Payments\Contracts\PaymentGateway`   | `ManualGateway`                                                  | bKash, Nagad, SSLCommerz, Stripe     |
+| `Services\Search\Contracts\SearchDriver`       | `DatabaseSearchDriver`                                           | Scout + Meilisearch                  |
+| `Services\Communication\Contracts\MailChannel` | Laravel Mail                                                     | SES / Postmark / Mailgun             |
+| `Services\Communication\Contracts\SmsChannel`  | **`BulkSmsBdChannel`** (bulksmsbd.net) + `LogSmsChannel` for dev | other BD gateways, WhatsApp Business |
+| Laravel notification channels                  | `database`, `mail`, **`sms`**                                    | `whatsapp`, `broadcast`, push        |
+| `Services\Media\MediaService` disks            | `public`, `local`                                                | S3 / object storage                  |
 
 See [15-roadmap.md](15-roadmap.md).

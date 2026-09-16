@@ -8,10 +8,10 @@ Bilingual from the first line of code, not retrofitted.
 
 ## 1. Locales
 
-| Code | Language | Role |
-|---|---|---|
-| `bn` | বাংলা | default for the public site |
-| `en` | English | default for the admin panel |
+| Code | Language | Role                        |
+| ---- | -------- | --------------------------- |
+| `bn` | বাংলা    | default for the public site |
+| `en` | English  | default for the admin panel |
 
 `config('app.locale')` = `bn`, `config('app.fallback_locale')` = `en`.
 
@@ -118,10 +118,10 @@ Fallback is per-field and non-empty-aware: if `title_bn` is blank, `title` is re
 
 Self-hosted, not CDN-loaded at runtime:
 
-| Script | Family | Weights |
-|---|---|---|
-| Bangla | **Noto Sans Bengali** | 400, 500, 600, 700 |
-| Latin | Instrument Sans (already in the starter kit) | 400, 500, 600 |
+| Script | Family                                       | Weights            |
+| ------ | -------------------------------------------- | ------------------ |
+| Bangla | **Noto Sans Bengali**                        | 400, 500, 600, 700 |
+| Latin  | Instrument Sans (already in the starter kit) | 400, 500, 600      |
 
 ```css
 /* resources/css/app.css */
@@ -133,7 +133,7 @@ Self-hosted, not CDN-loaded at runtime:
 html[lang='bn'] body,
 [lang='bn'] {
     font-family: var(--font-bangla);
-    line-height: 1.8;          /* Bangla needs more leading than Latin */
+    line-height: 1.8; /* Bangla needs more leading than Latin */
 }
 ```
 
@@ -141,7 +141,7 @@ html[lang='bn'] body,
 
 ### Why line-height matters
 
-Bengali has tall ascenders, deep descenders and the *matra* headline. Latin-tuned line heights (1.4–1.5) cause visible clipping and crowding. Bangla text uses 1.8; headings 1.4 minimum.
+Bengali has tall ascenders, deep descenders and the _matra_ headline. Latin-tuned line heights (1.4–1.5) cause visible clipping and crowding. Bangla text uses 1.8; headings 1.4 minimum.
 
 ## 7. Numerals
 
@@ -155,7 +155,9 @@ BanglaNumber::localize(5000, 'bn'); // ৫,০০০
 
 ```tsx
 const n = useBnNumber();
-<span>{n(1976)} — {n(2026)}</span>   // ১৯৭৬ — ২০২৬
+<span>
+    {n(1976)} — {n(2026)}
+</span>; // ১৯৭৬ — ২০২৬
 ```
 
 Applied to: dates, counters, statistics, currency, the 1976–2026 milestone, the countdown.
@@ -200,7 +202,7 @@ enum MemberStatus: string
 
 ## 10. Validation messages
 
-`lang/bn/validation.php` is the full Bengali translation of Laravel's validation file, plus `attributes` mapping every field name to its Bangla label — so `full_name` reports as *পূর্ণ নাম*, not `full name`.
+`lang/bn/validation.php` is the full Bengali translation of Laravel's validation file, plus `attributes` mapping every field name to its Bangla label — so `full_name` reports as _পূর্ণ নাম_, not `full name`.
 
 ## 11. Email & SMS
 

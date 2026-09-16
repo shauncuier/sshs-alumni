@@ -16,6 +16,18 @@ export default defineConfig({
                 bunny('Instrument Sans', {
                     weights: [400, 500, 600],
                 }),
+                // Bengali. Self-hosted at build time like the Latin face, so
+                // the public site never depends on a third-party font CDN at
+                // runtime. Without this, Bangla renders as boxes.
+                //
+                // `subsets` is REQUIRED here: it defaults to ['latin'], which
+                // silently produces @font-face rules covering only U+0000-00FF.
+                // The font downloads and looks installed, but the browser never
+                // applies it to a single Bengali character.
+                bunny('Noto Sans Bengali', {
+                    weights: [400, 500, 600, 700],
+                    subsets: ['bengali', 'latin'],
+                }),
             ],
         }),
         inertia(),

@@ -32,12 +32,12 @@ Wayfinder regenerates on build. Run `npm run dev` or `php artisan wayfinder:gene
 
 ### Bengali shows as boxes (□□□) or question marks
 
-| Cause | Fix |
-|---|---|
-| Fonts not built | `npm run build` |
+| Cause                    | Fix                                                         |
+| ------------------------ | ----------------------------------------------------------- |
+| Fonts not built          | `npm run build`                                             |
 | `lang` attribute missing | `<html lang="{{ app()->getLocale() }}">` in `app.blade.php` |
-| Database not `utf8mb4` | see below |
-| File saved as non-UTF-8 | all `lang/**` files must be UTF-8 without BOM |
+| Database not `utf8mb4`   | see below                                                   |
+| File saved as non-UTF-8  | all `lang/**` files must be UTF-8 without BOM               |
 
 ### Bengali corrupted in the database (`à¦¬à¦¾à¦‚à¦²à¦¾`)
 
@@ -81,8 +81,8 @@ mysqldump --default-character-set=utf8mb4 --single-transaction -u user -p db > b
 ```
 
 2. If conjuncts (যুক্তাক্ষর) still render wrong — `ক্ষ`, `ন্ত`, `স্ত` broken apart — dompdf's text shaping cannot handle them. **Do not keep fighting it.** Fall back to:
-   - Financial documents in Latin script (already the norm for receipts in Bangladesh)
-   - Member-facing bilingual documents via **browser print-to-PDF**, which shapes Bengali correctly
+    - Financial documents in Latin script (already the norm for receipts in Bangladesh)
+    - Member-facing bilingual documents via **browser print-to-PDF**, which shapes Bengali correctly
 
 Test this early, in the phase that builds receipts, not at the end.
 
@@ -116,11 +116,11 @@ If this appears in production, the deployment is on SQLite and should be migrate
 
 Almost always one of the portability rules in [01-architecture.md §8](01-architecture.md):
 
-| Error | Cause |
-|---|---|
-| `Specified key was too long` | indexed `string` without an explicit short length under `utf8mb4` |
-| `Identifier name is too long` | auto-generated index name over 64 characters — name it explicitly |
-| `Syntax error near ENUM` | an SQL `ENUM` slipped in — use `string` + a PHP enum cast |
+| Error                               | Cause                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------- |
+| `Specified key was too long`        | indexed `string` without an explicit short length under `utf8mb4`         |
+| `Identifier name is too long`       | auto-generated index name over 64 characters — name it explicitly         |
+| `Syntax error near ENUM`            | an SQL `ENUM` slipped in — use `string` + a PHP enum cast                 |
 | `Cannot add foreign key constraint` | migration order, or mismatched column types between the FK and its target |
 
 ### `Class "Database\Seeders\DemoSeeder" ... refused`
@@ -183,18 +183,18 @@ Mail notifications are queued — see §4.
 
 ## 6. SMS (BulkSMSBD)
 
-| Code | Meaning | Action |
-|---|---|---|
-| `202` | Submitted successfully | none — this is success |
-| `1002` | Sender ID invalid or disabled | `BULKSMSBD_SENDER_ID` is wrong or not approved by the vendor. Contact them. |
-| `1003` | Missing required fields | a parameter was dropped — a bug, check the request |
-| `1005` | Internal error | vendor-side; retry with backoff |
-| `1006` | Balance validity unavailable | account issue; contact the vendor |
-| `1007` | **Insufficient balance** | top up. The campaign halts rather than burning retries. |
-| `1011` | User ID not found | `BULKSMSBD_API_KEY` is wrong |
-| `1012` | Bengali masking required | resend as `type=unicode` |
-| `1013`–`1021` | Gateway / pricing / account configuration | vendor-side configuration; the raw code is surfaced to the admin |
-| **`1032`** | **IP not whitelisted** — undocumented by the vendor | **halt**; whitelist the server's outbound IP (see below) |
+| Code          | Meaning                                             | Action                                                                      |
+| ------------- | --------------------------------------------------- | --------------------------------------------------------------------------- |
+| `202`         | Submitted successfully                              | none — this is success                                                      |
+| `1002`        | Sender ID invalid or disabled                       | `BULKSMSBD_SENDER_ID` is wrong or not approved by the vendor. Contact them. |
+| `1003`        | Missing required fields                             | a parameter was dropped — a bug, check the request                          |
+| `1005`        | Internal error                                      | vendor-side; retry with backoff                                             |
+| `1006`        | Balance validity unavailable                        | account issue; contact the vendor                                           |
+| `1007`        | **Insufficient balance**                            | top up. The campaign halts rather than burning retries.                     |
+| `1011`        | User ID not found                                   | `BULKSMSBD_API_KEY` is wrong                                                |
+| `1012`        | Bengali masking required                            | resend as `type=unicode`                                                    |
+| `1013`–`1021` | Gateway / pricing / account configuration           | vendor-side configuration; the raw code is surfaced to the admin            |
+| **`1032`**    | **IP not whitelisted** — undocumented by the vendor | **halt**; whitelist the server's outbound IP (see below)                    |
 
 ### Code 1032 — "Your ip ... not Whitelisted"
 

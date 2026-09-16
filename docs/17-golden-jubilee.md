@@ -6,14 +6,14 @@
 
 ## 0. Whose fifty years
 
-| | |
-|---|---|
-| **Celebrated** | সবুজ শিক্ষায়তন সরকারি উচ্চ বিদ্যালয় / Sabuj Shikshayatan Government High School — **established 1976**, EIIN 105070, Sitakunda, Chattogram |
-| **Organised by** | প্রাক্তন ছাত্র-ছাত্রী পরিষদ / Former Students Association — **established 2015** |
+|                  |                                                                                                                                              |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Celebrated**   | সবুজ শিক্ষায়তন সরকারি উচ্চ বিদ্যালয় / Sabuj Shikshayatan Government High School — **established 1976**, EIIN 105070, Sitakunda, Chattogram |
+| **Organised by** | প্রাক্তন ছাত্র-ছাত্রী পরিষদ / Former Students Association — **established 2015**                                                             |
 
 **The fifty years are the school's.** The association is eleven years old in 2026 and is the body running the celebration. Copy across the site reflects this exactly:
 
-- Hero credits the school's milestone — *সবুজ শিক্ষায়তন-এর ৫০ বছর*
+- Hero credits the school's milestone — _সবুজ শিক্ষায়তন-এর ৫০ বছর_
 - The association is named as organiser, not as the subject of the anniversary
 - The school-history timeline shows ১৯৭৬ (school founded) **and** ২০১৫ (association founded)
 - The About page tells the association's own eleven-year story separately
@@ -30,12 +30,12 @@ The Golden Jubilee is **not** a special subsystem. It is one row in `events` wit
 
 What the Jubilee gets that an ordinary event does not:
 
-| Element | Mechanism |
-|---|---|
-| Dedicated URLs (`/jubilee/*`) | routes resolving the flagship event |
-| Distinct visual treatment | the "ceremonial" register — see [07-branding-ui.md §4](07-branding-ui.md) |
-| Microsite-only copy | `settings.jubilee.*` |
-| Prominence on the home page | `is_flagship` |
+| Element                       | Mechanism                                                                 |
+| ----------------------------- | ------------------------------------------------------------------------- |
+| Dedicated URLs (`/jubilee/*`) | routes resolving the flagship event                                       |
+| Distinct visual treatment     | the "ceremonial" register — see [07-branding-ui.md §4](07-branding-ui.md) |
+| Microsite-only copy           | `settings.jubilee.*`                                                      |
+| Prominence on the home page   | `is_flagship`                                                             |
 
 Everything else — registration, tickets, payments, check-in, gallery, sponsors, volunteers — is the general event system.
 
@@ -59,11 +59,19 @@ $table->timestamp('ends_at')->nullable();
 ```
 
 ```tsx
-{event.date_status === 'announced'
-    ? <DateDisplay from={event.starts_at} to={event.ends_at} />
-    : <p className="jubilee-tba">{t('jubilee.date_tba')}</p>}
+{
+    event.date_status === 'announced' ? (
+        <DateDisplay from={event.starts_at} to={event.ends_at} />
+    ) : (
+        <p className="jubilee-tba">{t('jubilee.date_tba')}</p>
+    );
+}
 
-{event.date_status === 'announced' && <JubileeCountdown to={event.starts_at} />}
+{
+    event.date_status === 'announced' && (
+        <JubileeCountdown to={event.starts_at} />
+    );
+}
 ```
 
 ```php
@@ -100,13 +108,13 @@ The date can be changed again afterwards, and reverted to `tba` — the committe
 
 ## 3. Microsite
 
-| Route | Page |
-|---|---|
-| `/jubilee` | landing — hero, theme, 1976–2026 milestone, overview, countdown or TBA, CTAs |
-| `/jubilee/schedule` | programme schedule, per-session; "to be announced" while empty |
-| `/jubilee/sponsors` | sponsor wall by tier |
-| `/jubilee/faq` | FAQs from the `jubilee` group |
-| `/jubilee/register` | registration, routed into the general event registration flow |
+| Route               | Page                                                                         |
+| ------------------- | ---------------------------------------------------------------------------- |
+| `/jubilee`          | landing — hero, theme, 1976–2026 milestone, overview, countdown or TBA, CTAs |
+| `/jubilee/schedule` | programme schedule, per-session; "to be announced" while empty               |
+| `/jubilee/sponsors` | sponsor wall by tier                                                         |
+| `/jubilee/faq`      | FAQs from the `jubilee` group                                                |
+| `/jubilee/register` | registration, routed into the general event registration flow                |
 
 Also surfaced through the general system: `/events/{jubilee-slug}`, `/gallery` albums tied to the event, `/announcements` with the Jubilee audience.
 
@@ -144,19 +152,19 @@ Bangla is primary throughout. English appears as a secondary line, not a replace
 
 Editable at `/admin/jubilee` under `settings.manage`:
 
-| Key | Default |
-|---|---|
-| `theme_line_bn` | ৫০ বছরের গৌরবময় পথচলা |
-| `theme_line_en` | Fifty Glorious Years |
-| `title_bn` | সুবর্ণজয়ন্তী ২০২৬ |
-| `title_en` | Golden Jubilee 2026 |
-| `from_year` | 1976 |
-| `to_year` | 2026 |
-| `hero_image` | `public/brand/jubilee-banner.jpg` |
-| `show_countdown` | `true` — still requires `date_status = announced` |
-| `organizer_block_bn` / `_en` | |
-| `registration_note_bn` / `_en` | |
-| `contact_phone`, `contact_email` | |
+| Key                              | Default                                           |
+| -------------------------------- | ------------------------------------------------- |
+| `theme_line_bn`                  | ৫০ বছরের গৌরবময় পথচলা                            |
+| `theme_line_en`                  | Fifty Glorious Years                              |
+| `title_bn`                       | সুবর্ণজয়ন্তী ২০২৬                                |
+| `title_en`                       | Golden Jubilee 2026                               |
+| `from_year`                      | 1976                                              |
+| `to_year`                        | 2026                                              |
+| `hero_image`                     | `public/brand/jubilee-banner.jpg`                 |
+| `show_countdown`                 | `true` — still requires `date_status = announced` |
+| `organizer_block_bn` / `_en`     |                                                   |
+| `registration_note_bn` / `_en`   |                                                   |
+| `contact_phone`, `contact_email` |                                                   |
 
 ---
 
@@ -194,10 +202,10 @@ Money will be collected in cash and by mobile financial services settled outside
 
 `school_milestones` is seeded with two verified entries and left open:
 
-| Year | Title |
-|---|---|
-| ১৯৭৬ | বিদ্যালয়ের পথচলা শুরু — *School journey begins* |
-| ২০১৫ | প্রাক্তন ছাত্র-ছাত্রী পরিষদ প্রতিষ্ঠা — *Former Students Association founded* |
+| Year | Title                                                                         |
+| ---- | ----------------------------------------------------------------------------- |
+| ১৯৭৬ | বিদ্যালয়ের পথচলা শুরু — _School journey begins_                              |
+| ২০১৫ | প্রাক্তন ছাত্র-ছাত্রী পরিষদ প্রতিষ্ঠা — _Former Students Association founded_ |
 
 Admins add unlimited milestones (year, title, description, image, order) at `/admin/school-history`. The timeline renders on `/about/school` and on the Jubilee landing page, anchored by 1976 → 2026.
 

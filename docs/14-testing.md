@@ -10,16 +10,16 @@ The platform has a very large surface — 61 tables, 11 roles, three UI surfaces
 
 Effort concentrates where a bug causes **real harm**:
 
-| Priority | Area | Why |
-|---|---|---|
-| 1 | Authorization | a leak exposes thousands of people's personal data |
-| 2 | Privacy filtering | the member made a choice; breaking it is a betrayal, not a bug |
-| 3 | Verification state machine | wrong status = wrong membership number, wrong access |
-| 4 | Payments | money must reconcile |
-| 5 | Check-in idempotency | a duplicate at the gate is a real-world argument |
-| 6 | Registration validation | the front door of the whole platform |
-| 7 | Localization | a missing key is a blank screen for a Bangla-first user |
-| 8 | CRUD happy paths | cheap, useful regression net |
+| Priority | Area                       | Why                                                            |
+| -------- | -------------------------- | -------------------------------------------------------------- |
+| 1        | Authorization              | a leak exposes thousands of people's personal data             |
+| 2        | Privacy filtering          | the member made a choice; breaking it is a betrayal, not a bug |
+| 3        | Verification state machine | wrong status = wrong membership number, wrong access           |
+| 4        | Payments                   | money must reconcile                                           |
+| 5        | Check-in idempotency       | a duplicate at the gate is a real-world argument               |
+| 6        | Registration validation    | the front door of the whole platform                           |
+| 7        | Localization               | a missing key is a blank screen for a Bangla-first user        |
+| 8        | CRUD happy paths           | cheap, useful regression net                                   |
 
 Feature tests over unit tests, as the project conventions require. Unit tests are for pure calculation: `ProfileCompletionCalculator`, `MembershipNumberGenerator`, `BanglaNumber`, SMS segment counting.
 
@@ -170,17 +170,17 @@ it('falls back to the base column when the _bn column is empty', …);
 
 ## 5. Per-phase coverage
 
-| Phase | Tests added |
-|---|---|
-| **0 Foundation** | migrations run on both drivers · every factory creates · settings cache invalidates · media upload + variant generation · audit observer writes · locale middleware resolution order · lang key parity |
-| **1 Auth & registration** | role/permission seeding idempotent · `Gate::before` · every admin route 403 matrix · all five registration steps · per-step validation · draft persistence · notification dispatched |
-| **2 Profiles & directory** | profile update · privacy flags on every surface · completion scoring · full verification state machine · membership number uniqueness · directory search + every filter · coordinator scoping |
-| **3 Events & Jubilee** | event lifecycle · publish permission · registration + capacity + waitlist · duplicate registration blocked · QR generation · **duplicate check-in** · TBA date rendering · membership card · public verification page |
-| **4 CRM** | contact CRUD · pipeline transitions · polymorphic timeline ordering · system activity rows on member events · task assignment + overdue · tag application |
-| **5 Money & people** | manual payment full side-effect set · refund · receipt uniqueness · fee waiver · donation (incl. anonymous) · sponsor visibility · volunteer assignment · committee display |
-| **6 Community** | post CRUD · comment threading · one reaction per member · report queue · moderation actions · batch scoping · rate limits |
-| **7 CMS** | publish/unpublish · bilingual fallback · announcement audience + time window · gallery ordering · story review flow · SEO field rendering |
-| **8 Reports & hardening** | every report renders and exports · export permission + audit row · global search permission filtering · campaign recipient state machine · **SMS driver is `log` in tests** · sitemap · full security sweep |
+| Phase                      | Tests added                                                                                                                                                                                                           |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **0 Foundation**           | migrations run on both drivers · every factory creates · settings cache invalidates · media upload + variant generation · audit observer writes · locale middleware resolution order · lang key parity                |
+| **1 Auth & registration**  | role/permission seeding idempotent · `Gate::before` · every admin route 403 matrix · all five registration steps · per-step validation · draft persistence · notification dispatched                                  |
+| **2 Profiles & directory** | profile update · privacy flags on every surface · completion scoring · full verification state machine · membership number uniqueness · directory search + every filter · coordinator scoping                         |
+| **3 Events & Jubilee**     | event lifecycle · publish permission · registration + capacity + waitlist · duplicate registration blocked · QR generation · **duplicate check-in** · TBA date rendering · membership card · public verification page |
+| **4 CRM**                  | contact CRUD · pipeline transitions · polymorphic timeline ordering · system activity rows on member events · task assignment + overdue · tag application                                                             |
+| **5 Money & people**       | manual payment full side-effect set · refund · receipt uniqueness · fee waiver · donation (incl. anonymous) · sponsor visibility · volunteer assignment · committee display                                           |
+| **6 Community**            | post CRUD · comment threading · one reaction per member · report queue · moderation actions · batch scoping · rate limits                                                                                             |
+| **7 CMS**                  | publish/unpublish · bilingual fallback · announcement audience + time window · gallery ordering · story review flow · SEO field rendering                                                                             |
+| **8 Reports & hardening**  | every report renders and exports · export permission + audit row · global search permission filtering · campaign recipient state machine · **SMS driver is `log` in tests** · sitemap · full security sweep           |
 
 ## 6. SMS safety in tests
 
@@ -216,8 +216,8 @@ Larastan stays at **level 7**. It is not lowered to make code pass — the code 
 
 ```yaml
 strategy:
-  matrix:
-    db: [sqlite, mysql]
+    matrix:
+        db: [sqlite, mysql]
 ```
 
 Both drivers, every run. This is what keeps SQLite development and MySQL production from silently diverging — the failure mode that portability rules are designed to prevent.

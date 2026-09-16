@@ -35,18 +35,18 @@ A `v2` is added as a new namespace beside `v1`, never as a mutation of it. `v1` 
 
 ## 3. Planned surface
 
-| Group | Endpoints |
-|---|---|
-| Auth | `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, `POST /auth/refresh` |
-| Me | `GET/PATCH /me/profile`, `GET /me/card`, `GET /me/events`, `GET /me/payments`, `GET /me/notifications` |
-| Directory | `GET /directory` (search + filters), `GET /directory/{ulid}` |
-| Members | `GET /members`, `GET /members/{ulid}` — admin scope |
-| Batches | `GET /batches`, `GET /batches/{slug}` |
-| Events | `GET /events`, `GET /events/{slug}`, `POST /events/{slug}/register` |
-| Check-in | `POST /events/{slug}/checkin` — for a future scanner app |
-| Community | `GET /posts`, `POST /posts`, `POST /posts/{ulid}/comments`, `POST /posts/{ulid}/react` |
-| Content | `GET /news`, `GET /announcements`, `GET /gallery` |
-| Public | `GET /verify/member/{ulid}` — unauthenticated, same six fields as the web page |
+| Group     | Endpoints                                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------ |
+| Auth      | `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, `POST /auth/refresh`                          |
+| Me        | `GET/PATCH /me/profile`, `GET /me/card`, `GET /me/events`, `GET /me/payments`, `GET /me/notifications` |
+| Directory | `GET /directory` (search + filters), `GET /directory/{ulid}`                                           |
+| Members   | `GET /members`, `GET /members/{ulid}` — admin scope                                                    |
+| Batches   | `GET /batches`, `GET /batches/{slug}`                                                                  |
+| Events    | `GET /events`, `GET /events/{slug}`, `POST /events/{slug}/register`                                    |
+| Check-in  | `POST /events/{slug}/checkin` — for a future scanner app                                               |
+| Community | `GET /posts`, `POST /posts`, `POST /posts/{ulid}/comments`, `POST /posts/{ulid}/react`                 |
+| Content   | `GET /news`, `GET /announcements`, `GET /gallery`                                                      |
+| Public    | `GET /verify/member/{ulid}` — unauthenticated, same six fields as the web page                         |
 
 ## 4. Authentication
 
@@ -62,7 +62,7 @@ Sanctum is **not** installed in this build. It becomes the fifth approved packag
 
 ```json
 {
-    "data": { },
+    "data": {},
     "meta": { "current_page": 1, "per_page": 20, "total": 412 },
     "links": { "next": "…", "prev": null }
 }

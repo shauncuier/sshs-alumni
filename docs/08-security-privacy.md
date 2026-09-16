@@ -6,23 +6,23 @@ This platform holds the personal data of thousands of real people — names, pho
 
 ## 1. Threat model
 
-| Threat | Mitigation |
-|---|---|
-| Scraping the alumni directory | Directory is members-only; ULID identifiers are not enumerable; per-field privacy applied server-side |
-| Privilege escalation to admin | Permission checks in policies and route middleware; no role logic in React; every admin route covered by a 403 test |
-| Enumerating members by ID | Integer PKs never exposed; public routes take ULIDs only |
-| Forged membership card | QR encodes a server-verified ULID; the verification page reads from the database, never from the QR payload |
-| Duplicate / fraudulent event check-in | `UNIQUE` constraint on `event_checkins.event_registration_id` |
-| Malicious file upload | MIME + extension allow-list, size caps, image re-encoding, non-guessable storage names, private disk for documents |
-| Stored XSS via community posts / CMS | React escapes by default; rich text sanitized server-side against an allow-list before storage |
-| SQL injection | Eloquent / query builder bindings only; no string-interpolated SQL |
-| Mass assignment | Explicit `#[Fillable]` per model; never `$guarded = []` |
-| CSRF | Laravel's `web` middleware group (already active) |
-| Credential stuffing | Fortify login throttling (5/min per email+IP, already configured), 2FA and passkeys available |
-| Bulk data exfiltration by a staff account | `reports.export` is a separate permission; every export writes an audit row with the filters used |
-| Exposure of sponsor agreements / verification documents | Private disk, served only through an authorized controller |
-| Session hijacking | Encrypted cookies, `SESSION_SECURE_COOKIE=true` and `SameSite=lax` in production |
-| Leaked SMS / mail credentials | `.env` only; never logged, never shared to the frontend, never written into error columns |
+| Threat                                                  | Mitigation                                                                                                          |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Scraping the alumni directory                           | Directory is members-only; ULID identifiers are not enumerable; per-field privacy applied server-side               |
+| Privilege escalation to admin                           | Permission checks in policies and route middleware; no role logic in React; every admin route covered by a 403 test |
+| Enumerating members by ID                               | Integer PKs never exposed; public routes take ULIDs only                                                            |
+| Forged membership card                                  | QR encodes a server-verified ULID; the verification page reads from the database, never from the QR payload         |
+| Duplicate / fraudulent event check-in                   | `UNIQUE` constraint on `event_checkins.event_registration_id`                                                       |
+| Malicious file upload                                   | MIME + extension allow-list, size caps, image re-encoding, non-guessable storage names, private disk for documents  |
+| Stored XSS via community posts / CMS                    | React escapes by default; rich text sanitized server-side against an allow-list before storage                      |
+| SQL injection                                           | Eloquent / query builder bindings only; no string-interpolated SQL                                                  |
+| Mass assignment                                         | Explicit `#[Fillable]` per model; never `$guarded = []`                                                             |
+| CSRF                                                    | Laravel's `web` middleware group (already active)                                                                   |
+| Credential stuffing                                     | Fortify login throttling (5/min per email+IP, already configured), 2FA and passkeys available                       |
+| Bulk data exfiltration by a staff account               | `reports.export` is a separate permission; every export writes an audit row with the filters used                   |
+| Exposure of sponsor agreements / verification documents | Private disk, served only through an authorized controller                                                          |
+| Session hijacking                                       | Encrypted cookies, `SESSION_SECURE_COOKIE=true` and `SameSite=lax` in production                                    |
+| Leaked SMS / mail credentials                           | `.env` only; never logged, never shared to the frontend, never written into error columns                           |
 
 ## 2. Privacy model
 
@@ -36,15 +36,15 @@ This is enforced in one place — the API Resource layer — so it cannot drift 
 
 `member_privacy`, one row per member:
 
-| Flag | Default | Controls |
-|---|---|---|
-| `show_profile` | `true` | appearance in the directory at all |
-| `show_phone` | **`false`** | mobile, WhatsApp |
-| `show_email` | **`false`** | email |
-| `show_workplace` | `true` | occupation, organization, job title, industry |
-| `show_location` | `true` | division, district, city |
-| `show_date_of_birth` | **`false`** | date of birth |
-| `show_in_batch_list` | `true` | appearance on the batch page |
+| Flag                 | Default     | Controls                                      |
+| -------------------- | ----------- | --------------------------------------------- |
+| `show_profile`       | `true`      | appearance in the directory at all            |
+| `show_phone`         | **`false`** | mobile, WhatsApp                              |
+| `show_email`         | **`false`** | email                                         |
+| `show_workplace`     | `true`      | occupation, organization, job title, industry |
+| `show_location`      | `true`      | division, district, city                      |
+| `show_date_of_birth` | **`false`** | date of birth                                 |
+| `show_in_batch_list` | `true`      | appearance on the batch page                  |
 
 Contact details default to hidden. Defaults are privacy-preserving; opting in is a deliberate act by the member.
 
@@ -52,11 +52,11 @@ Full address, emergency contact, student ID and blood group are **never** expose
 
 ### Resource matrix
 
-| Resource | Audience | Exposes |
-|---|---|---|
-| `PublicMemberResource` | anyone, `/verify/member/{ulid}` | name, Bangla name, batch, membership number, photo, verification status. **Nothing else, ever — privacy flags do not widen this.** |
-| `DirectoryMemberResource` | approved members | name, photo, batch, bio, social links + every field its privacy flag permits |
-| `AdminMemberResource` | `members.view` holders | full record, minus anything the viewer's scoped policy excludes |
+| Resource                  | Audience                        | Exposes                                                                                                                            |
+| ------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `PublicMemberResource`    | anyone, `/verify/member/{ulid}` | name, Bangla name, batch, membership number, photo, verification status. **Nothing else, ever — privacy flags do not widen this.** |
+| `DirectoryMemberResource` | approved members                | name, photo, batch, bio, social links + every field its privacy flag permits                                                       |
+| `AdminMemberResource`     | `members.view` holders          | full record, minus anything the viewer's scoped policy excludes                                                                    |
 
 ```php
 // DirectoryMemberResource — the pattern
@@ -131,13 +131,13 @@ Added:
 
 ## 5. File uploads
 
-| Purpose | Types | Max | Disk |
-|---|---|---|---|
-| Profile photo | jpg, png, webp | 2 MB | public |
-| Gallery / cover / banner | jpg, png, webp | 5 MB | public |
-| Sponsor logo | jpg, png, webp, svg\* | 2 MB | public |
-| Verification document | jpg, png, pdf | 5 MB | **private** |
-| Sponsor agreement | pdf | 10 MB | **private** |
+| Purpose                  | Types                 | Max   | Disk        |
+| ------------------------ | --------------------- | ----- | ----------- |
+| Profile photo            | jpg, png, webp        | 2 MB  | public      |
+| Gallery / cover / banner | jpg, png, webp        | 5 MB  | public      |
+| Sponsor logo             | jpg, png, webp, svg\* | 2 MB  | public      |
+| Verification document    | jpg, png, pdf         | 5 MB  | **private** |
+| Sponsor agreement        | pdf                   | 10 MB | **private** |
 
 Rules:
 
@@ -171,13 +171,13 @@ Audited: member approve / reject / suspend / delete, membership number assignmen
 
 ## 9. Secrets
 
-| Secret | Location |
-|---|---|
-| `APP_KEY` | `.env` — rotating it invalidates all encrypted cookies and sessions |
-| DB credentials | `.env` |
-| Mail credentials | `.env` |
-| `BULKSMSBD_API_KEY` | `.env` |
-| Future payment gateway keys | `.env` |
+| Secret                      | Location                                                            |
+| --------------------------- | ------------------------------------------------------------------- |
+| `APP_KEY`                   | `.env` — rotating it invalidates all encrypted cookies and sessions |
+| DB credentials              | `.env`                                                              |
+| Mail credentials            | `.env`                                                              |
+| `BULKSMSBD_API_KEY`         | `.env`                                                              |
+| Future payment gateway keys | `.env`                                                              |
 
 Never: committed, logged, shared to the frontend, included in an exception report, or written into `campaign_recipients.error`.
 

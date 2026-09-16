@@ -6,17 +6,17 @@ Target: a standard Linux server with PHP-FPM, Nginx (or Apache) and MySQL. **Doc
 
 ## 1. Server requirements
 
-| Component | Minimum | Recommended |
-|---|---|---|
-| OS | Ubuntu 22.04 / Debian 12 / AlmaLinux 9 | Ubuntu 24.04 LTS |
-| PHP | 8.3 | 8.3 / 8.4 with OPcache |
-| Web server | Nginx 1.22 | Nginx |
-| Database | **MySQL 8.0** | MySQL 8.0 / MariaDB 10.11 |
-| Node | 20 (build only) | 22 LTS |
-| RAM | 2 GB | 4 GB (event-day traffic) |
-| Disk | 20 GB | 50 GB — photos and gallery grow steadily |
-| Process supervisor | supervisor / systemd | |
-| TLS | Let's Encrypt | |
+| Component          | Minimum                                | Recommended                              |
+| ------------------ | -------------------------------------- | ---------------------------------------- |
+| OS                 | Ubuntu 22.04 / Debian 12 / AlmaLinux 9 | Ubuntu 24.04 LTS                         |
+| PHP                | 8.3                                    | 8.3 / 8.4 with OPcache                   |
+| Web server         | Nginx 1.22                             | Nginx                                    |
+| Database           | **MySQL 8.0**                          | MySQL 8.0 / MariaDB 10.11                |
+| Node               | 20 (build only)                        | 22 LTS                                   |
+| RAM                | 2 GB                                   | 4 GB (event-day traffic)                 |
+| Disk               | 20 GB                                  | 50 GB — photos and gallery grow steadily |
+| Process supervisor | supervisor / systemd                   |                                          |
+| TLS                | Let's Encrypt                          |                                          |
 
 Extensions: `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `fileinfo`, `bcmath`, `gd`, `zip`, `curl`, `opcache`.
 
@@ -203,11 +203,11 @@ php artisan up
 
 Three things must be backed up. Losing any one of them loses data the others cannot restore.
 
-| What | How | Frequency |
-|---|---|---|
-| Database | `mysqldump` | daily, 30-day retention |
-| `storage/app` | `rsync` / `tar` — photos, documents, gallery | daily |
-| `.env` | manual, stored securely offline | on every change |
+| What          | How                                          | Frequency               |
+| ------------- | -------------------------------------------- | ----------------------- |
+| Database      | `mysqldump`                                  | daily, 30-day retention |
+| `storage/app` | `rsync` / `tar` — photos, documents, gallery | daily                   |
+| `.env`        | manual, stored securely offline              | on every change         |
 
 ```bash
 #!/bin/bash
