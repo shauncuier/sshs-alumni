@@ -6,6 +6,58 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 0 — Foundation · 2026-09-17
+
+**Status: complete**
+
+### Added
+
+- **Packages** — the four approved: `spatie/laravel-permission`, `bacon/bacon-qr-code`, `intervention/image`, `barryvdh/laravel-dompdf`.
+- **Schema** — 11 grouped migrations, 61 tables, portability rules applied throughout.
+- **Models** — 46 enums with locale-resolved labels, 45 models with typed relations, explicit fillable lists and `@property` docblocks generated from the real schema, 45 factories.
+- **Concerns** — `HasUlid`, `Translatable`, `Auditable`.
+- **Services** — settings (cached, grouped), media (re-encoding, variants, SVG sanitisation), SMS (contract + BulkSMSBD + log driver + manager), profile-completion scoring.
+- **Observers** — `MemberObserver` (search blob, completion score, batch counter, privacy row), `AuditObserver` (changed attributes only, secrets stripped).
+- **Localization** — `SetLocale` middleware, locale switch route, translation sharing, `BanglaNumber`, seven language-file pairs with key parity enforced by a test.
+- **Frontend** — brand tokens from the real logos, self-hosted Noto Sans Bengali, `useTranslation`, `usePermission`, format helpers, locale switcher.
+- **Seeders** — RBAC, settings, batches, school history, Jubilee, reference data, plus production and demo entry points.
+- **Commands** — `make:admin`, `demo:purge`, `sms:balance`, `sms:test`.
+
+### Bugs found and fixed during the phase
+
+| Bug | Why it mattered |
+|---|---|
+| Font `subsets` defaulted to `['latin']` | Noto Sans Bengali downloaded with a unicode-range of U+0000–00FF only. The font looked installed but the browser would never apply it to a Bengali character — Bangla would fall back to a system font, or boxes. |
+| `SettingsSeeder` read `env()` directly | `env()` returns null once `config:cache` has run, which production always does. Seeding a cached install would have written empty organization and school values. |
+| `User` had a null locale in memory | Column defaults apply on insert, not in Eloquent — so the instance `actingAs()` and post-registration redirects use had no locale, and `SetLocale` crashed on it. |
+| SMS number normalisation dropped the trunk zero | Produced `881712345678` instead of the `8801712345678` the vendor documents. |
+| A Bangla OTP brand sanitised to `"-"`, not empty | Passed the emptiness check and would have produced a malformed OTP. |
+| BulkSMSBD code `1032` undocumented | IP not whitelisted. The send endpoint enforces it, the balance endpoint does not — so a green balance check proves nothing about sending. |
+| Intervention Image 4.3 API drift | `read()` → `decodePath()`, `encodeByExtension()` → `encodeUsingFileExtension()`. |
+
+### Verified, not assumed
+
+- Every model boots; all 143 relations resolve against the real schema; every fillable and cast column exists.
+- All 45 factories create a valid row.
+- A real seed run produced 47 permissions, 11 roles, 46 batches, 2 milestones, 9 volunteer teams, 6 sponsorship tiers — with the Jubilee holding no date and `dateIsTba()` true.
+- Three real SMS delivered through the live gateway (English 1 segment, Bangla 2 segments, OTP 1 segment), confirming the segment-cost model empirically.
+- Bangla renders correctly in the browser with conjuncts (ক্ষ, ন্ত, স্ত, র্ণ) forming properly and the specified 1.8 line-height applied.
+- **157 tests, 347 assertions. PHPStan level 7, TypeScript and the frontend linter all clean.**
+
+### Corrected
+
+The permission count in the docs was 60; the actual catalogue is 47. The matrix in `docs/04` always listed 47 — the summary figure was an arithmetic error, so the documentation was wrong rather than the code incomplete.
+
+### Not done in this phase
+
+Public, member and admin layouts move to Phase 1: a layout with no pages to render cannot be verified, so building it here would mean committing code nothing exercises.
+
+### Still unverified
+
+The migrations have not been run against MySQL — no server is available in this environment. The portability rules are applied by hand; the CI matrix is what will prove them.
+
+---
+
 ## Phase D.1 — Brand assets & verified organizational facts · 2026-09-17
 
 **Status: complete**
@@ -105,8 +157,7 @@ Written before any application code, so the design could be reviewed and correct
 
 | Phase                                     | Scope                                                                                                                                                                                                         |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **0 — Foundation**                        | packages · full migration set · models, enums, factories · settings & media services · audit trait · `SetLocale` + translation sharing · brand tokens & Bangla font · three layouts · production-safe seeders |
-| **1 — Auth, roles, registration**         | RBAC wiring · `Gate::before` · role admin UI · admin shell · five-step public registration                                                                                                                    |
+| **1 — Auth, roles, registration**         | role admin UI · public, member and admin layouts · admin shell · five-step public registration                                                                                                                    |
 | **2 — Profiles, verification, directory** | member dashboard & profile · verification workflow · batches & coordinators · members-only directory                                                                                                          |
 | **3 — Events, Jubilee, QR**               | event CRUD & lifecycle · registration & tickets · QR passes · check-in with duplicate prevention · Jubilee microsite · membership card                                                                        |
 | **4 — CRM**                               | contacts · pipeline · activity timeline · tasks · tags                                                                                                                                                        |
