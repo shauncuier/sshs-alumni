@@ -56,6 +56,21 @@ class User extends Authenticatable implements PasskeyUser
     use Auditable, HasFactory, HasRoles, Notifiable, PasskeyAuthenticatable, SoftDeletes, TwoFactorAuthenticatable;
 
     /**
+     * Defaults held in memory as well as in the database.
+     *
+     * The column defaults only apply on insert, so without these a freshly
+     * created User has a null locale and status until it is reloaded — which
+     * is exactly the instance `actingAs()` and post-registration redirects
+     * use.
+     *
+     * @var array<string, string>
+     */
+    protected $attributes = [
+        'locale' => 'bn',
+        'status' => 'active',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
