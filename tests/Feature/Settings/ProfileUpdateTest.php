@@ -64,7 +64,30 @@ test('user can delete their account', function () {
         ->assertRedirect(route('home'));
 
     $this->assertGuest();
-    expect($user->fresh())->toBeNull();
+
+    // Users are soft-deleted, not destroyed: an accidental deletion stays
+    // recoverable, and financial and audit rows that reference the user
+    // remain intact. See docs/08-security-privacy.md section 11.
+    // `fresh()` deliberately ignores global scopes, so query normally: an
+    // ordinary lookup must not find the user, while a trashed lookup must.
+    expect(User::find($user->id))->toBeNull()
+        ->and(User::withTrashed()->find($user->id))->not->toBeNull()
+        ->and(User::withTrashed()->find($user->id)->deleted_at)->not->toBeNull();
+});
+
+test('a deleted account can no longer sign in', function () {
+    $user = User::factory()->create(['email' => 'gone@example.test']);
+
+    $this->actingAs($user)->delete(route('profile.destroy'), [
+        'password' => 'password',
+    ]);
+
+    $this->post(route('login.store'), [
+        'email' => 'gone@example.test',
+        'password' => 'password',
+    ])->assertSessionHasErrors('email');
+
+    $this->assertGuest();
 });
 
 test('correct password must be provided to delete account', function () {

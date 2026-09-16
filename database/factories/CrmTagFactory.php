@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Database\Factories;
+
+use App\Models\CrmTag;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<CrmTag>
+ */
+class CrmTagFactory extends Factory
+{
+    protected $model = CrmTag::class;
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'name' => fake()->name(),
+            'name_bn' => null,
+            'color' => fake()->word(),
+            'description' => fake()->paragraph(),
+        ];
+    }
+}
