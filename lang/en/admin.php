@@ -22,6 +22,12 @@ return [
         'announcements' => 'Announcements',
         'gallery' => 'Gallery',
         'pages' => 'Pages',
+        'transitioned' => 'Status changed to :status.',
+        'correction_sent' => 'The correction request was sent to the member.',
+        'number_assigned' => 'Membership number :number assigned.',
+        'correction_placeholder' => 'Tell the member what needs correcting.',
+        'number_placeholder' => 'Leave blank to generate one',
+        'no_permission' => 'You do not have permission to verify members.',
         'history' => 'School History',
         'reports' => 'Reports',
         'settings' => 'Settings',
@@ -64,6 +70,18 @@ return [
         'announce_date' => 'Announce the date',
         'date_not_set' => 'No date has been published yet. The public site shows "the date will be announced soon".',
         'date_published' => 'The date is published and visible on the public site.',
+    ],
+
+    'members' => [
+        'search_placeholder' => 'Search by name, organisation or membership number',
+        'empty' => 'No member matches these filters.',
+    ],
+    'roles' => [
+        'intro' => 'Change what each role can do. Takes effect on the next request.',
+        'locked' => 'Locked',
+        'protected' => 'The :role role cannot be edited.',
+        'protected_note' => 'This role is protected and cannot be changed. Super Admin bypasses every check, and removing it could lock the committee out permanently.',
+        'updated' => 'Permissions for :role were updated.',
     ],
 
 ];

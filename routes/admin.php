@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +29,25 @@ Route::middleware(['auth', 'verified'])
         Route::get('/', DashboardController::class)
             ->middleware('can:admin.access')
             ->name('dashboard');
+
+        /*
+        | Members & verification
+        */
+        Route::middleware('can:members.view')->group(function (): void {
+            Route::get('members', [MemberController::class, 'index'])->name('members.index');
+            Route::get('members/{member}', [MemberController::class, 'show'])->name('members.show');
+        });
+
+        Route::middleware('can:members.verify')->group(function (): void {
+            Route::post('members/{member}/transition', [VerificationController::class, 'transition'])
+                ->name('members.transition');
+
+            Route::post('members/{member}/request-correction', [VerificationController::class, 'requestCorrection'])
+                ->name('members.correction');
+
+            Route::post('members/{member}/membership-number', [VerificationController::class, 'assignNumber'])
+                ->name('members.number');
+        });
 
         /*
         | Roles & permissions

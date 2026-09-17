@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Concerns\Auditable;
+use App\Models\Batch;
 use App\Models\Member;
 use App\Models\User;
 use App\Observers\AuditObserver;
 use App\Observers\MemberObserver;
+use App\Policies\BatchPolicy;
+use App\Policies\MemberPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
@@ -21,8 +24,15 @@ class AuthServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        $this->registerPolicies();
         $this->configureGates();
         $this->registerObservers();
+    }
+
+    private function registerPolicies(): void
+    {
+        Gate::policy(Member::class, MemberPolicy::class);
+        Gate::policy(Batch::class, BatchPolicy::class);
     }
 
     private function configureGates(): void

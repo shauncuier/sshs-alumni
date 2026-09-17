@@ -1,0 +1,96 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Member;
+
+use App\Enums\BloodGroup;
+use App\Enums\RelationType;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\DirectoryMemberResource;
+use App\Models\Batch;
+use App\Models\Member;
+use App\Services\Membership\MemberSearch;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+
+/**
+ * The alumni directory — approved members only.
+ *
+ * Every row is serialised by DirectoryMemberResource, which omits any field the
+ * member has hidden. A member with `show_profile = false` is excluded from the
+ * query entirely, so they do not appear as an empty card either.
+ *
+ * @see docs/05-modules.md section 3
+ */
+class DirectoryController extends Controller
+{
+    public function __construct(
+        private readonly MemberSearch $search,
+    ) {}
+
+    public function index(Request $request): Response
+    {
+        $query = Member::query()
+            ->directoryVisible()
+            ->with(['batch', 'privacy'])
+            ->orderBy('full_name');
+
+        $members = $this->search
+            ->apply($query, $request)
+            ->paginate(24)
+            ->withQueryString();
+
+        return Inertia::render('member/directory', [
+            'members' => DirectoryMemberResource::collection($members),
+            'filters' => $this->search->active($request),
+            'options' => [
+                'batches' => Batch::query()
+                    ->orderByDesc('ssc_year')
+                    ->get(['id', 'name', 'name_bn', 'ssc_year'])
+                    ->map(fn (Batch $batch): array => [
+                        'value' => (string) $batch->id,
+                        'label' => $batch->getTranslation('name') ?? $batch->name,
+                    ]),
+                'relation_types' => RelationType::options(),
+                'blood_groups' => BloodGroup::options(),
+                'districts' => Member::query()
+                    ->directoryVisible()
+                    ->whereNotNull('district')
+                    ->distinct()
+                    ->orderBy('district')
+                    ->pluck('district'),
+                'industries' => Member::query()
+                    ->directoryVisible()
+                    ->whereNotNull('industry')
+                    ->distinct()
+                    ->orderBy('industry')
+                    ->pluck('industry'),
+            ],
+        ]);
+    }
+
+    /**
+     * One member's directory profile.
+     *
+     * Bound by ULID, so profiles cannot be walked by incrementing an id.
+     */
+    public function show(Member $member): Response
+    {
+        // A member who has hidden their profile is a 404, not a 403: an
+        // existence-revealing error is itself a small disclosure.
+        // MemberObserver creates the privacy row for every member, so it is
+        // always present by the time a member can be looked up.
+        abort_unless(
+            $member->isApproved() && $member->privacy->show_profile,
+            404,
+        );
+
+        $member->load(['batch', 'privacy', 'links']);
+
+        return Inertia::render('member/directory-show', [
+            'member' => DirectoryMemberResource::make($member),
+        ]);
+    }
+}

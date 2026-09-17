@@ -128,4 +128,16 @@ return [
         'members_only_note' => 'To protect our members\' privacy, the directory opens after you register and the committee verifies your membership.',
     ],
 
+    'verify' => [
+        'title' => 'Membership verification',
+        'valid' => 'Verified member',
+        'invalid' => 'Not an active membership',
+        'not_found' => 'No membership found',
+        'not_found_note' => 'This card does not match any record. Please check with the association.',
+    ],
+    'batches' => [
+        'subtitle' => 'Every SSC cohort of the school, from 1981 onward.',
+        'member_count' => ':count members',
+    ],
+
 ];

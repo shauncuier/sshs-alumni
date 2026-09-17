@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Public\BatchController;
 use App\Http\Controllers\Public\LocaleController;
+use App\Http\Controllers\Public\MemberVerifyController;
 use App\Http\Controllers\Public\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,3 +52,23 @@ Route::prefix('join')->name('join.')->group(function (): void {
         ->middleware('throttle:20,1')
         ->name('store');
 });
+
+/*
+| Batches — AGGREGATE COUNTS ONLY.
+|
+| The directory is members-only. A public page listing real alumni names and
+| batch years would hand a scraper exactly what the directory withholds.
+*/
+Route::get('batches', [BatchController::class, 'index'])->name('batches.index');
+Route::get('batches/{batch:slug}', [BatchController::class, 'show'])->name('batches.show');
+
+/*
+| The QR target from a digital membership card.
+|
+| Returns six fields and nothing else, whatever the member's privacy settings
+| say. Rate limited because scanning is bursty; ULIDs are unguessable so the
+| limit is generous.
+*/
+Route::get('verify/member/{ulid}', MemberVerifyController::class)
+    ->middleware('throttle:30,1')
+    ->name('verify.member');

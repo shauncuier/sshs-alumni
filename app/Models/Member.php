@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Concerns\Auditable;
 use App\Concerns\HasUlid;
+use App\Concerns\Translatable;
 use App\Enums\BloodGroup;
 use App\Enums\Gender;
 use App\Enums\MemberStatus;
@@ -93,7 +94,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Member extends Model
 {
     /** @use HasFactory<MemberFactory> */
-    use Auditable, HasFactory, HasUlid, SoftDeletes;
+    use Auditable, HasFactory, HasUlid, SoftDeletes, Translatable;
+
+    /**
+     * Bio is authored in both languages by the member themselves.
+     *
+     * @return array<int, string>
+     */
+    public function translatableFields(): array
+    {
+        return ['bio'];
+    }
 
     /**
      * @return array<string, string>

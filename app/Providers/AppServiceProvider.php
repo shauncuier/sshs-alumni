@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\Communication\Contracts\SmsChannel;
 use App\Services\Communication\SmsManager;
 use Carbon\CarbonImmutable;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -40,6 +41,12 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function configureDefaults(): void
     {
+        // Inertia props are not an API envelope. Without this, a single
+        // resource arrives as `member.data.full_name` rather than
+        // `member.full_name`. Paginated collections keep their data/meta/links,
+        // because those come from the paginator rather than the wrapper.
+        JsonResource::withoutWrapping();
+
         Date::use(CarbonImmutable::class);
 
         DB::prohibitDestructiveCommands(
