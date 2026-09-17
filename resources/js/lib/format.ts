@@ -1,57 +1,26 @@
-import type { Locale } from '@/types/shared';
-
-const BANGLA_DIGITS = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-
 /**
- * Render digits in the active locale — ০১২৩ under বাংলা.
+ * Display formatting.
  *
- * Deliberately NOT for identifiers. Membership numbers, receipt numbers,
- * transaction references and phone numbers stay in Latin digits in both
- * languages so they can be quoted over the phone, searched and typed
- * reliably.
+ * The platform reads in English and uses Latin digits throughout, including
+ * inside the Bangla brand strings that survive on the header, footer and
+ * Jubilee hero — those are set phrases, not a second locale.
  *
- * @see docs/06-localization.md section 7
+ * @see docs/06-localization.md
  */
-export function toBanglaDigits(value: string | number): string {
-    return String(value).replace(
-        /\d/g,
-        (digit) => BANGLA_DIGITS[Number(digit)],
-    );
-}
 
-export function localizeNumber(value: string | number, locale: Locale): string {
-    return locale === 'bn' ? toBanglaDigits(value) : String(value);
-}
-
-export function formatNumber(
-    value: number,
-    locale: Locale,
-    decimals = 0,
-): string {
-    const formatted = value.toLocaleString('en-US', {
+export function formatNumber(value: number, decimals = 0): string {
+    return value.toLocaleString('en-US', {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
     });
-
-    return localizeNumber(formatted, locale);
 }
 
-/**
- * Taka sign under বাংলা, ISO code under English.
- */
-export function formatCurrency(amount: number, locale: Locale): string {
-    const formatted = formatNumber(amount, locale, 2);
-
-    return locale === 'bn' ? `৳${formatted}` : `BDT ${formatted}`;
+export function formatCurrency(amount: number): string {
+    return `BDT ${formatNumber(amount, 2)}`;
 }
 
-/**
- * A date in the active locale, with Bengali month names and numerals under
- * বাংলা.
- */
 export function formatDate(
     value: string | Date | null | undefined,
-    locale: Locale,
     options: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'long',
@@ -68,8 +37,21 @@ export function formatDate(
         return '';
     }
 
-    return new Intl.DateTimeFormat(
-        locale === 'bn' ? 'bn-BD' : 'en-GB',
-        options,
-    ).format(date);
+    return new Intl.DateTimeFormat('en-GB', options).format(date);
+}
+
+/**
+ * A date and time, for check-in logs and audit trails where the minute
+ * matters.
+ */
+export function formatDateTime(
+    value: string | Date | null | undefined,
+): string {
+    return formatDate(value, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 }

@@ -23,9 +23,7 @@ class PageFactory extends Factory
         return [
             'slug' => fake()->unique()->slug(),
             'title' => fake()->sentence(4),
-            'title_bn' => null,
             'body' => fake()->paragraph(),
-            'body_bn' => null,
             'status' => fake()->randomElement(ContentStatus::cases()),
             'meta_title' => fake()->word(),
             'meta_description' => fake()->word(),

@@ -30,8 +30,6 @@ class AdminBatchResource extends JsonResource
             'id' => $this->id,
             'slug' => $this->slug,
             'name' => $this->name,
-            'name_bn' => $this->name_bn,
-            'display_name' => $this->getTranslation('name') ?? $this->name,
             'ssc_year' => $this->ssc_year,
             // The counter cache, not a COUNT(*). It includes members who have
             // hidden themselves from the batch roll.
@@ -45,7 +43,7 @@ class AdminBatchResource extends JsonResource
                         // Members are bound by ULID, so that is what the
                         // remove link has to carry.
                         'ulid' => $member->ulid,
-                        'name' => $member->getTranslation('full_name') ?? $member->full_name,
+                        'name' => $member->full_name,
                         'membership_no' => $member->membership_no,
                         'photo_url' => $member->photo_path === null
                             ? null

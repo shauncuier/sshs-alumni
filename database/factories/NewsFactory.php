@@ -23,11 +23,8 @@ class NewsFactory extends Factory
         return [
             'slug' => fake()->unique()->slug(),
             'title' => fake()->sentence(4),
-            'title_bn' => null,
             'excerpt' => fake()->sentence(12),
-            'excerpt_bn' => null,
             'body' => fake()->paragraph(),
-            'body_bn' => null,
             'cover_path' => null,
             'category' => fake()->word(),
             'status' => fake()->randomElement(ContentStatus::cases()),

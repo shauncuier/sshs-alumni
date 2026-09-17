@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
  * Shared behaviour for every backed enum in the application.
  *
  * Enums never render their raw value. Labels resolve through the active
- * locale so the same case reads correctly in বাংলা and English.
+ * language file, so the copy lives with the rest of it.
  *
  * @see docs/06-localization.md
  */

@@ -24,13 +24,10 @@ class CommitteeMemberFactory extends Factory
         return [
             'committee_id' => Committee::factory(),
             'name' => fake()->name(),
-            'name_bn' => null,
             'role' => fake()->jobTitle(),
             'designation' => fake()->jobTitle(),
-            'designation_bn' => null,
             'photo_path' => null,
             'bio' => fake()->paragraph(),
-            'bio_bn' => null,
             'contact_email' => fake()->safeEmail(),
             'contact_phone' => '01'.fake()->numerify('#########'),
             'display_order' => fake()->numberBetween(1, 100),

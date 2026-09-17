@@ -82,15 +82,6 @@ export default function VerifyMember({
                                         {member.full_name}
                                     </h1>
 
-                                    {member.full_name_bn && (
-                                        <p
-                                            lang="bn"
-                                            className="text-muted-foreground"
-                                        >
-                                            {member.full_name_bn}
-                                        </p>
-                                    )}
-
                                     <div className="flex flex-wrap gap-2">
                                         {member.batch && (
                                             <Badge variant="secondary">

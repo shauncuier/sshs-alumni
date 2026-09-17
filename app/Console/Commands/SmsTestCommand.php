@@ -124,7 +124,7 @@ class SmsTestCommand extends Command
         }
 
         if ($this->option('bangla')) {
-            return 'সুবর্ণজয়ন্তী ২০২৬ — প্রাক্তন ছাত্র-ছাত্রী পরিষদ। এটি একটি পরীক্ষামূলক বার্তা।';
+            return 'Golden Jubilee 2026 - Former Students Association. This is a test message.';
         }
 
         return 'SSHS Alumni: test message from the Golden Jubilee platform.';

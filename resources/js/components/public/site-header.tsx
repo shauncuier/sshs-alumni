@@ -2,7 +2,6 @@ import { Link, usePage } from '@inertiajs/react';
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
 import { BrandMark } from '@/components/shared/brand-mark';
-import { LocaleSwitcher } from '@/components/shared/locale-switcher';
 import { Button } from '@/components/ui/button';
 import {
     Sheet,
@@ -16,7 +15,7 @@ import { cn } from '@/lib/utils';
 import type { PublicNavItem } from '@/types/shared';
 
 export function SiteHeader() {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const page = usePage();
     const [open, setOpen] = useState(false);
 
@@ -53,7 +52,6 @@ export function SiteHeader() {
                         <Link
                             key={link.key}
                             href={link.href}
-                            lang={locale}
                             className={cn(
                                 'rounded-md px-3 py-2 text-sm font-medium transition-colors',
                                 isActive(link.href)
@@ -67,8 +65,6 @@ export function SiteHeader() {
                 </nav>
 
                 <div className="ms-auto flex items-center gap-2 lg:ms-0">
-                    <LocaleSwitcher />
-
                     {isAuthenticated ? (
                         <Button asChild size="sm">
                             <Link href="/dashboard">
@@ -119,7 +115,6 @@ export function SiteHeader() {
                                     <Link
                                         key={link.key}
                                         href={link.href}
-                                        lang={locale}
                                         onClick={() => setOpen(false)}
                                         className={cn(
                                             'rounded-md px-3 py-2.5 text-sm font-medium',

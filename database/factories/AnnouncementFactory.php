@@ -26,9 +26,7 @@ class AnnouncementFactory extends Factory
         return [
             'kind' => fake()->randomElement(AnnouncementKind::cases()),
             'title' => fake()->sentence(4),
-            'title_bn' => null,
             'body' => fake()->paragraph(),
-            'body_bn' => null,
             'level' => fake()->randomElement(AnnouncementLevel::cases()),
             'audience' => fake()->randomElement(AudienceScope::cases()),
             'starts_at' => null,

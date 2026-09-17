@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Concerns\Translatable;
 use App\Enums\CampaignChannel;
 use Carbon\CarbonImmutable;
 use Database\Factories\MessageTemplateFactory;
@@ -21,29 +20,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property CampaignChannel $channel
  * @property string|null $subject
- * @property string|null $subject_bn
  * @property string $body
- * @property string|null $body_bn
  * @property array<array-key, mixed>|null $variables
  * @property bool $is_system
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  */
 #[Fillable([
-    'key', 'name', 'channel', 'subject', 'subject_bn', 'body', 'body_bn', 'variables', 'is_system',
+    'key', 'name', 'channel', 'subject', 'body', 'variables', 'is_system',
 ])]
 class MessageTemplate extends Model
 {
     /** @use HasFactory<MessageTemplateFactory> */
-    use HasFactory, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['subject', 'body'];
-    }
+    use HasFactory;
 
     /**
      * @return array<string, string>

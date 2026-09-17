@@ -113,12 +113,14 @@ These numbers drive the MySQL-in-production decision and the queue/caching strat
 
 1. **Privacy before features.** A member controls what the world sees. Private fields are never serialized into a response — not hidden with CSS, not filtered on the client. See [08-security-privacy.md](08-security-privacy.md).
 2. **Auditability.** Every administrative action that touches a person, money, or published content leaves an audit row.
-3. **Bilingual from the first line.** No user-facing string is hard-coded in a component. See [06-localization.md](06-localization.md).
+3. **No user-facing string is hard-coded in a component.** The site reads in English; copy lives in `lang/en/`. See [06-localization.md](06-localization.md).
 4. **Normalized, not fragmented.** One concept, one table. Consolidations from the original spec are documented with reasons in [02-database-schema.md](02-database-schema.md).
 5. **Server-side authorization.** The client receives a permission list to hide buttons. The server decides. Always.
 6. **Extensible, not over-engineered.** Payment gateways, notification channels and search drivers sit behind interfaces. Everything else is plain Laravel.
 
-## 7. Glossary — বাংলা / English
+## 7. Glossary — বাংলা terms and their English equivalents
+
+The platform reads in English. This table is here because the association and the school use these terms among themselves, and the English column is what appears on screen.
 
 | বাংলা                                 | English                                   | In code                       |
 | ------------------------------------- | ----------------------------------------- | ----------------------------- |
@@ -157,7 +159,7 @@ These numbers drive the MySQL-in-production decision and the queue/caching strat
 | [03-routes.md](03-routes.md)                       | Every route, name, middleware               |
 | [04-roles-permissions.md](04-roles-permissions.md) | RBAC matrix                                 |
 | [05-modules.md](05-modules.md)                     | Functional spec per module                  |
-| [06-localization.md](06-localization.md)           | বাংলা/English architecture                  |
+| [06-localization.md](06-localization.md)           | English-only decision, what stayed in বাংলা |
 | [07-branding-ui.md](07-branding-ui.md)             | Design system                               |
 | [08-security-privacy.md](08-security-privacy.md)   | Threat model, privacy enforcement           |
 | [09-payments.md](09-payments.md)                   | Gateway abstraction                         |

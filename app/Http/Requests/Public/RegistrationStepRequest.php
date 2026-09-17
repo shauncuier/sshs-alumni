@@ -58,7 +58,6 @@ class RegistrationStepRequest extends FormRequest
     {
         return [
             'full_name' => ['required', 'string', 'max:150'],
-            'full_name_bn' => ['nullable', 'string', 'max:150'],
             'relation_type' => ['required', Rule::enum(RelationType::class)],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
             'gender' => ['nullable', Rule::enum(Gender::class)],
@@ -131,7 +130,6 @@ class RegistrationStepRequest extends FormRequest
     {
         return [
             'bio' => ['nullable', 'string', 'max:2000'],
-            'bio_bn' => ['nullable', 'string', 'max:2000'],
             'skills' => ['nullable', 'array', 'max:20'],
             'skills.*' => ['string', 'max:60'],
             'interests' => ['nullable', 'array', 'max:20'],
@@ -171,7 +169,7 @@ class RegistrationStepRequest extends FormRequest
     }
 
     /**
-     * Field names as the applicant sees them, so an error reads "পূর্ণ নাম is
+     * Field names as the applicant sees them, so an error reads "Full name is
      * required" rather than "full name is required".
      *
      * These reuse the form's own labels rather than a partial
@@ -183,7 +181,7 @@ class RegistrationStepRequest extends FormRequest
     public function attributes(): array
     {
         $fields = [
-            'full_name', 'full_name_bn', 'relation_type', 'gender', 'blood_group',
+            'full_name', 'relation_type', 'gender', 'blood_group',
             'date_of_birth', 'mobile', 'whatsapp', 'email', 'password',
             'student_id', 'admission_year', 'group_stream', 'section', 'house',
             'occupation', 'organization', 'job_title', 'industry',

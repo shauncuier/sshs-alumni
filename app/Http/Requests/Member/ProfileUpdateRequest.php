@@ -34,7 +34,6 @@ class ProfileUpdateRequest extends FormRequest
     {
         return [
             'full_name' => ['required', 'string', 'max:150'],
-            'full_name_bn' => ['nullable', 'string', 'max:150'],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
             'gender' => ['nullable', Rule::enum(Gender::class)],
             'blood_group' => ['nullable', Rule::enum(BloodGroup::class)],
@@ -67,7 +66,6 @@ class ProfileUpdateRequest extends FormRequest
             'emergency_contact_phone' => ['nullable', 'string', 'max:32'],
 
             'bio' => ['nullable', 'string', 'max:2000'],
-            'bio_bn' => ['nullable', 'string', 'max:2000'],
             'skills' => ['nullable', 'array', 'max:20'],
             'skills.*' => ['string', 'max:60'],
             'interests' => ['nullable', 'array', 'max:20'],

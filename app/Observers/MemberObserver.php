@@ -91,7 +91,6 @@ class MemberObserver
     {
         $parts = array_filter([
             $member->full_name,
-            $member->full_name_bn,
             $member->organization,
             $member->occupation,
             $member->city,
@@ -105,7 +104,7 @@ class MemberObserver
     private function touchesSearchableFields(Member $member): bool
     {
         return $member->isDirty([
-            'full_name', 'full_name_bn', 'organization',
+            'full_name', 'organization',
             'occupation', 'city', 'district', 'membership_no',
         ]);
     }

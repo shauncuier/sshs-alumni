@@ -3,11 +3,11 @@ import { Mail, MapPin, Phone } from 'lucide-react';
 import { BrandMark } from '@/components/shared/brand-mark';
 import { useSetting } from '@/hooks/use-setting';
 import { useTranslation } from '@/hooks/use-translation';
-import { localizeNumber } from '@/lib/format';
+import { formatNumber } from '@/lib/format';
 import type { PublicNavItem } from '@/types/shared';
 
 export function SiteFooter() {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const page = usePage();
 
     const nav = page.props.nav as
@@ -26,7 +26,6 @@ export function SiteFooter() {
     const phone = useSetting<string>('contact.phone');
     const email = useSetting<string>('contact.email');
 
-    const schoolName = (locale === 'bn' ? schoolNameBn : schoolNameEn) ?? '';
     const year = new Date().getFullYear();
 
     return (
@@ -35,9 +34,23 @@ export function SiteFooter() {
                 <div className="space-y-4">
                     <BrandMark size="md" />
 
-                    <p lang={locale} className="text-sm leading-relaxed">
-                        {schoolName}
-                    </p>
+                    {/* The school's own name, in its own script, with the
+                        transliteration under it. */}
+                    <div className="space-y-0.5">
+                        {schoolNameBn && (
+                            <p
+                                lang="bn"
+                                className="text-sm leading-relaxed text-white"
+                            >
+                                {schoolNameBn}
+                            </p>
+                        )}
+                        {schoolNameEn && (
+                            <p className="text-xs leading-relaxed text-white/60">
+                                {schoolNameEn}
+                            </p>
+                        )}
+                    </div>
 
                     {/* Both founding years, stated separately. The fifty years
                         are the school's; the association organises. */}
@@ -45,17 +58,13 @@ export function SiteFooter() {
                         {schoolEstablished && (
                             <div className="flex gap-2">
                                 <dt>{t('public.nav.about_school')}:</dt>
-                                <dd>
-                                    {localizeNumber(schoolEstablished, locale)}
-                                </dd>
+                                <dd>{formatNumber(schoolEstablished)}</dd>
                             </div>
                         )}
                         {orgEstablished && (
                             <div className="flex gap-2">
                                 <dt>{t('public.nav.about_association')}:</dt>
-                                <dd>
-                                    {localizeNumber(orgEstablished, locale)}
-                                </dd>
+                                <dd>{formatNumber(orgEstablished)}</dd>
                             </div>
                         )}
                     </dl>
@@ -73,7 +82,6 @@ export function SiteFooter() {
                             <li key={link.key}>
                                 <Link
                                     href={link.href}
-                                    lang={locale}
                                     className="transition-colors hover:text-white"
                                 >
                                     {t(`public.nav.${link.key}`)}
@@ -137,7 +145,6 @@ export function SiteFooter() {
                                 <li key={link.key}>
                                     <Link
                                         href={link.href}
-                                        lang={locale}
                                         className="transition-colors hover:text-white"
                                     >
                                         {t(`public.footer.${link.key}`)}
@@ -151,8 +158,8 @@ export function SiteFooter() {
 
             <div className="border-t border-white/10">
                 <p className="mx-auto max-w-7xl px-4 py-5 text-center text-xs text-white/50">
-                    © {localizeNumber(year, locale)} —{' '}
-                    {t('public.hero.organisation')}. {t('public.footer.rights')}
+                    © {formatNumber(year)} — {t('public.hero.organisation')}.{' '}
+                    {t('public.footer.rights')}
                 </p>
             </div>
         </footer>

@@ -48,7 +48,7 @@ const CARDS: {
 ];
 
 export default function AdminDashboard({ stats }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
 
     return (
         <AdminLayout title={t('admin.nav.dashboard')}>
@@ -71,7 +71,7 @@ export default function AdminDashboard({ stats }: Props) {
                             </CardHeader>
                             <CardContent>
                                 <p className="text-3xl font-semibold tabular-nums">
-                                    {formatNumber(stats[card.key], locale)}
+                                    {formatNumber(stats[card.key])}
                                 </p>
                             </CardContent>
                         </Card>
@@ -101,7 +101,7 @@ export default function AdminDashboard({ stats }: Props) {
                         </CardHeader>
                         <CardContent>
                             <p className="text-2xl font-semibold tabular-nums">
-                                {formatNumber(stats.batches, locale)}
+                                {formatNumber(stats.batches)}
                             </p>
                         </CardContent>
                     </Card>
@@ -118,7 +118,7 @@ export default function AdminDashboard({ stats }: Props) {
                         </CardHeader>
                         <CardContent>
                             <p className="text-2xl font-semibold tabular-nums">
-                                {formatNumber(stats.events, locale)}
+                                {formatNumber(stats.events)}
                             </p>
                         </CardContent>
                     </Card>

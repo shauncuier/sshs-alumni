@@ -6,6 +6,59 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Language change — English-only · 2026-09-17
+
+**Status: complete**
+
+The platform was built bilingual. The committee decided the site reads in English, so the translation machinery was removed rather than left dormant.
+
+### Removed
+
+| Removed                                        | Was                                                    |
+| ---------------------------------------------- | ------------------------------------------------------ |
+| `lang/bn/`                                     | Seven Bangla language files, key-for-key with English  |
+| `App\Concerns\Translatable`                    | Resolved `title` / `title_bn` by active locale         |
+| `App\Http\Middleware\SetLocale`                | Session → user preference → config                     |
+| `App\Http\Controllers\Public\LocaleController` | `GET /locale/{locale}`                                 |
+| `App\Enums\Locale`                             | `bn` \| `en`                                           |
+| `App\Support\BanglaNumber` + `bn_number()`     | ০১২৩ numeral rendering                                 |
+| `LocaleSwitcher`                               | The picker in every layout                             |
+| 43 `_bn` columns across 23 tables              | The paired-column translation scheme                   |
+| `users.locale`                                 | A per-user preference with one language to choose from |
+
+`App\Support\Locale` became `App\Support\Translations`, which now does one thing: flatten `lang/en` for the frontend.
+
+### Kept in বাংলা
+
+Identity, not translation — real names of real organisations and of a real event. All four live in `settings`, so the column drop never touched them:
+
+`organization.name_bn` · `school.name_bn` · `jubilee.title_bn` · `jubilee.theme_bn`
+
+Plus `school.motto_bn` (জ্ঞানই শক্তি), with `school.motto_en` alongside it. Each renders with its English line underneath, and each Bangla node carries `lang="bn"` — **Noto Sans Bengali is still loaded**, for exactly these strings.
+
+`school.board_bn` and `school.chairperson_bn` became `school.board` and `school.chairperson` in English: an education board and an office holder are not the association's own identity.
+
+### Bugs found and fixed during the change
+
+| Bug                                                       | Why it mattered                                                                                                                                                                 |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **The strip script ate the settings it was told to keep** | `organization.name_bn` and the Jubilee title and theme match the same `'foo_bn' => [...]` shape as the columns being removed. Caught by the test that asserts they are present. |
+| **`$ticket->currency` without the nullsafe operator**     | A fatal error on any event registration with no ticket type. Found by PHPStan while it was still unreachable code.                                                              |
+| **"1 members"**                                           | The Bangla copy had no plural forms, so nothing needed them. `choice()` now reads Laravel's pipe syntax.                                                                        |
+| `APP_LOCALE=bn` in `.env`                                 | Laravel's own framework strings kept coming back in Bangla — the migration output read `6 সেকেন্ড DONE`.                                                                        |
+
+### Verified, not assumed
+
+- `/batches` driven in a real browser: English copy, Latin digits, no console errors.
+- A test asserts **no line of frontend copy contains a Bangla character**. If one appears it belongs in `settings`, not in a language file.
+- **282 tests, 857 assertions.** PHPStan level 7, TypeScript and the frontend linter clean.
+
+### Note
+
+The column drop destroys the Bangla text those columns held — batch names, the Jubilee event's `title_bn`, demo member names. `down()` restores the columns but not their contents. Stated before it was run.
+
+---
+
 ## Phase 2 — Profiles, verification, batches, directory · 2026-09-17
 
 **Status: complete**

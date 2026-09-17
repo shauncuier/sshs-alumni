@@ -1,25 +1,26 @@
 import { usePage } from '@inertiajs/react';
 import { useCallback } from 'react';
-import type { Locale, Translations } from '@/types/shared';
+import type { Translations } from '@/types/shared';
 
 type Replacements = Record<string, string | number>;
 
 /**
- * Translation lookup for the active locale.
+ * Copy lookup.
  *
- * Keys are `file.section.key`, matching `lang/{locale}/{file}.php`. Only the
- * active locale is shipped, so this never has to choose between languages.
+ * Keys are `file.section.key`, matching `lang/en/{file}.php`. The platform is
+ * English-only, so this resolves one language — but the indirection stays,
+ * because it is what keeps user-facing strings out of components and in files
+ * the committee can edit without touching JSX.
  *
  * A missing key returns the key itself rather than an empty string — a gap is
  * then visible on screen and in a screenshot, instead of silently rendering
  * nothing.
  *
- * @see docs/06-localization.md section 4
+ * @see docs/06-localization.md
  */
 export function useTranslation() {
     const page = usePage();
     const translations = (page.props.translations ?? {}) as Translations;
-    const locale = (page.props.locale ?? 'bn') as Locale;
 
     const t = useCallback(
         (key: string, replacements?: Replacements): string => {
@@ -48,5 +49,51 @@ export function useTranslation() {
         [translations],
     );
 
-    return { t, locale, isBangla: locale === 'bn' };
+    /**
+     * Pick a plural form, using Laravel's pipe syntax:
+     *
+     *   'No members|:count member|:count members'
+     *
+     * Three parts: zero, one, many. Two parts drops the zero case. English
+     * needs this — "1 members" reads as a bug to anyone looking at it.
+     */
+    const choice = useCallback(
+        (key: string, count: number, replacements?: Replacements): string => {
+            const line = translations[key];
+
+            if (line === undefined) {
+                return key;
+            }
+
+            const parts = line.split('|');
+
+            let form: string;
+
+            if (parts.length >= 3) {
+                form =
+                    count === 0 ? parts[0] : count === 1 ? parts[1] : parts[2];
+            } else if (parts.length === 2) {
+                form = count === 1 ? parts[0] : parts[1];
+            } else {
+                form = parts[0];
+            }
+
+            // The chosen form still goes through `t`'s replacement rules, so
+            // `:count` and any other token behave identically.
+            let resolved = form;
+
+            const tokens = Object.entries({ count, ...replacements }).sort(
+                ([a], [b]) => b.length - a.length,
+            );
+
+            for (const [token, value] of tokens) {
+                resolved = resolved.replaceAll(`:${token}`, String(value));
+            }
+
+            return resolved;
+        },
+        [translations],
+    );
+
+    return { t, choice };
 }

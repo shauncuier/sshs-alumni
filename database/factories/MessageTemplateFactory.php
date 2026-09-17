@@ -25,9 +25,7 @@ class MessageTemplateFactory extends Factory
             'name' => fake()->name(),
             'channel' => fake()->randomElement(CampaignChannel::cases()),
             'subject' => fake()->word(),
-            'subject_bn' => null,
             'body' => fake()->paragraph(),
-            'body_bn' => null,
             'variables' => [],
         ];
     }

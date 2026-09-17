@@ -21,7 +21,6 @@ class CrmTagFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'name_bn' => null,
             'color' => fake()->word(),
             'description' => fake()->paragraph(),
         ];

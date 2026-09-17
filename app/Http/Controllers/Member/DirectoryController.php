@@ -48,10 +48,10 @@ class DirectoryController extends Controller
             'options' => [
                 'batches' => Batch::query()
                     ->orderByDesc('ssc_year')
-                    ->get(['id', 'name', 'name_bn', 'ssc_year'])
+                    ->get(['id', 'name', 'ssc_year'])
                     ->map(fn (Batch $batch): array => [
                         'value' => (string) $batch->id,
-                        'label' => $batch->getTranslation('name') ?? $batch->name,
+                        'label' => $batch->name,
                     ]),
                 'relation_types' => RelationType::options(),
                 'blood_groups' => BloodGroup::options(),

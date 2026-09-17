@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Concerns\Translatable;
 use App\Enums\ContentStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\NewsFactory;
@@ -21,11 +20,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property string $slug
  * @property string $title
- * @property string|null $title_bn
  * @property string|null $excerpt
- * @property string|null $excerpt_bn
  * @property string $body
- * @property string|null $body_bn
  * @property string|null $cover_path
  * @property int|null $author_id
  * @property string|null $category
@@ -41,24 +37,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'slug', 'title', 'title_bn', 'excerpt', 'excerpt_bn', 'body', 'body_bn', 'cover_path',
+    'slug', 'title', 'excerpt', 'body', 'cover_path',
     'author_id', 'category', 'is_featured', 'status', 'published_at', 'meta_title',
     'meta_description', 'og_image_path',
 ])]
 class News extends Model
 {
     /** @use HasFactory<NewsFactory> */
-    use HasFactory, SoftDeletes, Translatable;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'news';
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['title', 'excerpt', 'body'];
-    }
 
     /**
      * @return array<string, string>

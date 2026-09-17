@@ -37,7 +37,7 @@ class DashboardController extends Controller
                 'is_approved' => $member->isApproved(),
                 'profile_completion' => $member->profile_completion,
                 'missing_groups' => $completion->missingGroups($member),
-                'batch' => $member->batch?->getTranslation('name'),
+                'batch' => $member->batch?->name,
             ],
         ]);
     }

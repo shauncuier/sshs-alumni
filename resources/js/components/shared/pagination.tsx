@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function Pagination({ meta }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
 
     if (meta.last_page <= 1) {
         return null;
@@ -29,9 +29,9 @@ export function Pagination({ meta }: Props) {
         >
             <p className="text-muted-foreground text-sm">
                 {t('common.labels.showing', {
-                    from: formatNumber(meta.from ?? 0, locale),
-                    to: formatNumber(meta.to ?? 0, locale),
-                    total: formatNumber(meta.total, locale),
+                    from: formatNumber(meta.from ?? 0),
+                    to: formatNumber(meta.to ?? 0),
+                    total: formatNumber(meta.total),
                 })}
             </p>
 
@@ -48,9 +48,8 @@ export function Pagination({ meta }: Props) {
 
                 {numbered.map((link, index) => (
                     <PageLink key={`${link.label}-${index}`} link={link}>
-                        {/* Page numbers follow the reading language. */}
                         {/^\d+$/.test(link.label)
-                            ? formatNumber(Number(link.label), locale)
+                            ? formatNumber(Number(link.label))
                             : link.label}
                     </PageLink>
                 ))}

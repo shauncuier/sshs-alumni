@@ -59,7 +59,7 @@ const PRIVACY_FLAGS = [
 ] as const;
 
 export default function Join({ step, steps, draft, options }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
 
     const index = steps.indexOf(step);
 
@@ -135,10 +135,7 @@ export default function Join({ step, steps, draft, options }: Props) {
                                                 {position + 1}
                                             </span>
                                         )}
-                                        <span
-                                            lang={locale}
-                                            className="truncate"
-                                        >
+                                        <span className="truncate">
                                             {t(`public.join.steps.${one}`)}
                                         </span>
                                     </div>
@@ -165,19 +162,6 @@ export default function Join({ step, steps, draft, options }: Props) {
                                         }
                                         autoComplete="name"
                                         required
-                                    />
-                                </Field>
-
-                                <Field
-                                    label={t('public.join.fields.full_name_bn')}
-                                    error={form.errors.full_name_bn}
-                                >
-                                    <Input
-                                        lang="bn"
-                                        value={value('full_name_bn')}
-                                        onChange={(e) =>
-                                            set('full_name_bn', e.target.value)
-                                        }
                                     />
                                 </Field>
 

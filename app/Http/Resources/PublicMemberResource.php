@@ -31,14 +31,13 @@ class PublicMemberResource extends JsonResource
     {
         return [
             'full_name' => $this->full_name,
-            'full_name_bn' => $this->full_name_bn,
             'photo_url' => $this->photo_path === null
                 ? null
                 : asset('storage/'.$this->photo_path),
             'membership_no' => $this->membership_no,
             'batch' => $this->whenLoaded(
                 'batch',
-                fn (): ?string => $this->batch?->getTranslation('name'),
+                fn (): ?string => $this->batch?->name,
             ),
             'status' => $this->status->value,
             'status_label' => $this->status->label(),

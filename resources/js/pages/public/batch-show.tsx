@@ -21,7 +21,7 @@ type Batch = {
  * directory, which requires an approved membership.
  */
 export default function BatchShow({ batch }: { batch: Batch }) {
-    const { t, locale } = useTranslation();
+    const { t, choice } = useTranslation();
 
     return (
         <PublicLayout
@@ -49,9 +49,11 @@ export default function BatchShow({ batch }: { batch: Batch }) {
 
                     <p className="mt-3 flex items-center gap-2 text-white/70">
                         <Users className="size-4" aria-hidden="true" />
-                        {t('public.batches.member_count', {
-                            count: formatNumber(batch.members_count, locale),
-                        })}
+                        {choice(
+                            'public.batches.member_count',
+                            batch.members_count,
+                            { count: formatNumber(batch.members_count) },
+                        )}
                     </p>
                 </div>
             </div>

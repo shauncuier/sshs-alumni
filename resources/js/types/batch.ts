@@ -19,8 +19,6 @@ export type AdminBatchRow = {
     id: number;
     slug: string;
     name: string;
-    name_bn: string | null;
-    display_name: string;
     ssc_year: number;
     members_count: number;
     status: string;
@@ -30,7 +28,6 @@ export type AdminBatchRow = {
 
 export type AdminBatchDetail = AdminBatchRow & {
     description: string | null;
-    description_bn: string | null;
     cover_url: string | null;
 };
 

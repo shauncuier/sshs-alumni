@@ -26,7 +26,7 @@ type Props = {
 };
 
 export default function RolesIndex({ roles, permissionGroups }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const [selectedId, setSelectedId] = useState<number>(
         roles.find((role) => !role.is_protected)?.id ?? roles[0].id,
     );
@@ -79,7 +79,7 @@ export default function RolesIndex({ roles, permissionGroups }: Props) {
                                     variant="secondary"
                                     className="tabular-nums"
                                 >
-                                    {formatNumber(role.users_count, locale)}
+                                    {formatNumber(role.users_count)}
                                 </Badge>
                             </button>
                         ))}

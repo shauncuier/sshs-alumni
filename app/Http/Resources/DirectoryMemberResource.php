@@ -44,7 +44,6 @@ class DirectoryMemberResource extends JsonResource
             // entry IS.
             'ulid' => $this->ulid,
             'full_name' => $this->full_name,
-            'full_name_bn' => $this->full_name_bn,
             'photo_url' => $this->photo_path === null
                 ? null
                 : asset('storage/'.$this->photo_path),
@@ -54,9 +53,9 @@ class DirectoryMemberResource extends JsonResource
             'ssc_year' => $this->ssc_year,
             'batch' => $this->whenLoaded(
                 'batch',
-                fn (): ?string => $this->batch?->getTranslation('name'),
+                fn (): ?string => $this->batch?->name,
             ),
-            'bio' => $this->getTranslation('bio'),
+            'bio' => $this->bio,
 
             $this->mergeWhen($privacy->show_workplace, fn (): array => [
                 'occupation' => $this->occupation,

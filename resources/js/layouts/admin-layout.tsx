@@ -29,12 +29,12 @@ export default function AdminLayout({
     title,
     breadcrumbs = [],
 }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
 
     useFlashMessages();
 
     return (
-        <div lang={locale}>
+        <div>
             <Head title={title ?? t('admin.nav.dashboard')}>
                 {/* Admin pages are never indexed. */}
                 <meta name="robots" content="noindex, nofollow" />

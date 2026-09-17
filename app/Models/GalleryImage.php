@@ -18,13 +18,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $gallery_album_id
  * @property int $media_id
  * @property string|null $caption
- * @property string|null $caption_bn
  * @property int $display_order
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  */
 #[Fillable([
-    'gallery_album_id', 'media_id', 'caption', 'caption_bn', 'display_order',
+    'gallery_album_id', 'media_id', 'caption', 'display_order',
 ])]
 class GalleryImage extends Model
 {

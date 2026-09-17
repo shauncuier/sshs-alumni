@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Concerns\Auditable;
 use App\Concerns\HasUlid;
-use App\Concerns\Translatable;
 use App\Enums\EventDateStatus;
 use App\Enums\EventStatus;
 use App\Enums\EventType;
@@ -35,17 +34,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $slug
  * @property EventType $type
  * @property string $title
- * @property string|null $title_bn
  * @property string|null $summary
- * @property string|null $summary_bn
  * @property string|null $description
- * @property string|null $description_bn
  * @property string|null $cover_path
  * @property EventDateStatus $date_status
  * @property CarbonImmutable|null $starts_at
  * @property CarbonImmutable|null $ends_at
  * @property string|null $venue
- * @property string|null $venue_bn
  * @property string|null $address
  * @property string|null $map_url
  * @property string|null $latitude
@@ -71,8 +66,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'slug', 'type', 'title', 'title_bn', 'summary', 'summary_bn', 'description', 'description_bn',
-    'cover_path', 'date_status', 'starts_at', 'ends_at', 'venue', 'venue_bn', 'address', 'map_url',
+    'slug', 'type', 'title', 'summary', 'description', 'cover_path', 'date_status', 'starts_at', 'ends_at', 'venue', 'address', 'map_url',
     'latitude', 'longitude', 'registration_required', 'registration_opens_at',
     'registration_closes_at', 'capacity', 'registration_fee', 'currency', 'organizer_name',
     'contact_phone', 'contact_email', 'status', 'meta_title', 'meta_description', 'og_image_path',
@@ -80,15 +74,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Event extends Model
 {
     /** @use HasFactory<EventFactory> */
-    use Auditable, HasFactory, HasUlid, SoftDeletes, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['title', 'summary', 'description', 'venue'];
-    }
+    use Auditable, HasFactory, HasUlid, SoftDeletes;
 
     /**
      * @return array<string, string>
@@ -185,7 +171,7 @@ class Event extends Model
 
     /**
      * True while the committee has not published a date. Public surfaces then
-     * render "তারিখ শীঘ্রই ঘোষণা করা হবে" and no countdown is rendered at all.
+     * render the "to be announced" line and no countdown is rendered at all.
      */
     public function dateIsTba(): bool
     {

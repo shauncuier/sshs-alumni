@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Concerns\HasUlid;
-use App\Concerns\Translatable;
 use App\Enums\SponsorKind;
 use App\Enums\SponsorStatus;
 use Carbon\CarbonImmutable;
@@ -29,7 +28,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $sponsorship_package_id
  * @property SponsorKind $kind
  * @property string $name
- * @property string|null $name_bn
  * @property string|null $contact_name
  * @property string|null $contact_email
  * @property string|null $contact_phone
@@ -47,22 +45,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'event_id', 'sponsorship_package_id', 'kind', 'name', 'name_bn', 'contact_name',
+    'event_id', 'sponsorship_package_id', 'kind', 'name', 'contact_name',
     'contact_email', 'contact_phone', 'logo_path', 'website', 'amount', 'currency',
     'agreement_path', 'status', 'is_public', 'display_order', 'notes',
 ])]
 class Sponsor extends Model
 {
     /** @use HasFactory<SponsorFactory> */
-    use HasFactory, HasUlid, SoftDeletes, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['name'];
-    }
+    use HasFactory, HasUlid, SoftDeletes;
 
     /**
      * @return array<string, string>

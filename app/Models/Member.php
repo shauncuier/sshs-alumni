@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Concerns\Auditable;
 use App\Concerns\HasUlid;
-use App\Concerns\Translatable;
 use App\Enums\BloodGroup;
 use App\Enums\Gender;
 use App\Enums\MemberStatus;
@@ -39,7 +38,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $user_id
  * @property string|null $membership_no
  * @property string $full_name
- * @property string|null $full_name_bn
  * @property string|null $photo_path
  * @property CarbonImmutable|null $date_of_birth
  * @property Gender|null $gender
@@ -69,7 +67,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $emergency_contact_name
  * @property string|null $emergency_contact_phone
  * @property string|null $bio
- * @property string|null $bio_bn
  * @property array<array-key, mixed>|null $skills
  * @property array<array-key, mixed>|null $interests
  * @property MemberStatus $status
@@ -84,17 +81,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'user_id', 'full_name', 'full_name_bn', 'photo_path', 'date_of_birth', 'gender', 'blood_group',
+    'user_id', 'full_name', 'photo_path', 'date_of_birth', 'gender', 'blood_group',
     'relation_type', 'batch_id', 'ssc_year', 'student_id', 'admission_year', 'group_stream',
     'section', 'house', 'higher_education', 'occupation', 'organization', 'job_title', 'industry',
     'business_info', 'country', 'division', 'district', 'city', 'address', 'mobile', 'whatsapp',
-    'email', 'emergency_contact_name', 'emergency_contact_phone', 'bio', 'bio_bn', 'skills',
+    'email', 'emergency_contact_name', 'emergency_contact_phone', 'bio', 'skills',
     'interests', 'registered_at',
 ])]
 class Member extends Model
 {
     /** @use HasFactory<MemberFactory> */
-    use Auditable, HasFactory, HasUlid, SoftDeletes, Translatable;
+    use Auditable, HasFactory, HasUlid, SoftDeletes;
 
     /**
      * Bio is authored in both languages by the member themselves.

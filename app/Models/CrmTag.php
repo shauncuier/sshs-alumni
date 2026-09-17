@@ -16,14 +16,13 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  *
  * @property int $id
  * @property string $name
- * @property string|null $name_bn
  * @property string|null $color
  * @property string|null $description
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  */
 #[Fillable([
-    'name', 'name_bn', 'color', 'description',
+    'name', 'color', 'description',
 ])]
 class CrmTag extends Model
 {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actions\Membership;
 
-use App\Enums\Locale;
 use App\Enums\MemberStatus;
 use App\Models\Member;
 use App\Models\MemberLink;
@@ -46,7 +45,6 @@ class RegisterMember
                 'name' => (string) $draft['full_name'],
                 'email' => (string) $draft['email'],
                 'password' => $hashedPassword,
-                'locale' => Locale::from((string) ($draft['locale'] ?? app()->getLocale())),
                 'phone' => $draft['mobile'] ?? null,
             ]);
 
@@ -57,14 +55,14 @@ class RegisterMember
 
             $member = Member::query()->create([
                 ...Arr::only($draft, [
-                    'full_name', 'full_name_bn', 'date_of_birth', 'gender', 'blood_group',
+                    'full_name', 'date_of_birth', 'gender', 'blood_group',
                     'relation_type', 'batch_id', 'ssc_year', 'student_id', 'admission_year',
                     'group_stream', 'section', 'house', 'higher_education',
                     'occupation', 'organization', 'job_title', 'industry', 'business_info',
                     'country', 'division', 'district', 'city', 'address',
                     'mobile', 'whatsapp', 'email',
                     'emergency_contact_name', 'emergency_contact_phone',
-                    'bio', 'bio_bn', 'skills', 'interests',
+                    'bio', 'skills', 'interests',
                 ]),
                 'user_id' => $user->id,
                 // Never trusted from the payload: status, membership number

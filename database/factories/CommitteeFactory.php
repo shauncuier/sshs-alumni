@@ -23,10 +23,8 @@ class CommitteeFactory extends Factory
         return [
             'slug' => fake()->unique()->slug(),
             'name' => fake()->name(),
-            'name_bn' => null,
             'type' => fake()->randomElement(CommitteeType::cases()),
             'description' => fake()->paragraph(),
-            'description_bn' => null,
             'term_start' => fake()->date(),
             'term_end' => fake()->date(),
             'status' => fake()->word(),

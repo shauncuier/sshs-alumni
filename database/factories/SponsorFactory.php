@@ -24,7 +24,6 @@ class SponsorFactory extends Factory
         return [
             'kind' => fake()->randomElement(SponsorKind::cases()),
             'name' => fake()->name(),
-            'name_bn' => null,
             'contact_name' => fake()->name(),
             'contact_email' => fake()->safeEmail(),
             'contact_phone' => '01'.fake()->numerify('#########'),

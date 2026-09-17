@@ -29,7 +29,7 @@ export default function PublicLayout({
     description,
     indexable = true,
 }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
 
     useFlashMessages();
 
@@ -40,7 +40,7 @@ export default function PublicLayout({
     // `theme-light` pins the public site to light tokens regardless of the
     // visitor's system preference.
     return (
-        <div lang={locale} className="theme-light flex min-h-screen flex-col">
+        <div className="theme-light flex min-h-screen flex-col">
             <Head title={pageTitle}>
                 {description && (
                     <meta name="description" content={description} />
@@ -51,10 +51,7 @@ export default function PublicLayout({
                     <meta property="og:description" content={description} />
                 )}
                 <meta property="og:type" content="website" />
-                <meta
-                    property="og:locale"
-                    content={locale === 'bn' ? 'bn_BD' : 'en_GB'}
-                />
+                <meta property="og:locale" content="en_GB" />
             </Head>
 
             {/* Keyboard users should not have to tab through the whole menu

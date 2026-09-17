@@ -20,7 +20,7 @@ type Member = {
 };
 
 export default function MemberDashboard({ member }: { member: Member | null }) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
 
     if (!member) {
         return (
@@ -67,7 +67,6 @@ export default function MemberDashboard({ member }: { member: Member | null }) {
                                 {t('member.profile.completion', {
                                     percent: formatNumber(
                                         member.profile_completion,
-                                        locale,
                                     ),
                                 })}
                             </CardTitle>

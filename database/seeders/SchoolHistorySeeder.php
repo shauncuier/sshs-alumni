@@ -28,18 +28,14 @@ class SchoolHistorySeeder extends Seeder
             [
                 'year' => (int) (setting('school.established') ?? config('organization.school.established')),
                 'title' => 'School journey begins',
-                'title_bn' => 'বিদ্যালয়ের পথচলা শুরু',
                 'description' => 'Sabuj Shikshayatan Government High School is established at Baro Aulia, Sitakunda, Chattogram.',
-                'description_bn' => 'সীতাকুণ্ড, চট্টগ্রামের বাড়ৈ আউলিয়ায় সবুজ শিক্ষায়তন উচ্চ বিদ্যালয় প্রতিষ্ঠিত হয়।',
                 'display_order' => 1,
                 'is_highlighted' => true,
             ],
             [
                 'year' => (int) (setting('organization.established') ?? config('organization.association.established')),
                 'title' => 'Former Students Association founded',
-                'title_bn' => 'প্রাক্তন ছাত্র-ছাত্রী পরিষদ প্রতিষ্ঠা',
                 'description' => 'Alumni of the school form the Former Students Association to keep the community connected.',
-                'description_bn' => 'বিদ্যালয়ের প্রাক্তন শিক্ষার্থীরা মিলে প্রাক্তন ছাত্র-ছাত্রী পরিষদ গঠন করেন।',
                 'display_order' => 2,
                 'is_highlighted' => true,
             ],

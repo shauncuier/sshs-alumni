@@ -15,7 +15,7 @@ _৫০ বছরের গৌরবময় পথচলা_
 
 ---
 
-A permanent bilingual (বাংলা / English) digital platform for the alumni association: a public community website, a member area, and an administrative CRM.
+A permanent digital platform for the alumni association: a public community website, a member area, and an administrative CRM. The site reads in English; the organisation's and the school's own names and the Golden Jubilee's title and theme line stay in বাংলা, because those are their names rather than copy to be translated.
 
 Its first major use is the **Golden Jubilee 2026**, but it is built to serve the association for decades afterwards. The Jubilee is modelled as the first _flagship event_ inside a general-purpose event system — not as a special subsystem that becomes dead code in 2027.
 
@@ -105,13 +105,13 @@ Specifications and usage rules: [docs/07-branding-ui.md §1–2](docs/07-brandin
 
 | Doc                                                      | Contents                                                   |
 | -------------------------------------------------------- | ---------------------------------------------------------- |
-| [00 — Overview](docs/00-overview.md)                     | product scope, Golden Jubilee context, bn/en glossary      |
+| [00 — Overview](docs/00-overview.md)                     | product scope, Golden Jubilee context, glossary            |
 | [01 — Architecture](docs/01-architecture.md)             | modular monolith, directory trees, cross-cutting patterns  |
 | [02 — Database Schema](docs/02-database-schema.md)       | 61 tables, ERD, indexes, deviations from the original spec |
 | [03 — Routes](docs/03-routes.md)                         | every route, name, middleware, rate limit                  |
 | [04 — Roles & Permissions](docs/04-roles-permissions.md) | 11 roles × 47 permissions, full matrix                     |
 | [05 — Modules](docs/05-modules.md)                       | functional spec per module, incl. BulkSMSBD integration    |
-| [06 — Localization](docs/06-localization.md)             | বাংলা/English architecture, fonts, numerals                |
+| [06 — Language & copy](docs/06-localization.md)          | English-only decision, what stayed in বাংলা, copy files    |
 | [07 — Branding & UI](docs/07-branding-ui.md)             | design system, components, accessibility                   |
 | [08 — Security & Privacy](docs/08-security-privacy.md)   | threat model, privacy enforcement, required tests          |
 | [09 — Payments](docs/09-payments.md)                     | gateway abstraction, offline recording, receipts           |
@@ -144,7 +144,7 @@ Project conventions live in `CLAUDE.md` / `AGENTS.md`, and domain skills in `.cl
 
 1. **Privacy before features.** A private field is _absent from the response payload_ — not blanked, not hidden with CSS. Enforced once, in the API Resource layer, so it cannot drift between the web app and a future API.
 2. **Server-side authorization, always.** The frontend receives a permission list purely to hide buttons. Policies and middleware decide.
-3. **Bilingual from the first line.** No user-facing string is hard-coded in a component.
+3. **No user-facing string is hard-coded in a component.** Copy lives in `lang/en/` so it can be corrected without touching JSX.
 4. **Auditability.** Every administrative action touching a person, money or published content leaves an audit row.
 5. **One concept, one table.** Consolidations from the original specification are documented with reasons in [docs/02](docs/02-database-schema.md).
 6. **Extensible, not over-engineered.** Payment gateways, SMS channels and search drivers sit behind interfaces. Everything else is plain Laravel.

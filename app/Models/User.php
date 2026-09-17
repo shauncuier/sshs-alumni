@@ -4,7 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Concerns\Auditable;
-use App\Enums\Locale;
 use App\Enums\UserStatus;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -38,7 +37,6 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
  * @property string|null $remember_token
- * @property Locale $locale
  * @property string|null $avatar_path
  * @property string|null $phone
  * @property Carbon|null $phone_verified_at
@@ -48,7 +46,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  */
-#[Fillable(['name', 'email', 'password', 'locale', 'phone', 'avatar_path'])]
+#[Fillable(['name', 'email', 'password', 'phone', 'avatar_path'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
@@ -58,15 +56,13 @@ class User extends Authenticatable implements PasskeyUser
     /**
      * Defaults held in memory as well as in the database.
      *
-     * The column defaults only apply on insert, so without these a freshly
-     * created User has a null locale and status until it is reloaded — which
-     * is exactly the instance `actingAs()` and post-registration redirects
-     * use.
+     * The column default only applies on insert, so without this a freshly
+     * created User has a null status until it is reloaded — which is exactly
+     * the instance `actingAs()` and post-registration redirects use.
      *
      * @var array<string, string>
      */
     protected $attributes = [
-        'locale' => 'bn',
         'status' => 'active',
     ];
 
@@ -83,7 +79,6 @@ class User extends Authenticatable implements PasskeyUser
             'two_factor_confirmed_at' => 'datetime',
             'phone_verified_at' => 'datetime',
             'last_active_at' => 'datetime',
-            'locale' => Locale::class,
             'status' => UserStatus::class,
         ];
     }
@@ -104,14 +99,5 @@ class User extends Authenticatable implements PasskeyUser
     public function isActive(): bool
     {
         return $this->status === UserStatus::Active;
-    }
-
-    /**
-     * Preferred locale for notifications, honoured by Laravel's
-     * HasLocalePreference contract.
-     */
-    public function preferredLocale(): string
-    {
-        return $this->locale->value;
     }
 }

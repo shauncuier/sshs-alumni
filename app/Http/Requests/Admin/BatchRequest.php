@@ -38,7 +38,6 @@ class BatchRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:80'],
-            'name_bn' => ['nullable', 'string', 'max:80'],
             'ssc_year' => [
                 'required',
                 'integer',
@@ -50,7 +49,6 @@ class BatchRequest extends FormRequest
                 Rule::unique('batches', 'ssc_year')->ignore($id),
             ],
             'description' => ['nullable', 'string', 'max:5000'],
-            'description_bn' => ['nullable', 'string', 'max:5000'],
             'status' => ['required', new Enum(BatchStatus::class)],
         ];
     }

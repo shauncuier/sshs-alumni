@@ -67,7 +67,7 @@ const ICONS: Record<string, LucideIcon> = {
 };
 
 export function AdminSidebar() {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const page = usePage();
     const current = page.url;
 
@@ -102,9 +102,7 @@ export function AdminSidebar() {
                             >
                                 <Link href="/admin" prefetch>
                                     <LayoutGrid aria-hidden="true" />
-                                    <span lang={locale}>
-                                        {t('admin.nav.dashboard')}
-                                    </span>
+                                    <span>{t('admin.nav.dashboard')}</span>
                                 </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -113,7 +111,7 @@ export function AdminSidebar() {
 
                 {groups.map((group) => (
                     <SidebarGroup key={group.label}>
-                        <SidebarGroupLabel lang={locale}>
+                        <SidebarGroupLabel>
                             {t(`admin.groups.${group.label}`)}
                         </SidebarGroupLabel>
 
@@ -132,7 +130,7 @@ export function AdminSidebar() {
                                         >
                                             <Link href={item.href} prefetch>
                                                 <Icon aria-hidden="true" />
-                                                <span lang={locale}>
+                                                <span>
                                                     {t(`admin.nav.${item.key}`)}
                                                 </span>
                                             </Link>

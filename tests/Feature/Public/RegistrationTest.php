@@ -22,7 +22,6 @@ function basicStep(array $overrides = []): array
 {
     return [
         'full_name' => 'Rahim Uddin',
-        'full_name_bn' => 'রহিম উদ্দিন',
         'relation_type' => RelationType::FormerStudent->value,
         'mobile' => '01712345678',
         'email' => 'rahim@example.test',
@@ -86,7 +85,6 @@ describe('the registration flow', function (): void {
 
         expect($member)->not->toBeNull()
             ->and($member->full_name)->toBe('Rahim Uddin')
-            ->and($member->full_name_bn)->toBe('রহিম উদ্দিন')
             ->and($member->privacy)->not->toBeNull()
             ->and($user->hasRole('Member'))->toBeTrue();
     });

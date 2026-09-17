@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Concerns\Translatable;
 use Carbon\CarbonImmutable;
 use Database\Factories\SchoolMilestoneFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -22,9 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $year
  * @property string|null $date_label
  * @property string $title
- * @property string|null $title_bn
  * @property string|null $description
- * @property string|null $description_bn
  * @property string|null $image_path
  * @property int $display_order
  * @property bool $is_highlighted
@@ -32,21 +29,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property CarbonImmutable|null $updated_at
  */
 #[Fillable([
-    'year', 'date_label', 'title', 'title_bn', 'description', 'description_bn', 'image_path',
+    'year', 'date_label', 'title', 'description', 'image_path',
     'display_order', 'is_highlighted',
 ])]
 class SchoolMilestone extends Model
 {
     /** @use HasFactory<SchoolMilestoneFactory> */
-    use HasFactory, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['title', 'description'];
-    }
+    use HasFactory;
 
     /**
      * @return array<string, string>

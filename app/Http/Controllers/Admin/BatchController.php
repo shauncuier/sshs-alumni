@@ -38,11 +38,10 @@ class BatchController extends Controller
         $term = trim((string) $request->query('q', ''));
 
         $batches = Batch::query()
-            ->with(['coordinators:id,ulid,full_name,full_name_bn,membership_no,photo_path'])
+            ->with(['coordinators:id,ulid,full_name,membership_no,photo_path'])
             ->when($term !== '', function ($query) use ($term): void {
                 $query->where(function ($inner) use ($term): void {
                     $inner->where('name', 'like', '%'.$term.'%')
-                        ->orWhere('name_bn', 'like', '%'.$term.'%')
                         ->orWhere('ssc_year', 'like', $term.'%');
                 });
             })
@@ -66,13 +65,12 @@ class BatchController extends Controller
     {
         $this->authorize('view', $batch);
 
-        $batch->load(['coordinators:id,ulid,full_name,full_name_bn,membership_no,photo_path']);
+        $batch->load(['coordinators:id,ulid,full_name,membership_no,photo_path']);
 
         return Inertia::render('admin/batches/show', [
             'batch' => [
                 ...AdminBatchResource::make($batch)->resolve(),
                 'description' => $batch->description,
-                'description_bn' => $batch->description_bn,
                 'cover_url' => $batch->cover_path === null
                     ? null
                     : asset('storage/'.$batch->cover_path),

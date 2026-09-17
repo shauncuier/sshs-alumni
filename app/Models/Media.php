@@ -37,7 +37,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $width
  * @property int|null $height
  * @property string|null $alt
- * @property string|null $alt_bn
  * @property bool $is_public
  * @property int|null $uploaded_by
  * @property CarbonImmutable|null $created_at
@@ -46,7 +45,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 #[Fillable([
     'model_type', 'model_id', 'collection', 'disk', 'path', 'thumb_path', 'original_name',
-    'mime_type', 'extension', 'size', 'width', 'height', 'alt', 'alt_bn', 'is_public', 'uploaded_by',
+    'mime_type', 'extension', 'size', 'width', 'height', 'alt', 'is_public', 'uploaded_by',
 ])]
 class Media extends Model
 {

@@ -22,9 +22,7 @@ class VolunteerTeamFactory extends Factory
         return [
             'slug' => fake()->unique()->slug(),
             'name' => fake()->name(),
-            'name_bn' => null,
             'description' => fake()->paragraph(),
-            'description_bn' => null,
             'display_order' => fake()->numberBetween(1, 100),
         ];
     }

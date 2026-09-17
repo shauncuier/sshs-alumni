@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react';
 import { GraduationCap, Lock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from '@/hooks/use-translation';
-import { formatNumber, localizeNumber } from '@/lib/format';
+import { formatNumber } from '@/lib/format';
 import PublicLayout from '@/layouts/public-layout';
 
 type Batch = {
@@ -26,7 +26,7 @@ type Props = {
  * people to join rather than showing who.
  */
 export default function Batches({ batches, totals }: Props) {
-    const { t, locale } = useTranslation();
+    const { t, choice } = useTranslation();
 
     return (
         <PublicLayout
@@ -45,7 +45,7 @@ export default function Batches({ batches, totals }: Props) {
                     <dl className="mt-8 flex justify-center gap-10">
                         <div>
                             <dd className="text-3xl font-semibold">
-                                {formatNumber(totals.batches, locale)}
+                                {formatNumber(totals.batches)}
                             </dd>
                             <dt className="text-sm text-white/60">
                                 {t('public.stats.batches')}
@@ -53,7 +53,7 @@ export default function Batches({ batches, totals }: Props) {
                         </div>
                         <div>
                             <dd className="text-3xl font-semibold">
-                                {formatNumber(totals.members, locale)}
+                                {formatNumber(totals.members)}
                             </dd>
                             <dt className="text-sm text-white/60">
                                 {t('public.stats.members')}
@@ -86,12 +86,15 @@ export default function Batches({ batches, totals }: Props) {
                                             {batch.name}
                                         </p>
                                         <p className="text-muted-foreground text-sm">
-                                            {t('public.batches.member_count', {
-                                                count: localizeNumber(
-                                                    batch.members_count,
-                                                    locale,
-                                                ),
-                                            })}
+                                            {choice(
+                                                'public.batches.member_count',
+                                                batch.members_count,
+                                                {
+                                                    count: formatNumber(
+                                                        batch.members_count,
+                                                    ),
+                                                },
+                                            )}
                                         </p>
                                     </div>
                                 </CardContent>

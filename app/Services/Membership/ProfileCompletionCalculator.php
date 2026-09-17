@@ -26,7 +26,7 @@ class ProfileCompletionCalculator
     private const GROUPS = [
         'identity' => [
             'weight' => 20,
-            'fields' => ['full_name', 'full_name_bn', 'date_of_birth', 'gender'],
+            'fields' => ['full_name', 'date_of_birth', 'gender'],
         ],
         'photo' => [
             'weight' => 15,

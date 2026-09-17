@@ -26,7 +26,6 @@ class MemberFactory extends Factory
         return [
             'membership_no' => fake()->unique()->bothify('SSHS-####-####'),
             'full_name' => fake()->name(),
-            'full_name_bn' => null,
             'photo_path' => null,
             'date_of_birth' => fake()->date(),
             'gender' => fake()->randomElement(Gender::cases()),
@@ -55,7 +54,6 @@ class MemberFactory extends Factory
             'emergency_contact_name' => fake()->name(),
             'emergency_contact_phone' => '01'.fake()->numerify('#########'),
             'bio' => fake()->paragraph(),
-            'bio_bn' => null,
             'skills' => fake()->randomElements(['Teaching', 'Management', 'Design', 'Engineering', 'Finance', 'Writing', 'Public Speaking'], 3),
             'interests' => fake()->randomElements(['Sports', 'Music', 'Literature', 'Travel', 'Photography', 'Volunteering'], 2),
             'status' => fake()->randomElement(MemberStatus::cases()),

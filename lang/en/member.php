@@ -50,7 +50,7 @@ return [
     ],
 
     'directory' => [
-        'count' => ':count members',
+        'count' => 'No members|:count member|:count members',
         'search_placeholder' => 'Search by name, organisation, city or membership number',
         'empty' => 'No member matches these filters. Try removing one.',
         'grid_view' => 'Grid view',

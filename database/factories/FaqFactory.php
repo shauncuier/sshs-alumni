@@ -23,9 +23,7 @@ class FaqFactory extends Factory
         return [
             'group' => fake()->randomElement(FaqGroup::cases()),
             'question' => fake()->sentence(8).'?',
-            'question_bn' => null,
             'answer' => fake()->paragraph(),
-            'answer_bn' => null,
             'display_order' => fake()->numberBetween(1, 100),
         ];
     }

@@ -17,7 +17,6 @@ export type MemberLink = {
 export type DirectoryMember = {
     ulid: string;
     full_name: string;
-    full_name_bn: string | null;
     photo_url: string | null;
     relation_type: string;
     relation_label: string;
@@ -43,7 +42,6 @@ export type DirectoryMember = {
 
 export type PublicMember = {
     full_name: string;
-    full_name_bn: string | null;
     photo_url: string | null;
     membership_no: string | null;
     batch?: string | null;
@@ -82,7 +80,6 @@ export type AdminMember = DirectoryMember & {
     address: string | null;
     emergency_contact_name: string | null;
     emergency_contact_phone: string | null;
-    bio_bn: string | null;
     skills: string[] | null;
     interests: string[] | null;
     status: string;

@@ -32,7 +32,6 @@ class MediaFactory extends Factory
             'width' => fake()->numberBetween(1, 100),
             'height' => fake()->numberBetween(1, 100),
             'alt' => fake()->word(),
-            'alt_bn' => null,
         ];
     }
 }

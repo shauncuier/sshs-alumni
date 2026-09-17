@@ -32,7 +32,7 @@ export default function MemberShow({
     canVerify,
     allowedTransitions,
 }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const getInitials = useInitials();
 
     return (
@@ -68,14 +68,6 @@ export default function MemberShow({
                                     <h1 className="text-xl font-semibold">
                                         {member.full_name}
                                     </h1>
-                                    {member.full_name_bn && (
-                                        <p
-                                            lang="bn"
-                                            className="text-muted-foreground"
-                                        >
-                                            {member.full_name_bn}
-                                        </p>
-                                    )}
                                     <div className="flex flex-wrap gap-2">
                                         <Badge>{member.status_label}</Badge>
                                         {member.batch && (
@@ -179,7 +171,6 @@ export default function MemberShow({
                                                 <p className="text-muted-foreground text-xs">
                                                     {formatDate(
                                                         entry.created_at,
-                                                        locale,
                                                         {
                                                             dateStyle: 'medium',
                                                             timeStyle: 'short',

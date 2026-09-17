@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Concerns\Translatable;
 use App\Enums\AudienceType;
 use App\Enums\CampaignChannel;
 use App\Enums\CampaignStatus;
@@ -29,9 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $message_template_id
  * @property CampaignChannel $channel
  * @property string|null $subject
- * @property string|null $subject_bn
  * @property string $body
- * @property string|null $body_bn
  * @property AudienceType $audience_type
  * @property array<array-key, mixed>|null $audience_filters
  * @property CarbonImmutable|null $scheduled_at
@@ -50,21 +47,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'name', 'message_template_id', 'channel', 'subject', 'subject_bn', 'body', 'body_bn',
-    'audience_type', 'audience_filters', 'scheduled_at', 'status', 'created_by',
+    'name', 'message_template_id', 'channel', 'subject', 'body', 'audience_type', 'audience_filters', 'scheduled_at', 'status', 'created_by',
 ])]
 class Campaign extends Model
 {
     /** @use HasFactory<CampaignFactory> */
-    use HasFactory, SoftDeletes, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['subject', 'body'];
-    }
+    use HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>

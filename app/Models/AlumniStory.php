@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Concerns\Translatable;
 use App\Enums\StoryStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\AlumniStoryFactory;
@@ -23,9 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $member_id
  * @property string $author_name
  * @property string $title
- * @property string|null $title_bn
  * @property string $body
- * @property string|null $body_bn
  * @property string|null $photo_path
  * @property int|null $batch_id
  * @property string|null $career_summary
@@ -41,22 +38,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'slug', 'member_id', 'author_name', 'title', 'title_bn', 'body', 'body_bn', 'photo_path',
+    'slug', 'member_id', 'author_name', 'title', 'body', 'photo_path',
     'batch_id', 'career_summary', 'is_featured', 'status', 'published_at', 'meta_title',
     'meta_description', 'og_image_path',
 ])]
 class AlumniStory extends Model
 {
     /** @use HasFactory<AlumniStoryFactory> */
-    use HasFactory, SoftDeletes, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['title', 'body'];
-    }
+    use HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>

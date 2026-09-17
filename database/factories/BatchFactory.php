@@ -23,10 +23,8 @@ class BatchFactory extends Factory
         return [
             'slug' => fake()->unique()->slug(),
             'name' => fake()->name(),
-            'name_bn' => null,
             'ssc_year' => fake()->numberBetween(1981, 2024),
             'description' => fake()->paragraph(),
-            'description_bn' => null,
             'cover_path' => null,
             'status' => fake()->randomElement(BatchStatus::cases()),
         ];

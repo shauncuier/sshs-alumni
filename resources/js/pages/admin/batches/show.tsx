@@ -29,10 +29,10 @@ type Props = {
 };
 
 export default function BatchShow({ batch, candidates, options, can }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
 
     return (
-        <AdminLayout title={batch.display_name}>
+        <AdminLayout title={batch.name}>
             <div className="space-y-5">
                 <Button asChild variant="ghost" size="sm">
                     <Link href="/admin/batches">
@@ -42,9 +42,7 @@ export default function BatchShow({ batch, candidates, options, can }: Props) {
                 </Button>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <h1 lang={locale} className="text-2xl font-semibold">
-                        {batch.display_name}
-                    </h1>
+                    <h1 className="text-2xl font-semibold">{batch.name}</h1>
                     <Badge
                         variant={
                             batch.status === 'active' ? 'default' : 'outline'
@@ -54,7 +52,7 @@ export default function BatchShow({ batch, candidates, options, can }: Props) {
                     </Badge>
                     <span className="text-muted-foreground text-sm">
                         {t('admin.batches.members_count')}:{' '}
-                        {formatNumber(batch.members_count, locale)}
+                        {formatNumber(batch.members_count)}
                     </span>
                 </div>
 
@@ -88,10 +86,8 @@ function DetailsForm({
 
     const form = useForm({
         name: batch.name,
-        name_bn: batch.name_bn ?? '',
         ssc_year: String(batch.ssc_year),
         description: batch.description ?? '',
-        description_bn: batch.description_bn ?? '',
         status: batch.status,
     });
 
@@ -112,7 +108,7 @@ function DetailsForm({
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-1.5">
                             <Label htmlFor="name">
-                                {t('common.labels.name')} (EN)
+                                {t('common.labels.name')}
                             </Label>
                             <Input
                                 id="name"
@@ -123,22 +119,6 @@ function DetailsForm({
                                 }
                             />
                             <InputError message={form.errors.name} />
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <Label htmlFor="name_bn">
-                                {t('common.labels.name')} (বাংলা)
-                            </Label>
-                            <Input
-                                id="name_bn"
-                                lang="bn"
-                                value={form.data.name_bn}
-                                disabled={!editable}
-                                onChange={(event) =>
-                                    form.setData('name_bn', event.target.value)
-                                }
-                            />
-                            <InputError message={form.errors.name_bn} />
                         </div>
 
                         <div className="space-y-1.5">
@@ -189,7 +169,7 @@ function DetailsForm({
 
                     <div className="space-y-1.5">
                         <Label htmlFor="description">
-                            {t('common.labels.description')} (EN)
+                            {t('common.labels.description')}
                         </Label>
                         <textarea
                             id="description"
@@ -202,27 +182,6 @@ function DetailsForm({
                             className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-1 focus-visible:outline-none disabled:opacity-50"
                         />
                         <InputError message={form.errors.description} />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label htmlFor="description_bn">
-                            {t('common.labels.description')} (বাংলা)
-                        </Label>
-                        <textarea
-                            id="description_bn"
-                            lang="bn"
-                            rows={3}
-                            value={form.data.description_bn}
-                            disabled={!editable}
-                            onChange={(event) =>
-                                form.setData(
-                                    'description_bn',
-                                    event.target.value,
-                                )
-                            }
-                            className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-1 focus-visible:outline-none disabled:opacity-50"
-                        />
-                        <InputError message={form.errors.description_bn} />
                     </div>
 
                     {editable && (

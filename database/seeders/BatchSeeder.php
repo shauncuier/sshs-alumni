@@ -6,7 +6,6 @@ namespace Database\Seeders;
 
 use App\Enums\BatchStatus;
 use App\Models\Batch;
-use App\Support\BanglaNumber;
 use Illuminate\Database\Seeder;
 
 /**
@@ -37,7 +36,6 @@ class BatchSeeder extends Seeder
                 [
                     'slug' => "ssc-{$year}",
                     'name' => "SSC {$year}",
-                    'name_bn' => 'এসএসসি '.BanglaNumber::toBangla($year),
                     'status' => BatchStatus::Active,
                 ],
             );

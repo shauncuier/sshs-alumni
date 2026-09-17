@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Concerns\Translatable;
 use App\Enums\BatchStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\BatchFactory;
@@ -24,10 +23,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property string $slug
  * @property string $name
- * @property string|null $name_bn
  * @property int $ssc_year
  * @property string|null $description
- * @property string|null $description_bn
  * @property string|null $cover_path
  * @property int $members_count
  * @property BatchStatus $status
@@ -36,20 +33,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'slug', 'name', 'name_bn', 'ssc_year', 'description', 'description_bn', 'cover_path', 'status',
+    'slug', 'name', 'ssc_year', 'description', 'cover_path', 'status',
 ])]
 class Batch extends Model
 {
     /** @use HasFactory<BatchFactory> */
-    use HasFactory, SoftDeletes, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['name', 'description'];
-    }
+    use HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>

@@ -23,12 +23,10 @@ class SponsorshipPackageFactory extends Factory
         return [
             'slug' => fake()->unique()->slug(),
             'name' => fake()->name(),
-            'name_bn' => null,
             'tier' => fake()->randomElement(SponsorTier::cases()),
             'amount' => fake()->randomFloat(2, 100, 10000),
             'currency' => 'BDT',
             'benefits' => fake()->word(),
-            'benefits_bn' => null,
             'max_slots' => fake()->numberBetween(1, 100),
             'display_order' => fake()->numberBetween(1, 100),
         ];

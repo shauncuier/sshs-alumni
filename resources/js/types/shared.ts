@@ -4,9 +4,7 @@
  * @see app/Http/Middleware/HandleInertiaRequests.php
  */
 
-export type Locale = 'bn' | 'en';
-
-/** Flattened `file.key.subkey` map for the ACTIVE locale only. */
+/** Flattened `file.key.subkey` map, from `lang/en`. */
 export type Translations = Record<string, string>;
 
 /**
@@ -23,8 +21,6 @@ export type FlashMessages = {
 };
 
 export type SharedProps = {
-    locale: Locale;
-    locales: Record<Locale, string>;
     translations: Translations;
     settings: PublicSettings;
     flash: FlashMessages;

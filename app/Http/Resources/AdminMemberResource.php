@@ -36,7 +36,6 @@ class AdminMemberResource extends JsonResource
             'membership_no' => $this->membership_no,
 
             'full_name' => $this->full_name,
-            'full_name_bn' => $this->full_name_bn,
             'photo_url' => $this->photo_path === null
                 ? null
                 : asset('storage/'.$this->photo_path),
@@ -50,7 +49,7 @@ class AdminMemberResource extends JsonResource
 
             'batch' => $this->whenLoaded(
                 'batch',
-                fn (): ?string => $this->batch?->getTranslation('name'),
+                fn (): ?string => $this->batch?->name,
             ),
             'batch_id' => $this->batch_id,
             'ssc_year' => $this->ssc_year,
@@ -80,7 +79,6 @@ class AdminMemberResource extends JsonResource
             'emergency_contact_phone' => $this->emergency_contact_phone,
 
             'bio' => $this->bio,
-            'bio_bn' => $this->bio_bn,
             'skills' => $this->skills,
             'interests' => $this->interests,
 

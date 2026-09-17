@@ -25,7 +25,6 @@ class GalleryImageFactory extends Factory
             'gallery_album_id' => GalleryAlbum::factory(),
             'media_id' => Media::factory(),
             'caption' => fake()->word(),
-            'caption_bn' => null,
             'display_order' => fake()->numberBetween(1, 100),
         ];
     }

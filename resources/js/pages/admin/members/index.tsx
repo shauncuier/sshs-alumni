@@ -46,7 +46,7 @@ const STATUS_VARIANT: Record<
 };
 
 export default function MembersIndex({ members, filters, options }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const getInitials = useInitials();
     const { term, setTerm } = useDebouncedSearch(
         filters.q ?? '',
@@ -71,7 +71,7 @@ export default function MembersIndex({ members, filters, options }: Props) {
                         {t('admin.nav.members')}
                     </h1>
                     <p className="text-muted-foreground text-sm">
-                        {formatNumber(members.meta.total, locale)}
+                        {formatNumber(members.meta.total)}
                     </p>
                 </div>
 
@@ -192,10 +192,7 @@ export default function MembersIndex({ members, filters, options }: Props) {
                                             </Badge>
                                         </td>
                                         <td className="text-muted-foreground hidden p-3 lg:table-cell">
-                                            {formatDate(
-                                                member.registered_at,
-                                                locale,
-                                            )}
+                                            {formatDate(member.registered_at)}
                                         </td>
                                     </tr>
                                 ))}

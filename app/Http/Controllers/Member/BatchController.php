@@ -53,13 +53,13 @@ class BatchController extends Controller
             ->paginate(24)
             ->withQueryString();
 
-        $batch->load(['coordinators:id,ulid,full_name,full_name_bn,membership_no,photo_path']);
+        $batch->load(['coordinators:id,ulid,full_name,membership_no,photo_path']);
 
         return Inertia::render('member/batch', [
             'batch' => [
                 'slug' => $batch->slug,
-                'name' => $batch->getTranslation('name') ?? $batch->name,
-                'description' => $batch->getTranslation('description'),
+                'name' => $batch->name,
+                'description' => $batch->description,
                 'ssc_year' => $batch->ssc_year,
                 'members_count' => $batch->members_count,
                 'cover_url' => $batch->cover_path === null
@@ -73,7 +73,7 @@ class BatchController extends Controller
             'coordinators' => $batch->coordinators
                 ->map(fn (Member $coordinator): array => [
                     'ulid' => $coordinator->ulid,
-                    'name' => $coordinator->getTranslation('full_name') ?? $coordinator->full_name,
+                    'name' => $coordinator->full_name,
                     'membership_no' => $coordinator->membership_no,
                     'photo_url' => $coordinator->photo_path === null
                         ? null

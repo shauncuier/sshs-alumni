@@ -45,7 +45,7 @@ export default function BatchesIndex({
     options,
     can,
 }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const { term, setTerm } = useDebouncedSearch(
         filters.q ?? '',
         '/admin/batches',
@@ -59,10 +59,7 @@ export default function BatchesIndex({
                         <h1 className="text-2xl font-semibold">
                             {t('admin.nav.batches')}
                         </h1>
-                        <p
-                            lang={locale}
-                            className="text-muted-foreground mt-1 max-w-2xl text-sm"
-                        >
+                        <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
                             {t('admin.batches.intro')}
                         </p>
                     </div>
@@ -127,26 +124,19 @@ export default function BatchesIndex({
                                         <td className="p-3">
                                             <Link
                                                 href={`/admin/batches/${batch.id}`}
-                                                lang={locale}
                                                 className="font-medium hover:underline"
                                             >
-                                                {batch.display_name}
+                                                {batch.name}
                                             </Link>
                                         </td>
                                         {/* A year is a number, not an
                                             identifier, so it follows the
                                             reading language. */}
                                         <td className="hidden p-3 sm:table-cell">
-                                            {formatNumber(
-                                                batch.ssc_year,
-                                                locale,
-                                            )}
+                                            {formatNumber(batch.ssc_year)}
                                         </td>
                                         <td className="p-3">
-                                            {formatNumber(
-                                                batch.members_count,
-                                                locale,
-                                            )}
+                                            {formatNumber(batch.members_count)}
                                         </td>
                                         <td className="text-muted-foreground hidden p-3 md:table-cell">
                                             {batch.coordinators.length === 0
@@ -192,10 +182,8 @@ function CreateBatchDialog({ options }: { options: { statuses: Option[] } }) {
 
     const form = useForm({
         name: '',
-        name_bn: '',
         ssc_year: '',
         description: '',
-        description_bn: '',
         status: 'active',
     });
 
@@ -274,9 +262,9 @@ function CreateBatchDialog({ options }: { options: { statuses: Option[] } }) {
                             <InputError message={form.errors.status} />
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="space-y-1.5 sm:col-span-2">
                             <Label htmlFor="name">
-                                {t('common.labels.name')} (EN)
+                                {t('common.labels.name')}
                             </Label>
                             <Input
                                 id="name"
@@ -287,21 +275,6 @@ function CreateBatchDialog({ options }: { options: { statuses: Option[] } }) {
                                 required
                             />
                             <InputError message={form.errors.name} />
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <Label htmlFor="name_bn">
-                                {t('common.labels.name')} (বাংলা)
-                            </Label>
-                            <Input
-                                id="name_bn"
-                                lang="bn"
-                                value={form.data.name_bn}
-                                onChange={(event) =>
-                                    form.setData('name_bn', event.target.value)
-                                }
-                            />
-                            <InputError message={form.errors.name_bn} />
                         </div>
                     </div>
 

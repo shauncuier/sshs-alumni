@@ -68,10 +68,10 @@ class RegistrationController extends Controller
                 'link_types' => MemberLinkType::options(),
                 'batches' => Batch::query()
                     ->orderByDesc('ssc_year')
-                    ->get(['id', 'name', 'name_bn', 'ssc_year'])
+                    ->get(['id', 'name', 'ssc_year'])
                     ->map(fn (Batch $batch): array => [
                         'id' => $batch->id,
-                        'label' => $batch->getTranslation('name') ?? $batch->name,
+                        'label' => $batch->name,
                         'ssc_year' => $batch->ssc_year,
                     ]),
             ],

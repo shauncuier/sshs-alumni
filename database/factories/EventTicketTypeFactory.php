@@ -23,7 +23,6 @@ class EventTicketTypeFactory extends Factory
         return [
             'event_id' => Event::factory(),
             'name' => fake()->name(),
-            'name_bn' => null,
             'description' => fake()->paragraph(),
             'price' => fake()->randomFloat(2, 100, 10000),
             'currency' => 'BDT',

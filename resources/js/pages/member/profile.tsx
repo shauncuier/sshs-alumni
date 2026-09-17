@@ -47,7 +47,7 @@ const PRIVACY_FLAGS = [
 ] as const;
 
 export default function Profile({ member, completion, options }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
 
     return (
         <MemberLayout title={t('member.nav.profile')}>
@@ -58,7 +58,7 @@ export default function Profile({ member, completion, options }: Props) {
                     </h1>
                     <p className="text-muted-foreground mt-1 text-sm">
                         {t('member.profile.completion', {
-                            percent: formatNumber(completion.percent, locale),
+                            percent: formatNumber(completion.percent),
                         })}
                     </p>
                 </div>
@@ -82,7 +82,7 @@ export default function Profile({ member, completion, options }: Props) {
  * @see app/Services/Media/MediaService.php
  */
 function PhotoForm({ member, maxKb }: { member: AdminMember; maxKb: number }) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const getInitials = useInitials();
     const [preview, setPreview] = useState<string | null>(null);
 
@@ -158,12 +158,9 @@ function PhotoForm({ member, maxKb }: { member: AdminMember; maxKb: number }) {
                                 onChange={choose}
                                 className="file:text-foreground cursor-pointer"
                             />
-                            <p
-                                lang={locale}
-                                className="text-muted-foreground text-xs"
-                            >
+                            <p className="text-muted-foreground text-xs">
                                 {t('member.photo.help', {
-                                    size: `${formatNumber(Math.round(maxKb / 1024), locale)} MB`,
+                                    size: `${formatNumber(Math.round(maxKb / 1024))} MB`,
                                 })}
                             </p>
                             <InputError message={form.errors.photo} />
@@ -200,7 +197,6 @@ function ProfileForm({
 
     const form = useForm({
         full_name: member.full_name ?? '',
-        full_name_bn: member.full_name_bn ?? '',
         date_of_birth: member.date_of_birth ?? '',
         gender: member.gender ?? '',
         blood_group: member.blood_group ?? '',
@@ -248,19 +244,6 @@ function ProfileForm({
                                     form.setData('full_name', e.target.value)
                                 }
                                 required
-                            />
-                        </Field>
-
-                        <Field
-                            label={t('public.join.fields.full_name_bn')}
-                            error={form.errors.full_name_bn}
-                        >
-                            <Input
-                                lang="bn"
-                                value={form.data.full_name_bn}
-                                onChange={(e) =>
-                                    form.setData('full_name_bn', e.target.value)
-                                }
                             />
                         </Field>
                     </div>

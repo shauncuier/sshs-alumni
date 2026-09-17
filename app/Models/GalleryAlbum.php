@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Concerns\Translatable;
 use App\Enums\ContentStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\GalleryAlbumFactory;
@@ -21,9 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property string $slug
  * @property string $title
- * @property string|null $title_bn
  * @property string|null $description
- * @property string|null $description_bn
  * @property string|null $cover_path
  * @property int|null $event_id
  * @property int|null $batch_id
@@ -36,21 +33,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'slug', 'title', 'title_bn', 'description', 'description_bn', 'cover_path', 'event_id',
+    'slug', 'title', 'description', 'cover_path', 'event_id',
     'batch_id', 'status', 'published_at', 'display_order',
 ])]
 class GalleryAlbum extends Model
 {
     /** @use HasFactory<GalleryAlbumFactory> */
-    use HasFactory, SoftDeletes, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['title', 'description'];
-    }
+    use HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>

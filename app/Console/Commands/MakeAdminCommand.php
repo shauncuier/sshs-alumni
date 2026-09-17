@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Enums\Locale;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
@@ -77,7 +76,6 @@ class MakeAdminCommand extends Command
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($password),
-            'locale' => Locale::Bn,
         ]);
 
         $user->forceFill(['email_verified_at' => now()])->save();

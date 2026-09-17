@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Concerns\Translatable;
 use App\Enums\SponsorTier;
 use Carbon\CarbonImmutable;
 use Database\Factories\SponsorshipPackageFactory;
@@ -19,12 +18,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $slug
  * @property string $name
- * @property string|null $name_bn
  * @property SponsorTier $tier
  * @property string|null $amount
  * @property string $currency
  * @property string|null $benefits
- * @property string|null $benefits_bn
  * @property int|null $max_slots
  * @property int $display_order
  * @property bool $is_active
@@ -32,21 +29,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property CarbonImmutable|null $updated_at
  */
 #[Fillable([
-    'slug', 'name', 'name_bn', 'tier', 'amount', 'currency', 'benefits', 'benefits_bn', 'max_slots',
+    'slug', 'name', 'tier', 'amount', 'currency', 'benefits', 'max_slots',
     'display_order', 'is_active',
 ])]
 class SponsorshipPackage extends Model
 {
     /** @use HasFactory<SponsorshipPackageFactory> */
-    use HasFactory, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['name', 'benefits'];
-    }
+    use HasFactory;
 
     /**
      * @return array<string, string>

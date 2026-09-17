@@ -31,7 +31,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $currency
  * @property bool $is_anonymous
  * @property string|null $message
- * @property string|null $message_bn
  * @property DonationStatus $status
  * @property bool $is_public
  * @property CarbonImmutable|null $received_at
@@ -41,7 +40,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 #[Fillable([
     'donor_member_id', 'crm_contact_id', 'donor_name', 'donor_email', 'donor_phone', 'campaign',
-    'event_id', 'amount', 'currency', 'is_anonymous', 'message', 'message_bn', 'status',
+    'event_id', 'amount', 'currency', 'is_anonymous', 'message', 'status',
     'is_public', 'received_at',
 ])]
 class Donation extends Model

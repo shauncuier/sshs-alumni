@@ -48,7 +48,7 @@ class DashboardController extends Controller
 
                 return [
                     'ulid' => $event->ulid,
-                    'title' => $event->getTranslation('title'),
+                    'title' => $event->title,
                     'date_is_tba' => $event->dateIsTba(),
                     'starts_at' => $event->starts_at?->toIso8601String(),
                 ];

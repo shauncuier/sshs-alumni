@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Services\Settings\SettingsService;
-use App\Support\BanglaNumber;
 
 if (! function_exists('setting')) {
     /**
@@ -22,19 +21,5 @@ if (! function_exists('setting')) {
         }
 
         return $settings->get($path, $default);
-    }
-}
-
-if (! function_exists('bn_number')) {
-    /**
-     * Render a number in the active locale — ০১২৩ under বাংলা.
-     *
-     * Deliberately NOT for identifiers: membership numbers, receipt numbers
-     * and phone numbers stay in Latin digits in both languages so they can be
-     * quoted, searched and typed reliably.
-     */
-    function bn_number(string|int|float $value, ?string $locale = null): string
-    {
-        return BanglaNumber::localize($value, $locale);
     }
 }

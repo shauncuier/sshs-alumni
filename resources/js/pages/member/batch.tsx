@@ -19,7 +19,7 @@ type Props = {
 };
 
 export default function Batch({ batch, members, coordinators }: Props) {
-    const { t, locale } = useTranslation();
+    const { t, choice } = useTranslation();
 
     if (batch === null) {
         return (
@@ -40,21 +40,16 @@ export default function Batch({ batch, members, coordinators }: Props) {
                         className="text-brand-green-700 size-6"
                         aria-hidden="true"
                     />
-                    <h1 lang={locale} className="text-2xl font-semibold">
-                        {batch.name}
-                    </h1>
+                    <h1 className="text-2xl font-semibold">{batch.name}</h1>
                     <Badge variant="secondary">
-                        {t('member.directory.count', {
-                            count: formatNumber(batch.members_count, locale),
+                        {choice('member.directory.count', batch.members_count, {
+                            count: formatNumber(batch.members_count),
                         })}
                     </Badge>
                 </div>
 
                 {batch.description !== null && (
-                    <p
-                        lang={locale}
-                        className="text-muted-foreground max-w-3xl text-sm leading-relaxed"
-                    >
+                    <p className="text-muted-foreground max-w-3xl text-sm leading-relaxed">
                         {batch.description}
                     </p>
                 )}

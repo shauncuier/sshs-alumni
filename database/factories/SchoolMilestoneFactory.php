@@ -23,9 +23,7 @@ class SchoolMilestoneFactory extends Factory
             'year' => fake()->numberBetween(1976, 2026),
             'date_label' => fake()->word(),
             'title' => fake()->sentence(4),
-            'title_bn' => null,
             'description' => fake()->paragraph(),
-            'description_bn' => null,
             'image_path' => null,
             'display_order' => fake()->numberBetween(1, 100),
         ];

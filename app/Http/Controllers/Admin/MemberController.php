@@ -53,10 +53,10 @@ class MemberController extends Controller
                 'blood_groups' => BloodGroup::options(),
                 'batches' => Batch::query()
                     ->orderByDesc('ssc_year')
-                    ->get(['id', 'name', 'name_bn'])
+                    ->get(['id', 'name'])
                     ->map(fn (Batch $batch): array => [
                         'value' => (string) $batch->id,
-                        'label' => $batch->getTranslation('name') ?? $batch->name,
+                        'label' => $batch->name,
                     ]),
             ],
         ]);

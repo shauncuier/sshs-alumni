@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { BrandMark } from '@/components/shared/brand-mark';
-import { LocaleSwitcher } from '@/components/shared/locale-switcher';
 import { UserMenuContent } from '@/components/user-menu-content';
 import {
     DropdownMenu,
@@ -56,7 +55,7 @@ const ICONS: Record<string, LucideIcon> = {
  * worse than not offering it.
  */
 export default function MemberLayout({ children, title }: Props) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const getInitials = useInitials();
     const page = usePage();
     const current = page.url;
@@ -70,7 +69,7 @@ export default function MemberLayout({ children, title }: Props) {
     const items = nav?.member ?? [];
 
     return (
-        <div lang={locale} className="bg-muted/30 min-h-screen">
+        <div className="bg-muted/30 min-h-screen">
             <Head title={title ?? t('admin.nav.dashboard')}>
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
@@ -82,8 +81,6 @@ export default function MemberLayout({ children, title }: Props) {
                     </Link>
 
                     <div className="ms-auto flex items-center gap-2">
-                        <LocaleSwitcher />
-
                         {user && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger
@@ -127,9 +124,7 @@ export default function MemberLayout({ children, title }: Props) {
                                 )}
                             >
                                 <Icon className="size-4" aria-hidden="true" />
-                                <span lang={locale}>
-                                    {t(`member.nav.${item.key}`)}
-                                </span>
+                                <span>{t(`member.nav.${item.key}`)}</span>
                             </Link>
                         );
                     })}

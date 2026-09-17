@@ -28,12 +28,12 @@ class BatchController extends Controller
         $batches = Batch::query()
             ->where('status', 'active')
             ->orderByDesc('ssc_year')
-            ->get(['id', 'slug', 'name', 'name_bn', 'ssc_year', 'members_count', 'cover_path']);
+            ->get(['id', 'slug', 'name', 'ssc_year', 'members_count', 'cover_path']);
 
         return Inertia::render('public/batches', [
             'batches' => $batches->map(fn (Batch $batch): array => [
                 'slug' => $batch->slug,
-                'name' => $batch->getTranslation('name') ?? $batch->name,
+                'name' => $batch->name,
                 'ssc_year' => $batch->ssc_year,
                 'members_count' => $batch->members_count,
                 'cover_url' => $batch->cover_path === null
@@ -52,8 +52,8 @@ class BatchController extends Controller
         return Inertia::render('public/batch-show', [
             'batch' => [
                 'slug' => $batch->slug,
-                'name' => $batch->getTranslation('name') ?? $batch->name,
-                'description' => $batch->getTranslation('description'),
+                'name' => $batch->name,
+                'description' => $batch->description,
                 'ssc_year' => $batch->ssc_year,
                 'members_count' => $batch->members_count,
                 'cover_url' => $batch->cover_path === null

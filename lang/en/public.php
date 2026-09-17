@@ -78,7 +78,6 @@ return [
         ],
         'fields' => [
             'full_name' => 'Full name',
-            'full_name_bn' => 'Name in Bangla',
             'relation_type' => 'Your relationship to the school',
             'gender' => 'Gender',
             'blood_group' => 'Blood group',
@@ -137,7 +136,7 @@ return [
     ],
     'batches' => [
         'subtitle' => 'Every SSC cohort of the school, from 1981 onward.',
-        'member_count' => ':count members',
+        'member_count' => 'No members yet|:count member|:count members',
     ],
 
 ];

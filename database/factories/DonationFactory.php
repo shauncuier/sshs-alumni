@@ -28,7 +28,6 @@ class DonationFactory extends Factory
             'amount' => fake()->randomFloat(2, 100, 10000),
             'currency' => 'BDT',
             'message' => fake()->word(),
-            'message_bn' => null,
             'status' => fake()->randomElement(DonationStatus::cases()),
             'received_at' => null,
         ];

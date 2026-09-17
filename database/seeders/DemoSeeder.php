@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\Locale;
 use App\Enums\MemberStatus;
 use App\Enums\RelationType;
 use App\Models\Batch;
@@ -68,7 +67,6 @@ class DemoSeeder extends Seeder
             ['user_id' => $user->id],
             [
                 'full_name' => 'Demo Member '.self::MARKER,
-                'full_name_bn' => 'ডেমো সদস্য',
                 'relation_type' => RelationType::FormerStudent,
                 'batch_id' => Batch::query()->where('ssc_year', 2000)->value('id'),
                 'ssc_year' => 2000,
@@ -140,7 +138,6 @@ class DemoSeeder extends Seeder
                 'name' => $name,
                 'password' => Hash::make(self::PASSWORD),
                 'email_verified_at' => now(),
-                'locale' => Locale::Bn,
             ],
         );
 

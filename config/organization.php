@@ -42,8 +42,11 @@ return [
         'phone' => env('SCHOOL_PHONE', ''),
         'email' => env('SCHOOL_EMAIL', ''),
         'website' => env('SCHOOL_WEBSITE', 'https://sabujsghs.edu.bd'),
-        'board_bn' => env('SCHOOL_BOARD_BN', 'মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, চট্টগ্রাম'),
+        'board' => env('SCHOOL_BOARD', 'Board of Intermediate and Secondary Education, Chattogram'),
+        // The school's motto is a set phrase in Bangla, with its sense in
+        // English underneath. See docs/06-localization.md section 2.
         'motto_bn' => env('SCHOOL_MOTTO_BN', 'জ্ঞানই শক্তি'),
+        'motto_en' => env('SCHOOL_MOTTO_EN', 'Knowledge is Power'),
 
         /*
          * Office holders change. These seed the initial values only; after
@@ -51,7 +54,7 @@ return [
          * requires a redeploy.
          */
         'head_teacher' => env('SCHOOL_HEAD_TEACHER', 'Nurjahan Akter'),
-        'chairperson_bn' => env('SCHOOL_CHAIRPERSON_BN', 'মো: জসিম উদ্দিন'),
+        'chairperson' => env('SCHOOL_CHAIRPERSON', 'Md. Jasim Uddin'),
     ],
 
     /*

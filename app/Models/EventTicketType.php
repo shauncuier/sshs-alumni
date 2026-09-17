@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $event_id
  * @property string $name
- * @property string|null $name_bn
  * @property string|null $description
  * @property string $price
  * @property string $currency
@@ -31,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property CarbonImmutable|null $updated_at
  */
 #[Fillable([
-    'event_id', 'name', 'name_bn', 'description', 'price', 'currency', 'quantity',
+    'event_id', 'name', 'description', 'price', 'currency', 'quantity',
     'per_person_limit', 'is_active', 'display_order',
 ])]
 class EventTicketType extends Model

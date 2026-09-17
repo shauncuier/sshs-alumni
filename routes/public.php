@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Public\BatchController;
-use App\Http\Controllers\Public\LocaleController;
 use App\Http\Controllers\Public\MemberVerifyController;
 use App\Http\Controllers\Public\RegistrationController;
 use Illuminate\Support\Facades\Route;
@@ -22,10 +21,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', fn () => inertia('welcome'))->name('home');
-
-// Language switch. The locale is validated against the allow-list inside the
-// controller rather than trusted from the URL.
-Route::get('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
 /*
 | Membership registration — five steps, validated one at a time.

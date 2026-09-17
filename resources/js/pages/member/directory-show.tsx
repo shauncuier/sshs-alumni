@@ -53,14 +53,6 @@ export default function DirectoryShow({ member }: { member: DirectoryMember }) {
                                 <h1 className="text-2xl font-semibold">
                                     {member.full_name}
                                 </h1>
-                                {member.full_name_bn && (
-                                    <p
-                                        lang="bn"
-                                        className="text-muted-foreground"
-                                    >
-                                        {member.full_name_bn}
-                                    </p>
-                                )}
                             </div>
 
                             <div className="flex flex-wrap gap-2">

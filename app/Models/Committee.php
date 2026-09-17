@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Concerns\Translatable;
 use App\Enums\CommitteeType;
 use Carbon\CarbonImmutable;
 use Database\Factories\CommitteeFactory;
@@ -20,10 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property string $slug
  * @property string $name
- * @property string|null $name_bn
  * @property CommitteeType $type
  * @property string|null $description
- * @property string|null $description_bn
  * @property CarbonImmutable|null $term_start
  * @property CarbonImmutable|null $term_end
  * @property string $status
@@ -33,21 +30,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'slug', 'name', 'name_bn', 'type', 'description', 'description_bn', 'term_start', 'term_end',
+    'slug', 'name', 'type', 'description', 'term_start', 'term_end',
     'status', 'display_order',
 ])]
 class Committee extends Model
 {
     /** @use HasFactory<CommitteeFactory> */
-    use HasFactory, SoftDeletes, Translatable;
-
-    /**
-     * @return array<int, string>
-     */
-    public function translatableFields(): array
-    {
-        return ['name', 'description'];
-    }
+    use HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>

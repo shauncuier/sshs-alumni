@@ -23,9 +23,7 @@ class GalleryAlbumFactory extends Factory
         return [
             'slug' => fake()->unique()->slug(),
             'title' => fake()->sentence(4),
-            'title_bn' => null,
             'description' => fake()->paragraph(),
-            'description_bn' => null,
             'cover_path' => null,
             'status' => fake()->randomElement(ContentStatus::cases()),
             'published_at' => null,

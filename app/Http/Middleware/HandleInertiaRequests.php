@@ -3,8 +3,8 @@
 namespace App\Http\Middleware;
 
 use App\Services\Settings\SettingsService;
-use App\Support\Locale;
 use App\Support\Navigation;
+use App\Support\Translations;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -57,11 +57,7 @@ class HandleInertiaRequests extends Middleware
                 $user,
                 $user?->member?->isApproved() ?? false,
             ),
-            'locale' => app()->getLocale(),
-            'locales' => Locale::available(),
-            // Only the ACTIVE locale, so the payload never carries both
-            // languages.
-            'translations' => Locale::flattenedFor(app()->getLocale()),
+            'translations' => Translations::flattened(),
             // Only settings explicitly marked public reach the frontend.
             'settings' => fn (): array => app(SettingsService::class)->publicSettings(),
             'flash' => [

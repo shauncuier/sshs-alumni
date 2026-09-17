@@ -43,7 +43,7 @@ type Props = {
 };
 
 export default function Directory({ members, filters, options }: Props) {
-    const { t, locale } = useTranslation();
+    const { t, choice } = useTranslation();
     const [view, setView] = useState<'grid' | 'list'>('grid');
     const { term, setTerm } = useDebouncedSearch(filters.q ?? '', '/directory');
 
@@ -66,9 +66,11 @@ export default function Directory({ members, filters, options }: Props) {
                             {t('member.nav.directory')}
                         </h1>
                         <p className="text-muted-foreground mt-1 text-sm">
-                            {t('member.directory.count', {
-                                count: formatNumber(members.meta.total, locale),
-                            })}
+                            {choice(
+                                'member.directory.count',
+                                members.meta.total,
+                                { count: formatNumber(members.meta.total) },
+                            )}
                         </p>
                     </div>
 

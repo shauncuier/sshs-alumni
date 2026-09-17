@@ -24,7 +24,6 @@ class CrmContactFactory extends Factory
         return [
             'type' => fake()->randomElement(CrmContactType::cases()),
             'name' => fake()->name(),
-            'name_bn' => null,
             'organization_name' => fake()->company(),
             'designation' => fake()->jobTitle(),
             'email' => fake()->safeEmail(),

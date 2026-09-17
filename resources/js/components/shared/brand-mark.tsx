@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useSetting } from '@/hooks/use-setting';
-import { useTranslation } from '@/hooks/use-translation';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -25,6 +24,12 @@ const SIZES = {
  * one ever fails to load — this renders a text mark rather than a broken
  * image. No AI-generated logo is ever substituted.
  *
+ * The site reads in English, but the organisation's and the school's own names
+ * stay in Bangla: those are their names, not copy to be translated. The
+ * transliteration follows as a secondary line, and `lang="bn"` on the Bangla
+ * node is what makes the browser apply Noto Sans Bengali and shape conjuncts
+ * correctly.
+ *
  * @see docs/07-branding-ui.md section 1
  */
 export function BrandMark({
@@ -34,14 +39,12 @@ export function BrandMark({
     className,
 }: Props) {
     const [failed, setFailed] = useState(false);
-    const { locale } = useTranslation();
 
     const group = mark === 'school' ? 'school' : 'organization';
     const path = useSetting<string>(`${group}.logo_path`);
     const nameBn = useSetting<string>(`${group}.name_bn`);
     const nameEn = useSetting<string>(`${group}.name_en`);
 
-    const name = (locale === 'bn' ? nameBn : nameEn) ?? nameEn ?? '';
     const showImage = Boolean(path) && !failed;
 
     return (
@@ -49,7 +52,7 @@ export function BrandMark({
             {showImage ? (
                 <img
                     src={`/storage/${path}`}
-                    alt={name}
+                    alt={nameEn ?? ''}
                     className={cn(SIZES[size], 'shrink-0 object-contain')}
                     onError={() => setFailed(true)}
                 />
@@ -66,11 +69,20 @@ export function BrandMark({
             )}
 
             {withName && (
-                <span
-                    lang={locale}
-                    className="text-brand-green-900 dark:text-foreground truncate text-sm leading-tight font-semibold"
-                >
-                    {name}
+                <span className="min-w-0 leading-tight">
+                    {nameBn && (
+                        <span
+                            lang="bn"
+                            className="text-brand-green-900 dark:text-foreground block truncate text-sm font-semibold"
+                        >
+                            {nameBn}
+                        </span>
+                    )}
+                    {nameEn && (
+                        <span className="text-muted-foreground block truncate text-xs">
+                            {nameEn}
+                        </span>
+                    )}
                 </span>
             )}
         </span>

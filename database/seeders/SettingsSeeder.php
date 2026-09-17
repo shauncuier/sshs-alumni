@@ -51,6 +51,9 @@ class SettingsSeeder extends Seeder
         return [
             // ── The association — organiser of the Jubilee ───────────────
             'organization' => [
+                // The association's own name stays in Bangla. It is their
+                // name, not copy to be translated — the site around it reads
+                // in English. See docs/06-localization.md section 2.
                 'name_bn' => [config('organization.association.name_bn'), true],
                 'name_en' => [config('organization.association.name_en'), true],
                 'short_name' => [config('organization.association.short_name'), true],
@@ -63,6 +66,7 @@ class SettingsSeeder extends Seeder
 
             // ── The school — whose fifty years are celebrated ────────────
             'school' => [
+                // As above: the school's own name, in its own script.
                 'name_bn' => [config('organization.school.name_bn'), true],
                 'name_en' => [config('organization.school.name_en'), true],
                 'established' => [(int) config('organization.school.established'), true],
@@ -71,12 +75,13 @@ class SettingsSeeder extends Seeder
                 'phone' => [config('organization.school.phone'), true],
                 'email' => [config('organization.school.email'), true],
                 'website' => [config('organization.school.website'), true],
-                'board_bn' => [config('organization.school.board_bn'), true],
+                'board' => [config('organization.school.board'), true],
+                'motto_bn' => [config('organization.school.motto_bn'), true],
+                'motto_en' => [config('organization.school.motto_en'), true],
                 'logo_path' => ['brand/logo-school.png', true],
                 // Office holders change; these are edited in the admin panel.
                 'head_teacher' => [config('organization.school.head_teacher'), true],
-                'chairperson_bn' => [config('organization.school.chairperson_bn'), true],
-                'motto_bn' => [config('organization.school.motto_bn'), true],
+                'chairperson' => [config('organization.school.chairperson'), true],
             ],
 
             'contact' => [
@@ -97,6 +102,8 @@ class SettingsSeeder extends Seeder
             // NOTE: no date. The committee has not fixed one, and it is
             // published from /admin/jubilee onto the flagship event row.
             'jubilee' => [
+                // The event's Bangla name and theme line are set phrases,
+                // Bangla numerals included. Nothing converts them at runtime.
                 'title_bn' => ['সুবর্ণজয়ন্তী ২০২৬', true],
                 'title_en' => ['Golden Jubilee 2026', true],
                 'theme_bn' => ['৫০ বছরের গৌরবময় পথচলা', true],
@@ -106,8 +113,6 @@ class SettingsSeeder extends Seeder
                 'hero_image' => ['brand/jubilee-banner.jpg', true],
                 // Still requires the event's date_status to be `announced`.
                 'show_countdown' => [true, true],
-                'organizer_block_bn' => ['আয়োজনে: প্রাক্তন ছাত্র-ছাত্রী পরিষদ', true],
-                'registration_note_bn' => ['', true],
             ],
 
             'registration' => [
@@ -136,8 +141,8 @@ class SettingsSeeder extends Seeder
             ],
 
             'seo' => [
-                'meta_title' => ['প্রাক্তন ছাত্র-ছাত্রী পরিষদ — সবুজ শিক্ষায়তন সরকারি উচ্চ বিদ্যালয়', true],
-                'meta_description' => ['সবুজ শিক্ষায়তন সরকারি উচ্চ বিদ্যালয়ের প্রাক্তন ছাত্র-ছাত্রীদের সংগঠন। সুবর্ণজয়ন্তী ২০২৬।', true],
+                'meta_title' => ['Former Students Association — Sabuj Shikshayatan Government High School', true],
+                'meta_description' => ['The alumni association of Sabuj Shikshayatan Government High School. Golden Jubilee 2026.', true],
             ],
 
             'notification' => [
@@ -148,7 +153,6 @@ class SettingsSeeder extends Seeder
             'system' => [
                 'default_language' => [config('app.locale', 'bn'), true],
                 'timezone' => [config('app.timezone', 'Asia/Dhaka'), false],
-                'footer_note_bn' => ['', true],
             ],
         ];
     }
