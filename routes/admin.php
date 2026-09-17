@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\RoleController;
@@ -18,17 +19,20 @@ use Illuminate\Support\Facades\Route;
 | reachable without a permission, so adding one without protecting it breaks
 | the suite.
 |
+| `admin.access` guards the whole group on top of the per-module permission.
+| Both are needed: an ordinary Member holds `batches.view` so they can read the
+| PUBLIC batch pages, and without the group gate that permission would also let
+| them open the admin panel.
+|
 | @see docs/03-routes.md section 3
 */
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'can:admin.access'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function (): void {
 
-        Route::get('/', DashboardController::class)
-            ->middleware('can:admin.access')
-            ->name('dashboard');
+        Route::get('/', DashboardController::class)->name('dashboard');
 
         /*
         | Members & verification
@@ -47,6 +51,32 @@ Route::middleware(['auth', 'verified'])
 
             Route::post('members/{member}/membership-number', [VerificationController::class, 'assignNumber'])
                 ->name('members.number');
+        });
+
+        /*
+        | Batches & coordinators
+        |
+        | `batches.edit` is the gate; BatchPolicy is the reach. A Batch
+        | Coordinator holds the permission but may only edit the batches they
+        | actually coordinate.
+        */
+        Route::middleware('can:batches.view')->group(function (): void {
+            Route::get('batches', [BatchController::class, 'index'])->name('batches.index');
+            Route::get('batches/{batch}', [BatchController::class, 'show'])->name('batches.show');
+        });
+
+        Route::middleware('can:batches.create')->group(function (): void {
+            Route::post('batches', [BatchController::class, 'store'])->name('batches.store');
+        });
+
+        Route::middleware('can:batches.edit')->group(function (): void {
+            Route::put('batches/{batch}', [BatchController::class, 'update'])->name('batches.update');
+
+            Route::post('batches/{batch}/coordinators', [BatchController::class, 'addCoordinator'])
+                ->name('batches.coordinators.store');
+
+            Route::delete('batches/{batch}/coordinators/{member}', [BatchController::class, 'removeCoordinator'])
+                ->name('batches.coordinators.destroy');
         });
 
         /*

@@ -6,6 +6,70 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 2 — Profiles, verification, batches, directory · 2026-09-17
+
+**Status: complete**
+
+### Added
+
+- **Member profile** — full self-service edit, links, privacy panel, completion scoring, and photo upload re-encoded by `MediaService`. The form request narrows what may be written: status, membership number and verification are absent from its rules, so they cannot be set however the payload is shaped.
+- **Verification workflow** — a `TRANSITIONS` state machine, every transition recorded with actor and note, request-for-correction, and batch-scoped membership numbers (`SSHS-{SSC_YEAR}-{SEQ}`) issued under `lockForUpdate()`.
+- **Alumni directory** — members-only, seven filters (batch, district, industry, country, occupation, relation, blood group), grid and list views, and a profile page bound by ULID so profiles cannot be walked.
+- **Privacy resources** — `PublicMemberResource`, `DirectoryMemberResource`, `AdminMemberResource`. Hidden fields are ABSENT from the payload, not blanked, and privacy defaults closed when the row is somehow missing.
+- **Batches** — admin list, detail and editing; coordinator assignment restricted to approved members of that batch; a member-facing "my batch" page honouring the extra `show_in_batch_list` opt-out.
+- **Server-computed navigation** — `App\Support\Navigation` builds the admin, member and public menus from route NAMES, filtered by `Route::has()` and permission. An unshipped phase cannot render a link, and the moment a phase lands its links appear with no component change.
+
+### Bugs found and fixed during the phase
+
+| Bug                                                       | Why it mattered                                                                                                                                                                                                              |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Controller` no longer carries `AuthorizesRequests`       | Laravel 11 removed it from the base class. Every `$this->authorize()` in an admin controller was a fatal error — reported from the running site, not caught by the suite.                                                    |
+| **34 dead navigation links**                              | 19 in the admin sidebar, 6 in member nav, 9 in the public header and footer, all pointing at routes that do not exist yet. Fixed structurally rather than by deleting links.                                                 |
+| **`/admin/batches` was reachable by any approved member** | The `Member` role holds `batches.view` so it can read the PUBLIC batch pages. Admin routes were gated per module only, so that permission also opened the admin panel. `can:admin.access` now guards the whole group.        |
+| **Pagination read page links from the wrong place**       | Laravel puts the numbered links inside `meta`; a paginated resource's top-level `links` is a `{first,last,prev,next}` OBJECT. `links.slice` threw and the whole page rendered blank — on the member list too, at 74 members. |
+| **`t()` replaced `:to` inside `:total`**                  | Produced `মোট ৩০tal টির মধ্যে ১–:to দেখানো হচ্ছে`. Placeholders are now replaced longest-first, and with `replaceAll`.                                                                                                       |
+| **Translation cache was `rememberForever`**               | Editing a lang file showed the old string with no hint why. Outside production the cache key now carries a fingerprint of the files' modification times.                                                                     |
+| Admin member URLs 404'd                                   | `HasUlid` makes `ulid` the route key; the admin links were still built from integer ids.                                                                                                                                     |
+
+### Verified, not assumed
+
+- Privacy was checked by reading real payloads, not only by green assertions: a member with `show_phone = false` produces a response with no phone key under every route that serialises them.
+- `/admin/batches`, `/admin/batches/{id}` and `/admin/members` were driven in a real browser. Three of the bugs above were found that way and would not have failed the suite.
+- The navigation test asserts every route name the menus declare either resolves or is on an explicit "not built yet" list, so a typo can no longer hide as a silently skipped item.
+- **289 tests, 873 assertions. PHPStan level 7, TypeScript and the frontend linter all clean.**
+
+### Not done in this phase
+
+The digital membership card and `/verify/member/{ulid}` QR target belong to Phase 3, where the QR generator lands. The public site's own pages (home, about, contact, news, gallery) are Phase 3 and 7; until then the public header carries only the links that exist.
+
+---
+
+## Phase 1 — Auth, roles, admin shell, registration · 2026-09-17
+
+**Status: complete**
+
+### Added
+
+- **Layouts** — `PublicLayout` (pinned light by a `theme-light` class, so one tab can show a light public page and a dark admin page), `MemberLayout` (horizontal nav for a phone-first audience), `AdminLayout` (the starter shell with our permission-filtered sidebar).
+- **Registration** — five steps validated one at a time, the draft held in the session so a refresh does not discard four screens of typing. Academic fields are required for former students and optional otherwise. The password is hashed the moment it validates and never enters the draft.
+- **RBAC UI** — the committee can re-cut roles without a deployment, which is why application code checks permissions rather than role names. Super Admin and Member are protected.
+- **The route-protection sweep** — walks the REAL route list and fails if any admin route lacks `auth` or a `can:` permission, then sweeps every admin route as a guest, as a member and as a Super Admin.
+
+### Bugs found and fixed during the phase
+
+| Bug                                   | Why it mattered                                                                                                                                                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `app.tsx` double-wrapped pages        | The starter sidebar was applied to every page, including pages carrying their own layout.                                                                                                                    |
+| Bangla labels rendered white-on-white | Dark mode was active while the public surface hardcoded white backgrounds.                                                                                                                                   |
+| The first fix for that did not work   | Tailwind v4 `@theme` declares `--color-card: var(--card)` at `:root`, so the substitution resolves once. Overriding `--card` downstream does nothing — the override has to target the `--color-*` namespace. |
+
+### Verified, not assumed
+
+- **196 tests, 472 assertions** at the close of the phase. PHPStan level 7, TypeScript and the frontend linter clean.
+- Checked by eye at the dev URL: the public site renders light with the brand-green step indicator and every Bangla label legible.
+
+---
+
 ## Phase 0 — Foundation · 2026-09-17
 
 **Status: complete**
@@ -155,13 +219,11 @@ Written before any application code, so the design could be reviewed and correct
 
 ## Upcoming
 
-| Phase                                     | Scope                                                                                                                                                 |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1 — Auth, roles, registration**         | role admin UI · public, member and admin layouts · admin shell · five-step public registration                                                        |
-| **2 — Profiles, verification, directory** | member dashboard & profile · verification workflow · batches & coordinators · members-only directory                                                  |
-| **3 — Events, Jubilee, QR**               | event CRUD & lifecycle · registration & tickets · QR passes · check-in with duplicate prevention · Jubilee microsite · membership card                |
-| **4 — CRM**                               | contacts · pipeline · activity timeline · tasks · tags                                                                                                |
-| **5 — Money, volunteers, committees**     | payment abstraction · fees · donations · sponsors · receipts · volunteers · committees                                                                |
-| **6 — Community**                         | posts · comments · reactions · reports · moderation                                                                                                   |
-| **7 — CMS**                               | pages · news · announcements · gallery · stories · school history · FAQs · media library                                                              |
-| **8 — Reports & hardening**               | 11 reports · charts · global search · campaigns (mail + SMS) · notifications · audit viewer · SEO · performance · security sweep · doc reconciliation |
+| Phase                                 | Scope                                                                                                                                                 |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **3 — Events, Jubilee, QR**           | event CRUD & lifecycle · registration & tickets · QR passes · check-in with duplicate prevention · Jubilee microsite · membership card                |
+| **4 — CRM**                           | contacts · pipeline · activity timeline · tasks · tags                                                                                                |
+| **5 — Money, volunteers, committees** | payment abstraction · fees · donations · sponsors · receipts · volunteers · committees                                                                |
+| **6 — Community**                     | posts · comments · reactions · reports · moderation                                                                                                   |
+| **7 — CMS**                           | pages · news · announcements · gallery · stories · school history · FAQs · media library                                                              |
+| **8 — Reports & hardening**           | 11 reports · charts · global search · campaigns (mail + SMS) · notifications · audit viewer · SEO · performance · security sweep · doc reconciliation |

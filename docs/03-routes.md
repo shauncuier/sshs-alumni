@@ -99,7 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () { … });
 | GET    | `/my/payments`                        | `my.payments`            | `Member\MyPaymentController@index`                                     |
 | GET    | `/my/payments/{payment:ulid}/receipt` | `my.payments.receipt`    |                                                                        |
 | GET    | `/my/donations`                       | `my.donations`           | `Member\MyDonationController@index`                                    |
-| GET    | `/my/batch`                           | `my.batch`               | `Member\MyBatchController@show`                                        |
+| GET    | `/my/batch`                           | `my.batch`               | `Member\BatchController` · approved members only                       |
 | GET    | `/notifications`                      | `notifications.index`    | `Member\NotificationController@index`                                  |
 | POST   | `/notifications/{id}/read`            | `notifications.read`     |                                                                        |
 | POST   | `/notifications/read-all`             | `notifications.read-all` |                                                                        |
@@ -131,85 +131,99 @@ Route::middleware(['auth', 'verified', 'member.approved'])->group(function () { 
 ## 3. Admin — `routes/admin.php`
 
 ```php
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'can:admin.access'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () { … });
 ```
 
-Every group carries a `can:` middleware. `LogAdminAction` middleware is applied to the whole group.
+`admin.access` guards the whole group, and every sub-group carries its own
+`can:` middleware on top. Both are needed, not one or the other: an ordinary
+Member holds `batches.view` so they can read the PUBLIC batch pages, and with
+per-module gating alone that same permission would have opened the admin
+panel. A test walks the live route list and fails if any admin route is
+missing either gate.
 
-| URI (under `/admin`)                              | Name prefix                  | Permission                                                            |
-| ------------------------------------------------- | ---------------------------- | --------------------------------------------------------------------- |
-| `/`                                               | `admin.dashboard`            | `admin.access`                                                        |
-| `/search`                                         | `admin.search`               | `admin.access`                                                        |
-| **Members**                                       |                              |                                                                       |
-| `/members` (index, create, show, edit, destroy)   | `admin.members.*`            | `members.view` / `members.create` / `members.edit` / `members.delete` |
-| `/members/{member}/verification`                  | `admin.members.verification` | `members.verify`                                                      |
-| `/members/{member}/approve` (POST)                | `admin.members.approve`      | `members.verify`                                                      |
-| `/members/{member}/reject` (POST)                 | `admin.members.reject`       | `members.verify`                                                      |
-| `/members/{member}/request-correction` (POST)     | `admin.members.correction`   | `members.verify`                                                      |
-| `/members/{member}/suspend` (POST)                | `admin.members.suspend`      | `members.verify`                                                      |
-| `/members/{member}/membership-number` (POST)      | `admin.members.number`       | `members.verify`                                                      |
-| `/members/import`                                 | `admin.members.import`       | `members.create`                                                      |
-| **CRM**                                           |                              |                                                                       |
-| `/crm/contacts` (resource)                        | `admin.crm.contacts.*`       | `crm.view` / `crm.manage`                                             |
-| `/crm/pipeline`                                   | `admin.crm.pipeline`         | `crm.view`                                                            |
-| `/crm/contacts/{contact}/activities` (POST)       | `admin.crm.activities.store` | `crm.manage`                                                          |
-| `/crm/tasks` (resource)                           | `admin.crm.tasks.*`          | `crm.manage`                                                          |
-| `/crm/tags` (resource)                            | `admin.crm.tags.*`           | `crm.manage`                                                          |
-| **Batches**                                       |                              |                                                                       |
-| `/batches` (resource)                             | `admin.batches.*`            | `batches.view` / `batches.edit`                                       |
-| `/batches/{batch}/coordinators`                   | `admin.batches.coordinators` | `batches.edit`                                                        |
-| **Events**                                        |                              |                                                                       |
-| `/events` (resource)                              | `admin.events.*`             | `events.view` / `events.create` / `events.edit`                       |
-| `/events/{event}/publish` (POST)                  | `admin.events.publish`       | `events.publish`                                                      |
-| `/events/{event}/tickets`                         | `admin.events.tickets`       | `events.edit`                                                         |
-| `/events/{event}/registrations`                   | `admin.events.registrations` | `events.view`                                                         |
-| `/events/{event}/checkin`                         | `admin.events.checkin`       | `events.checkin`                                                      |
-| `/events/{event}/checkin/scan` (POST)             | `admin.events.checkin.scan`  | `events.checkin` · `throttle:120,1`                                   |
-| **Golden Jubilee**                                |                              |                                                                       |
-| `/jubilee`                                        | `admin.jubilee.edit`         | `events.edit`                                                         |
-| `/jubilee/announce-date` (POST)                   | `admin.jubilee.announce`     | `events.publish`                                                      |
-| `/jubilee/schedule`                               | `admin.jubilee.schedule`     | `events.edit`                                                         |
-| **Money**                                         |                              |                                                                       |
-| `/payments` (index, show)                         | `admin.payments.*`           | `payments.view`                                                       |
-| `/payments/record` (GET/POST)                     | `admin.payments.record`      | `payments.create`                                                     |
-| `/payments/{payment}/refund` (POST)               | `admin.payments.refund`      | `payments.refund`                                                     |
-| `/membership-fees`                                | `admin.fees.*`               | `payments.view`                                                       |
-| `/donations` (resource)                           | `admin.donations.*`          | `donations.view` / `donations.manage`                                 |
-| `/sponsors` (resource)                            | `admin.sponsors.*`           | `sponsors.view` / `sponsors.manage`                                   |
-| `/sponsorship-packages` (resource)                | `admin.packages.*`           | `sponsors.manage`                                                     |
-| **People**                                        |                              |                                                                       |
-| `/volunteers` (resource)                          | `admin.volunteers.*`         | `volunteers.view` / `volunteers.manage`                               |
-| `/volunteer-teams` (resource)                     | `admin.volunteer-teams.*`    | `volunteers.manage`                                                   |
-| `/committees` (resource)                          | `admin.committees.*`         | `committees.view` / `committees.manage`                               |
-| **Community**                                     |                              |                                                                       |
-| `/community/posts`                                | `admin.community.posts`      | `community.moderate`                                                  |
-| `/community/reports`                              | `admin.community.reports`    | `community.moderate`                                                  |
-| **CMS**                                           |                              |                                                                       |
-| `/news` (resource)                                | `admin.news.*`               | `content.manage`                                                      |
-| `/announcements` (resource)                       | `admin.announcements.*`      | `content.manage`                                                      |
-| `/gallery` (resource) + `/gallery/{album}/images` | `admin.gallery.*`            | `content.manage`                                                      |
-| `/pages` (resource)                               | `admin.pages.*`              | `content.manage`                                                      |
-| `/stories` (resource)                             | `admin.stories.*`            | `content.manage`                                                      |
-| `/school-history` (resource)                      | `admin.history.*`            | `content.manage`                                                      |
-| `/faqs` (resource)                                | `admin.faqs.*`               | `content.manage`                                                      |
-| `/media`                                          | `admin.media.*`              | `content.manage`                                                      |
-| **Communication**                                 |                              |                                                                       |
-| `/campaigns` (resource)                           | `admin.campaigns.*`          | `campaigns.manage`                                                    |
-| `/campaigns/{campaign}/send` (POST)               | `admin.campaigns.send`       | `campaigns.send`                                                      |
-| `/message-templates` (resource)                   | `admin.templates.*`          | `campaigns.manage`                                                    |
-| `/sms/balance`                                    | `admin.sms.balance`          | `campaigns.manage` — BulkSMSBD balance check                          |
-| **Reports**                                       |                              |                                                                       |
-| `/reports`                                        | `admin.reports.index`        | `reports.view`                                                        |
-| `/reports/{report}`                               | `admin.reports.show`         | `reports.view`                                                        |
-| `/reports/{report}/export` (POST)                 | `admin.reports.export`       | `reports.export` · `throttle:10,1`                                    |
-| **System**                                        |                              |                                                                       |
-| `/settings/{group}`                               | `admin.settings.*`           | `settings.manage`                                                     |
-| `/users` (resource)                               | `admin.users.*`              | `users.manage`                                                        |
-| `/roles` (resource)                               | `admin.roles.*`              | `roles.manage`                                                        |
-| `/audit-logs`                                     | `admin.audit.index`          | `audit.view`                                                          |
+`LogAdminAction` middleware is applied to the whole group.
+
+| URI (under `/admin`)                              | Name prefix                          | Permission                                                            |
+| ------------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------- |
+| `/`                                               | `admin.dashboard`                    | `admin.access`                                                        |
+| `/search`                                         | `admin.search`                       | `admin.access`                                                        |
+| **Members**                                       |                                      |                                                                       |
+| `/members` (index, create, show, edit, destroy)   | `admin.members.*`                    | `members.view` / `members.create` / `members.edit` / `members.delete` |
+| `/members/{member}/verification`                  | `admin.members.verification`         | `members.verify`                                                      |
+| `/members/{member}/approve` (POST)                | `admin.members.approve`              | `members.verify`                                                      |
+| `/members/{member}/reject` (POST)                 | `admin.members.reject`               | `members.verify`                                                      |
+| `/members/{member}/request-correction` (POST)     | `admin.members.correction`           | `members.verify`                                                      |
+| `/members/{member}/suspend` (POST)                | `admin.members.suspend`              | `members.verify`                                                      |
+| `/members/{member}/membership-number` (POST)      | `admin.members.number`               | `members.verify`                                                      |
+| `/members/import`                                 | `admin.members.import`               | `members.create`                                                      |
+| **Batches**                                       |                                      |                                                                       |
+| `/batches` (index)                                | `admin.batches.index`                | `batches.view`                                                        |
+| `/batches/{batch}` (show)                         | `admin.batches.show`                 | `batches.view`                                                        |
+| `/batches` (POST)                                 | `admin.batches.store`                | `batches.create`                                                      |
+| `/batches/{batch}` (PUT)                          | `admin.batches.update`               | `batches.edit` + `BatchPolicy`                                        |
+| `/batches/{batch}/coordinators` (POST)            | `admin.batches.coordinators.store`   | `batches.edit` + `BatchPolicy`                                        |
+| `/batches/{batch}/coordinators/{member}` (DELETE) | `admin.batches.coordinators.destroy` | `batches.edit` + `BatchPolicy`                                        |
+| **CRM**                                           |                                      |                                                                       |
+| `/crm/contacts` (resource)                        | `admin.crm.contacts.*`               | `crm.view` / `crm.manage`                                             |
+| `/crm/pipeline`                                   | `admin.crm.pipeline`                 | `crm.view`                                                            |
+| `/crm/contacts/{contact}/activities` (POST)       | `admin.crm.activities.store`         | `crm.manage`                                                          |
+| `/crm/tasks` (resource)                           | `admin.crm.tasks.*`                  | `crm.manage`                                                          |
+| `/crm/tags` (resource)                            | `admin.crm.tags.*`                   | `crm.manage`                                                          |
+| **Batches**                                       |                                      |                                                                       |
+| `/batches` (resource)                             | `admin.batches.*`                    | `batches.view` / `batches.edit`                                       |
+| `/batches/{batch}/coordinators`                   | `admin.batches.coordinators`         | `batches.edit`                                                        |
+| **Events**                                        |                                      |                                                                       |
+| `/events` (resource)                              | `admin.events.*`                     | `events.view` / `events.create` / `events.edit`                       |
+| `/events/{event}/publish` (POST)                  | `admin.events.publish`               | `events.publish`                                                      |
+| `/events/{event}/tickets`                         | `admin.events.tickets`               | `events.edit`                                                         |
+| `/events/{event}/registrations`                   | `admin.events.registrations`         | `events.view`                                                         |
+| `/events/{event}/checkin`                         | `admin.events.checkin`               | `events.checkin`                                                      |
+| `/events/{event}/checkin/scan` (POST)             | `admin.events.checkin.scan`          | `events.checkin` · `throttle:120,1`                                   |
+| **Golden Jubilee**                                |                                      |                                                                       |
+| `/jubilee`                                        | `admin.jubilee.edit`                 | `events.edit`                                                         |
+| `/jubilee/announce-date` (POST)                   | `admin.jubilee.announce`             | `events.publish`                                                      |
+| `/jubilee/schedule`                               | `admin.jubilee.schedule`             | `events.edit`                                                         |
+| **Money**                                         |                                      |                                                                       |
+| `/payments` (index, show)                         | `admin.payments.*`                   | `payments.view`                                                       |
+| `/payments/record` (GET/POST)                     | `admin.payments.record`              | `payments.create`                                                     |
+| `/payments/{payment}/refund` (POST)               | `admin.payments.refund`              | `payments.refund`                                                     |
+| `/membership-fees`                                | `admin.fees.*`                       | `payments.view`                                                       |
+| `/donations` (resource)                           | `admin.donations.*`                  | `donations.view` / `donations.manage`                                 |
+| `/sponsors` (resource)                            | `admin.sponsors.*`                   | `sponsors.view` / `sponsors.manage`                                   |
+| `/sponsorship-packages` (resource)                | `admin.packages.*`                   | `sponsors.manage`                                                     |
+| **People**                                        |                                      |                                                                       |
+| `/volunteers` (resource)                          | `admin.volunteers.*`                 | `volunteers.view` / `volunteers.manage`                               |
+| `/volunteer-teams` (resource)                     | `admin.volunteer-teams.*`            | `volunteers.manage`                                                   |
+| `/committees` (resource)                          | `admin.committees.*`                 | `committees.view` / `committees.manage`                               |
+| **Community**                                     |                                      |                                                                       |
+| `/community/posts`                                | `admin.community.posts`              | `community.moderate`                                                  |
+| `/community/reports`                              | `admin.community.reports`            | `community.moderate`                                                  |
+| **CMS**                                           |                                      |                                                                       |
+| `/news` (resource)                                | `admin.news.*`                       | `content.manage`                                                      |
+| `/announcements` (resource)                       | `admin.announcements.*`              | `content.manage`                                                      |
+| `/gallery` (resource) + `/gallery/{album}/images` | `admin.gallery.*`                    | `content.manage`                                                      |
+| `/pages` (resource)                               | `admin.pages.*`                      | `content.manage`                                                      |
+| `/stories` (resource)                             | `admin.stories.*`                    | `content.manage`                                                      |
+| `/school-history` (resource)                      | `admin.history.*`                    | `content.manage`                                                      |
+| `/faqs` (resource)                                | `admin.faqs.*`                       | `content.manage`                                                      |
+| `/media`                                          | `admin.media.*`                      | `content.manage`                                                      |
+| **Communication**                                 |                                      |                                                                       |
+| `/campaigns` (resource)                           | `admin.campaigns.*`                  | `campaigns.manage`                                                    |
+| `/campaigns/{campaign}/send` (POST)               | `admin.campaigns.send`               | `campaigns.send`                                                      |
+| `/message-templates` (resource)                   | `admin.templates.*`                  | `campaigns.manage`                                                    |
+| `/sms/balance`                                    | `admin.sms.balance`                  | `campaigns.manage` — BulkSMSBD balance check                          |
+| **Reports**                                       |                                      |                                                                       |
+| `/reports`                                        | `admin.reports.index`                | `reports.view`                                                        |
+| `/reports/{report}`                               | `admin.reports.show`                 | `reports.view`                                                        |
+| `/reports/{report}/export` (POST)                 | `admin.reports.export`               | `reports.export` · `throttle:10,1`                                    |
+| **System**                                        |                                      |                                                                       |
+| `/settings/{group}`                               | `admin.settings.*`                   | `settings.manage`                                                     |
+| `/users` (resource)                               | `admin.users.*`                      | `users.manage`                                                        |
+| `/roles` (resource)                               | `admin.roles.*`                      | `roles.manage`                                                        |
+| `/audit-logs`                                     | `admin.audit.index`                  | `audit.view`                                                          |
 
 ---
 

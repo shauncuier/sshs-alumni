@@ -50,6 +50,7 @@ return [
         'date' => 'Date',
         'status' => 'Status',
         'batch' => 'Batch',
+        'description' => 'Description',
         'language' => 'Language',
         'change_language' => 'Change language',
         'showing' => 'Showing :from–:to of :total',

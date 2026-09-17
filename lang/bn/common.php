@@ -50,6 +50,7 @@ return [
         'date' => 'তারিখ',
         'status' => 'অবস্থা',
         'batch' => 'ব্যাচ',
+        'description' => 'বিবরণ',
         'language' => 'ভাষা',
         'change_language' => 'ভাষা পরিবর্তন',
         'showing' => 'মোট :total টির মধ্যে :from–:to দেখানো হচ্ছে',

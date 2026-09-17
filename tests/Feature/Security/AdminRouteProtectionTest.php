@@ -67,6 +67,24 @@ describe('every admin route is protected', function (): void {
         expect($unprotected)->toBe([]);
     });
 
+    it('requires admin.access on top of the module permission', function (): void {
+        // The per-module permission is not enough on its own. An ordinary
+        // Member holds `batches.view` so they can read the PUBLIC batch pages;
+        // without this gate that same permission would open the admin panel.
+        $ungated = collect(Route::getRoutes()->getRoutes())
+            ->filter(fn (RouteInstance $route): bool => str_starts_with($route->uri(), 'admin'))
+            ->reject(fn (RouteInstance $route): bool => in_array(
+                'can:admin.access',
+                $route->gatherMiddleware(),
+                true,
+            ))
+            ->map(fn (RouteInstance $route): string => $route->methods()[0].' '.$route->uri())
+            ->values()
+            ->all();
+
+        expect($ungated)->toBe([]);
+    });
+
     it('requires authentication', function (): void {
         $unauthenticated = collect(Route::getRoutes()->getRoutes())
             ->filter(fn (RouteInstance $route): bool => str_starts_with($route->uri(), 'admin'))

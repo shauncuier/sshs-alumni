@@ -57,6 +57,14 @@ Actions: `view`, `create`, `edit`, `delete`, plus module-specific verbs (`verify
 
 `✔` = full set · `view` = read only · `–` = none · scoped entries explained in §5.
 
+`admin.access` is the door to the whole panel, and it is checked as group
+middleware in addition to each route's own module permission. The distinction
+matters: a Member holds `batches.view`, `events.view`, `committees.view` and
+`community.view` so they can read the PUBLIC pages for those things. Without
+the group gate, `/admin/batches` would have been reachable by every approved
+alumnus. Read a `view` in the Member column as "may read the public page",
+never as "may open the admin panel".
+
 | Permission group     | Super Admin | Admin | CRM Mgr | Membership Mgr | Event Mgr | Finance Mgr | Content Mgr | Moderator | Batch Coord | Volunteer Coord | Member |
 | -------------------- | :---------: | :---: | :-----: | :------------: | :-------: | :---------: | :---------: | :-------: | :---------: | :-------------: | :----: |
 | `admin.access`       |      ✔      |   ✔   |    ✔    |       ✔        |     ✔     |      ✔      |      ✔      |     ✔     |      ✔      |        ✔        |   –    |

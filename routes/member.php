@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Member\BatchController;
 use App\Http\Controllers\Member\DashboardController;
 use App\Http\Controllers\Member\DirectoryController;
 use App\Http\Controllers\Member\ProfileController;
@@ -41,6 +42,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     */
     Route::middleware('member.approved')->group(function (): void {
         Route::get('directory', [DirectoryController::class, 'index'])->name('directory.index');
+
+        // The member's own cohort — the directory narrowed to one batch, with
+        // the extra `show_in_batch_list` opt-out honoured.
+        Route::get('my/batch', BatchController::class)->name('my.batch');
 
         // Bound by ULID so profiles cannot be walked by incrementing an id.
         Route::get('directory/{member:ulid}', [DirectoryController::class, 'show'])

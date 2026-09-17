@@ -34,10 +34,7 @@ export default function MemberDashboard({ member }: { member: Member | null }) {
     }
 
     return (
-        <MemberLayout
-            title={t('admin.nav.dashboard')}
-            approved={member.is_approved}
-        >
+        <MemberLayout title={t('admin.nav.dashboard')}>
             <div className="space-y-6">
                 <div className="flex flex-wrap items-center gap-3">
                     <h1 className="text-2xl font-semibold">

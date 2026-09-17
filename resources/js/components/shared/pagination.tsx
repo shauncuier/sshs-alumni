@@ -8,16 +8,16 @@ import type { PaginationLink, PaginationMeta } from '@/types/member';
 
 type Props = {
     meta: PaginationMeta;
-    links: PaginationLink[];
 };
 
-export function Pagination({ meta, links }: Props) {
+export function Pagination({ meta }: Props) {
     const { t, locale } = useTranslation();
 
     if (meta.last_page <= 1) {
         return null;
     }
 
+    const links = meta.links;
     const previous = links[0];
     const next = links[links.length - 1];
     const numbered = links.slice(1, -1);

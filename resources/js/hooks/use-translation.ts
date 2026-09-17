@@ -30,8 +30,16 @@ export function useTranslation() {
             }
 
             if (replacements) {
-                for (const [token, value] of Object.entries(replacements)) {
-                    line = line.replace(`:${token}`, String(value));
+                // Longest token first, or `:to` eats the `:to` inside
+                // `:total` and both placeholders come out wrong. Laravel's
+                // own translator sorts the same way.
+                const tokens = Object.entries(replacements).sort(
+                    ([a], [b]) => b.length - a.length,
+                );
+
+                for (const [token, value] of tokens) {
+                    // replaceAll, because a line may use a placeholder twice.
+                    line = line.replaceAll(`:${token}`, String(value));
                 }
             }
 

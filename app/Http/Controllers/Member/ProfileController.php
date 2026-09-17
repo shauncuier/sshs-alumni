@@ -47,6 +47,13 @@ class ProfileController extends Controller
                 'missing' => $completion->missingGroups($member),
             ],
             'options' => [
+                // The upload limit comes from the same config the validator
+                // reads, so the help text cannot promise a size the server
+                // then rejects.
+                'photo_max_kb' => (int) config(
+                    'media.collections.'.MediaCollection::Profile->value.'.max_kb',
+                    2048,
+                ),
                 'genders' => Gender::options(),
                 'blood_groups' => BloodGroup::options(),
                 'link_types' => MemberLinkType::options(),

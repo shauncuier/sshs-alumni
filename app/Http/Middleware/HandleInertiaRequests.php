@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Services\Settings\SettingsService;
 use App\Support\Locale;
+use App\Support\Navigation;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -50,6 +51,12 @@ class HandleInertiaRequests extends Middleware
                 'permissions' => $user?->getAllPermissions()->pluck('name')->all() ?? [],
                 'roles' => $user?->getRoleNames()->all() ?? [],
             ],
+            // Built from routes that actually exist, so a half-built phase
+            // can never render a link that 404s.
+            'nav' => fn (): array => Navigation::for(
+                $user,
+                $user?->member?->isApproved() ?? false,
+            ),
             'locale' => app()->getLocale(),
             'locales' => Locale::available(),
             // Only the ACTIVE locale, so the payload never carries both

@@ -13,27 +13,19 @@ import {
 } from '@/components/ui/sheet';
 import { useTranslation } from '@/hooks/use-translation';
 import { cn } from '@/lib/utils';
-
-type NavLink = { key: string; href: string };
-
-/**
- * Public navigation. Kept short on purpose — a twenty-item menu is a menu
- * nobody reads. Secondary destinations live in the footer.
- */
-const LINKS: NavLink[] = [
-    { key: 'jubilee', href: '/jubilee' },
-    { key: 'about', href: '/about' },
-    { key: 'events', href: '/events' },
-    { key: 'batches', href: '/batches' },
-    { key: 'news', href: '/news' },
-    { key: 'gallery', href: '/gallery' },
-    { key: 'contact', href: '/contact' },
-];
+import type { PublicNavItem } from '@/types/shared';
 
 export function SiteHeader() {
     const { t, locale } = useTranslation();
     const page = usePage();
     const [open, setOpen] = useState(false);
+
+    // Server-built from routes that exist, so an unshipped phase never
+    // appears in the menu.
+    const nav = page.props.nav as
+        | { publicPrimary?: PublicNavItem[] }
+        | undefined;
+    const links = nav?.publicPrimary ?? [];
 
     const auth = page.props.auth as { user?: unknown } | undefined;
     const isAuthenticated = Boolean(auth?.user);
@@ -57,7 +49,7 @@ export function SiteHeader() {
                     className="ms-auto hidden items-center gap-1 lg:flex"
                     aria-label={t('public.nav.home')}
                 >
-                    {LINKS.map((link) => (
+                    {links.map((link) => (
                         <Link
                             key={link.key}
                             href={link.href}
@@ -123,7 +115,7 @@ export function SiteHeader() {
                             </SheetHeader>
 
                             <nav className="mt-6 flex flex-col gap-1 px-4">
-                                {LINKS.map((link) => (
+                                {links.map((link) => (
                                     <Link
                                         key={link.key}
                                         href={link.href}

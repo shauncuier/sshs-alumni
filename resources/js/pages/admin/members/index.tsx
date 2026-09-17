@@ -204,7 +204,7 @@ export default function MembersIndex({ members, filters, options }: Props) {
                     </div>
                 )}
 
-                <Pagination meta={members.meta} links={members.links} />
+                <Pagination meta={members.meta} />
             </div>
         </AdminLayout>
     );

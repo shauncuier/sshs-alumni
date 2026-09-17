@@ -25,7 +25,7 @@ export default function DirectoryShow({ member }: { member: DirectoryMember }) {
         .join(', ');
 
     return (
-        <MemberLayout title={member.full_name} approved>
+        <MemberLayout title={member.full_name}>
             <div className="space-y-6">
                 <Button asChild variant="ghost" size="sm">
                     <Link href="/directory">

@@ -100,6 +100,12 @@ export type AdminMember = DirectoryMember & {
     } | null;
 };
 
+export type PaginationLink = {
+    url: string | null;
+    label: string;
+    active: boolean;
+};
+
 export type PaginationMeta = {
     current_page: number;
     from: number | null;
@@ -107,16 +113,16 @@ export type PaginationMeta = {
     total: number;
     per_page: number;
     last_page: number;
-};
-
-export type PaginationLink = {
-    url: string | null;
-    label: string;
-    active: boolean;
+    /**
+     * The numbered page links. Laravel puts these INSIDE meta; the top-level
+     * `links` of a paginated resource is a {first,last,prev,next} object, not
+     * an array, so reading page links from there breaks as soon as a list has
+     * a second page.
+     */
+    links: PaginationLink[];
 };
 
 export type Paginated<T> = {
     data: T[];
     meta: PaginationMeta;
-    links: PaginationLink[];
 };

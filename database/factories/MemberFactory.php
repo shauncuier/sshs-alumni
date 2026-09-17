@@ -65,4 +65,16 @@ class MemberFactory extends Factory
             'search_blob' => null,
         ];
     }
+
+    /**
+     * An approved member — the state most tests actually need, since a random
+     * status makes a directory or batch assertion flaky.
+     */
+    public function approved(): static
+    {
+        return $this->state(fn (): array => [
+            'status' => MemberStatus::Approved,
+            'verified_at' => now(),
+        ]);
+    }
 }

@@ -1,6 +1,9 @@
 import { useForm } from '@inertiajs/react';
-import type { FormEvent, ReactNode } from 'react';
+import { Upload } from 'lucide-react';
+import type { ChangeEvent, FormEvent, ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import InputError from '@/components/input-error';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -13,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useInitials } from '@/hooks/use-initials';
 import { useTranslation } from '@/hooks/use-translation';
 import { formatNumber } from '@/lib/format';
 import MemberLayout from '@/layouts/member-layout';
@@ -24,6 +28,7 @@ type Props = {
     member: AdminMember;
     completion: { percent: number; missing: string[] };
     options: {
+        photo_max_kb: number;
         genders: Option[];
         blood_groups: Option[];
         link_types: Option[];
@@ -45,10 +50,7 @@ export default function Profile({ member, completion, options }: Props) {
     const { t, locale } = useTranslation();
 
     return (
-        <MemberLayout
-            title={t('member.nav.profile')}
-            approved={member.status === 'approved'}
-        >
+        <MemberLayout title={t('member.nav.profile')}>
             <div className="space-y-6">
                 <div>
                     <h1 className="text-2xl font-semibold">
@@ -61,10 +63,129 @@ export default function Profile({ member, completion, options }: Props) {
                     </p>
                 </div>
 
+                <PhotoForm member={member} maxKb={options.photo_max_kb} />
                 <ProfileForm member={member} options={options} />
                 <PrivacyForm member={member} />
             </div>
         </MemberLayout>
+    );
+}
+
+/**
+ * Profile photo upload.
+ *
+ * Separate from the profile form because it is a multipart request and because
+ * a member changing their photo should not have to resubmit twenty text
+ * fields to do it. The server re-encodes whatever arrives, so the preview
+ * here is a courtesy, not a guarantee of the stored result.
+ *
+ * @see app/Services/Media/MediaService.php
+ */
+function PhotoForm({ member, maxKb }: { member: AdminMember; maxKb: number }) {
+    const { t, locale } = useTranslation();
+    const getInitials = useInitials();
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const form = useForm<{ photo: File | null }>({ photo: null });
+
+    // Object URLs leak until revoked, and a member may try several photos
+    // before settling on one.
+    useEffect(
+        () => () => {
+            if (preview !== null) {
+                URL.revokeObjectURL(preview);
+            }
+        },
+        [preview],
+    );
+
+    const choose = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] ?? null;
+
+        setPreview((previous) => {
+            if (previous !== null) {
+                URL.revokeObjectURL(previous);
+            }
+
+            return file === null ? null : URL.createObjectURL(file);
+        });
+
+        form.setData('photo', file);
+    };
+
+    const submit = (event: FormEvent) => {
+        event.preventDefault();
+
+        form.post('/my/photo', {
+            preserveScroll: true,
+            forceFormData: true,
+            onSuccess: () => {
+                form.reset('photo');
+                setPreview(null);
+            },
+        });
+    };
+
+    const shown = preview ?? member.photo_url;
+
+    return (
+        <form onSubmit={submit}>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">
+                        {t('member.photo.title')}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap items-start gap-6">
+                    <Avatar className="size-24 shrink-0">
+                        {shown !== null && (
+                            <AvatarImage src={shown} alt={member.full_name} />
+                        )}
+                        <AvatarFallback className="text-lg">
+                            {getInitials(member.full_name)}
+                        </AvatarFallback>
+                    </Avatar>
+
+                    <div className="min-w-56 flex-1 space-y-3">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="photo">
+                                {t('member.photo.choose')}
+                            </Label>
+                            <Input
+                                id="photo"
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                onChange={choose}
+                                className="file:text-foreground cursor-pointer"
+                            />
+                            <p
+                                lang={locale}
+                                className="text-muted-foreground text-xs"
+                            >
+                                {t('member.photo.help', {
+                                    size: `${formatNumber(Math.round(maxKb / 1024), locale)} MB`,
+                                })}
+                            </p>
+                            <InputError message={form.errors.photo} />
+                        </div>
+
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={
+                                form.data.photo === null || form.processing
+                            }
+                        >
+                            <Upload
+                                className="me-2 size-4"
+                                aria-hidden="true"
+                            />
+                            {t('member.photo.upload')}
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </form>
     );
 }
 

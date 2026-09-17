@@ -76,6 +76,23 @@ return [
         'search_placeholder' => 'Search by name, organisation or membership number',
         'empty' => 'No member matches these filters.',
     ],
+    'batches' => [
+        'search_placeholder' => 'Search by batch name or SSC year',
+        'empty' => 'No batch matches this search.',
+        'intro' => 'Batches are keyed by SSC year. Member counts are maintained automatically as members are approved and reassigned.',
+        'create' => 'Add a batch',
+        'ssc_year' => 'SSC year',
+        'members_count' => 'Members',
+        'coordinators' => 'Coordinators',
+        'no_coordinators' => 'None yet',
+        'coordinator_add' => 'Assign a coordinator',
+        'coordinator_added' => 'Coordinator assigned.',
+        'coordinator_removed' => 'Coordinator removed.',
+        'coordinator_note' => 'Only approved members of this batch can coordinate it. A coordinator can edit this batch and see its members in the admin panel.',
+        'no_candidates' => 'No approved member of this batch is available to assign.',
+        'details' => 'Batch details',
+    ],
+
     'roles' => [
         'intro' => 'Change what each role can do. Takes effect on the next request.',
         'locked' => 'Locked',

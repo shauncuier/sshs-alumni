@@ -1,21 +1,22 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { BrandMark } from '@/components/shared/brand-mark';
 import { useSetting } from '@/hooks/use-setting';
 import { useTranslation } from '@/hooks/use-translation';
 import { localizeNumber } from '@/lib/format';
-
-const QUICK_LINKS = [
-    { key: 'jubilee', href: '/jubilee' },
-    { key: 'events', href: '/events' },
-    { key: 'batches', href: '/batches' },
-    { key: 'committees', href: '/committees' },
-    { key: 'stories', href: '/stories' },
-    { key: 'donate', href: '/donate' },
-];
+import type { PublicNavItem } from '@/types/shared';
 
 export function SiteFooter() {
     const { t, locale } = useTranslation();
+    const page = usePage();
+
+    const nav = page.props.nav as
+        | { publicFooter?: PublicNavItem[]; publicLegal?: PublicNavItem[] }
+        | undefined;
+    const quickLinks = nav?.publicFooter ?? [];
+    // Privacy and terms are CMS pages. Until the CMS ships they do not exist,
+    // and the column is dropped rather than linking to a 404.
+    const legalLinks = nav?.publicLegal ?? [];
 
     const orgEstablished = useSetting<number>('organization.established');
     const schoolEstablished = useSetting<number>('school.established');
@@ -68,7 +69,7 @@ export function SiteFooter() {
                         {t('public.footer.quick_links')}
                     </h2>
                     <ul className="space-y-2 text-sm">
-                        {QUICK_LINKS.map((link) => (
+                        {quickLinks.map((link) => (
                             <li key={link.key}>
                                 <Link
                                     href={link.href}
@@ -126,29 +127,26 @@ export function SiteFooter() {
                     </ul>
                 </div>
 
-                <div>
-                    <h2 className="mb-4 text-sm font-semibold text-white">
-                        {t('public.nav.about')}
-                    </h2>
-                    <ul className="space-y-2 text-sm">
-                        <li>
-                            <Link
-                                href="/p/privacy-policy"
-                                className="transition-colors hover:text-white"
-                            >
-                                {t('public.footer.privacy')}
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                href="/p/terms"
-                                className="transition-colors hover:text-white"
-                            >
-                                {t('public.footer.terms')}
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
+                {legalLinks.length > 0 && (
+                    <div>
+                        <h2 className="mb-4 text-sm font-semibold text-white">
+                            {t('public.nav.about')}
+                        </h2>
+                        <ul className="space-y-2 text-sm">
+                            {legalLinks.map((link) => (
+                                <li key={link.key}>
+                                    <Link
+                                        href={link.href}
+                                        lang={locale}
+                                        className="transition-colors hover:text-white"
+                                    >
+                                        {t(`public.footer.${link.key}`)}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
 
             <div className="border-t border-white/10">

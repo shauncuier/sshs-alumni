@@ -63,14 +63,25 @@ final class Locale
      * The flattened translation map for a locale, as `file.key.subkey`.
      *
      * Cached: reading and flattening six PHP files on every request is wasted
-     * work, and translations only change on deploy or an `optimize:clear`.
+     * work, and translations only change on deploy.
+     *
+     * Outside production the cache key carries a fingerprint of the files'
+     * modification times, so editing a lang file takes effect on the next
+     * request. Without it a developer edits a string, sees the old one, and
+     * has no reason to suspect a cache.
      *
      * @return array<string, string>
      */
     public static function flattenedFor(string $locale): array
     {
+        $key = "translations.{$locale}";
+
+        if (! App::environment('production')) {
+            $key .= '.'.self::fingerprint($locale);
+        }
+
         /** @var array<string, string> $flat */
-        $flat = Cache::rememberForever("translations.{$locale}", static function () use ($locale): array {
+        $flat = Cache::rememberForever($key, static function () use ($locale): array {
             $flat = [];
 
             foreach (self::FRONTEND_FILES as $file) {
@@ -100,6 +111,22 @@ final class Locale
     {
         foreach (array_keys(self::available()) as $locale) {
             Cache::forget("translations.{$locale}");
+            Cache::forget("translations.{$locale}.".self::fingerprint($locale));
         }
+    }
+
+    /**
+     * A short hash of the locale's lang files and their modification times.
+     */
+    private static function fingerprint(string $locale): string
+    {
+        $stamps = [];
+
+        foreach (self::FRONTEND_FILES as $file) {
+            $path = lang_path("{$locale}/{$file}.php");
+            $stamps[] = File::exists($path) ? (string) File::lastModified($path) : '0';
+        }
+
+        return substr(md5(implode('|', $stamps)), 0, 12);
     }
 }

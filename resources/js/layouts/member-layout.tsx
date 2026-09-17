@@ -1,4 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
+import type { LucideIcon } from 'lucide-react';
 import {
     CalendarDays,
     CreditCard,
@@ -10,7 +11,7 @@ import {
     UserCircle,
     Users,
 } from 'lucide-react';
-import type { ComponentType, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { BrandMark } from '@/components/shared/brand-mark';
 import { LocaleSwitcher } from '@/components/shared/locale-switcher';
 import { UserMenuContent } from '@/components/user-menu-content';
@@ -25,42 +26,24 @@ import { useInitials } from '@/hooks/use-initials';
 import { useTranslation } from '@/hooks/use-translation';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types/auth';
+import type { NavItem } from '@/types/shared';
 
 type Props = {
     children: ReactNode;
     title?: string;
-    /** Approved-only areas are hidden until the committee verifies the member. */
-    approved?: boolean;
 };
 
-type Item = {
-    key: string;
-    href: string;
-    icon: ComponentType<{ className?: string }>;
-    approvedOnly?: boolean;
+const ICONS: Record<string, LucideIcon> = {
+    LayoutGrid,
+    UserCircle,
+    IdCard,
+    Users,
+    GraduationCap,
+    MessagesSquare,
+    CalendarDays,
+    CreditCard,
+    Gift,
 };
-
-const ITEMS: Item[] = [
-    { key: 'dashboard', href: '/dashboard', icon: LayoutGrid },
-    { key: 'profile', href: '/my/profile', icon: UserCircle },
-    { key: 'card', href: '/my/card', icon: IdCard, approvedOnly: true },
-    { key: 'directory', href: '/directory', icon: Users, approvedOnly: true },
-    {
-        key: 'community',
-        href: '/community',
-        icon: MessagesSquare,
-        approvedOnly: true,
-    },
-    {
-        key: 'batch',
-        href: '/my/batch',
-        icon: GraduationCap,
-        approvedOnly: true,
-    },
-    { key: 'events', href: '/my/events', icon: CalendarDays },
-    { key: 'payments', href: '/my/payments', icon: CreditCard },
-    { key: 'donations', href: '/my/donations', icon: Gift },
-];
 
 /**
  * The member area shell.
@@ -72,11 +55,7 @@ const ITEMS: Item[] = [
  * the middleware would redirect anyway, and offering a link that bounces is
  * worse than not offering it.
  */
-export default function MemberLayout({
-    children,
-    title,
-    approved = false,
-}: Props) {
+export default function MemberLayout({ children, title }: Props) {
     const { t, locale } = useTranslation();
     const getInitials = useInitials();
     const page = usePage();
@@ -85,7 +64,10 @@ export default function MemberLayout({
     useFlashMessages();
 
     const user = (page.props.auth as { user?: User } | undefined)?.user;
-    const items = ITEMS.filter((item) => approved || !item.approvedOnly);
+    // Built server-side from routes that exist, and already narrowed to
+    // what an unapproved member may reach.
+    const nav = page.props.nav as { member?: NavItem[] } | undefined;
+    const items = nav?.member ?? [];
 
     return (
         <div lang={locale} className="bg-muted/30 min-h-screen">
@@ -131,6 +113,7 @@ export default function MemberLayout({
                 >
                     {items.map((item) => {
                         const active = current.startsWith(item.href);
+                        const Icon = ICONS[item.icon] ?? LayoutGrid;
 
                         return (
                             <Link
@@ -143,10 +126,7 @@ export default function MemberLayout({
                                         : 'text-muted-foreground hover:bg-accent hover:text-foreground',
                                 )}
                             >
-                                <item.icon
-                                    className="size-4"
-                                    aria-hidden="true"
-                                />
+                                <Icon className="size-4" aria-hidden="true" />
                                 <span lang={locale}>
                                     {t(`member.nav.${item.key}`)}
                                 </span>

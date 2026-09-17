@@ -24,6 +24,10 @@ import type { DirectoryMember, Paginated } from '@/types/member';
 
 type Option = { value: string; label: string };
 
+/** Free-text columns come back as bare strings; the select wants pairs. */
+const toOptions = (values: string[]): Option[] =>
+    values.map((value) => ({ value, label: value }));
+
 type Props = {
     members: Paginated<DirectoryMember>;
     filters: Record<string, string | null>;
@@ -33,6 +37,8 @@ type Props = {
         blood_groups: Option[];
         districts: string[];
         industries: string[];
+        countries: string[];
+        occupations: string[];
     };
 };
 
@@ -52,7 +58,7 @@ export default function Directory({ members, filters, options }: Props) {
     };
 
     return (
-        <MemberLayout title={t('member.nav.directory')} approved>
+        <MemberLayout title={t('member.nav.directory')}>
             <div className="space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
@@ -114,21 +120,27 @@ export default function Directory({ members, filters, options }: Props) {
                         />
                         <FilterSelect
                             value={filters.district}
-                            options={options.districts.map((one) => ({
-                                value: one,
-                                label: one,
-                            }))}
+                            options={toOptions(options.districts)}
                             placeholder={t('public.join.fields.district')}
                             onChange={(value) => setFilter('district', value)}
                         />
                         <FilterSelect
                             value={filters.industry}
-                            options={options.industries.map((one) => ({
-                                value: one,
-                                label: one,
-                            }))}
+                            options={toOptions(options.industries)}
                             placeholder={t('public.join.fields.industry')}
                             onChange={(value) => setFilter('industry', value)}
+                        />
+                        <FilterSelect
+                            value={filters.country}
+                            options={toOptions(options.countries)}
+                            placeholder={t('public.join.fields.country')}
+                            onChange={(value) => setFilter('country', value)}
+                        />
+                        <FilterSelect
+                            value={filters.occupation}
+                            options={toOptions(options.occupations)}
+                            placeholder={t('public.join.fields.occupation')}
+                            onChange={(value) => setFilter('occupation', value)}
                         />
                         <FilterSelect
                             value={filters.relation_type}
@@ -182,7 +194,7 @@ export default function Directory({ members, filters, options }: Props) {
                     </div>
                 )}
 
-                <Pagination meta={members.meta} links={members.links} />
+                <Pagination meta={members.meta} />
             </div>
         </MemberLayout>
     );
@@ -199,8 +211,7 @@ function FilterSelect({
     placeholder: string;
     onChange: (value: string) => void;
 }) {
-    const { t } = useTranslation();
-
+    // A filter with nothing to offer is dropped rather than rendered empty.
     if (options.length === 0) {
         return null;
     }

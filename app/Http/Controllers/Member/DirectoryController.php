@@ -55,20 +55,34 @@ class DirectoryController extends Controller
                     ]),
                 'relation_types' => RelationType::options(),
                 'blood_groups' => BloodGroup::options(),
-                'districts' => Member::query()
-                    ->directoryVisible()
-                    ->whereNotNull('district')
-                    ->distinct()
-                    ->orderBy('district')
-                    ->pluck('district'),
-                'industries' => Member::query()
-                    ->directoryVisible()
-                    ->whereNotNull('industry')
-                    ->distinct()
-                    ->orderBy('industry')
-                    ->pluck('industry'),
+                // Built from the visible members themselves, so a filter can
+                // never offer a value that returns nothing.
+                'districts' => $this->distinctValues('district'),
+                'industries' => $this->distinctValues('industry'),
+                'countries' => $this->distinctValues('country'),
+                'occupations' => $this->distinctValues('occupation'),
             ],
         ]);
+    }
+
+    /**
+     * The distinct values of one column across directory-visible members.
+     *
+     * @return array<int, string>
+     */
+    private function distinctValues(string $column): array
+    {
+        /** @var array<int, string> $values */
+        $values = Member::query()
+            ->directoryVisible()
+            ->whereNotNull($column)
+            ->where($column, '!=', '')
+            ->distinct()
+            ->orderBy($column)
+            ->pluck($column)
+            ->all();
+
+        return $values;
     }
 
     /**
