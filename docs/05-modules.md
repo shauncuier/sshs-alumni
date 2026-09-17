@@ -162,13 +162,25 @@ Unique `(event_id, member_id)` prevents double registration.
 
 `new → contacted → interested → registered → verified → active → inactive → archived`
 
-Rendered as a board with drag-to-advance. Every stage change writes a `crm_activities` row of type `system`.
+Rendered as a board with drag-to-advance, and as a select on every card so it works without a mouse.
+
+**Unlike membership verification, this is not a locked state machine.** A relationship is not a workflow: a donor who went quiet may be moved straight back to `contacted`, and a prospect who walks in already registered skips three stages. Constraining that would make the committee fight the tool.
+
+What IS enforced: every stage change goes through `PipelineService` and writes a `crm_activities` row of type `system`, recording who moved someone and when — even when the move was a drag on a board. The ordinary edit form **strips** `pipeline_status` and `owner_id` so neither can change without being recorded.
+
+A move to the stage something is already at writes nothing; a board that fired an update on every drop would fill the timeline with noise.
 
 ### Activity timeline
 
 One polymorphic `crm_activities` table, subject = `Member` **or** `CrmContact`, type = `note` | `call` | `email` | `meeting` | `task` | `system`.
 
-`system` rows are written automatically by observers, which is what makes the specification's example flow render as one ordered query:
+**The union is the point.** A person may exist as a member AND as a contact — entered as a prospect, later registering, the two records linked. Their history is then split across two subjects, and a timeline showing only one half would be worse than no timeline: it would look complete while hiding the call that preceded the registration.
+
+`ActivityLogger::timelineFor()` resolves both subjects and orders the union, so the feed reads the same from either end.
+
+`system` rows are written by the SERVICES that do the thing — `VerificationService` on a status change, `EventRegistrar` on a registration, `PipelineService` on a stage move or an owner handover. Not by callers remembering to. **A form can never post one**: `system` is absent from the accepted type list, because those rows are the platform vouching that something happened and anyone able to write one could fabricate a history.
+
+That is what makes the specification's example flow render as one ordered query:
 
 ```
 John Doe
@@ -182,11 +194,23 @@ John Doe
 
 ### Tasks & follow-ups
 
-`crm_tasks` — title, due date, priority, assignee, completion. Overdue tasks surface on the CRM dashboard and in the assignee's notifications.
+`crm_tasks` — title, due date, priority, assignee, completion. A task may hang off a contact, off a member, or off nothing at all: "book the hall" belongs to no particular person.
+
+`is_overdue` is computed **server-side** in the resource, so a device with a wrong clock cannot hide a task that is late. Overdue counts surface on the admin dashboard, linking straight to the filter that lists them.
+
+`CrmTaskPolicy` lets the assignee complete, reschedule or annotate their own task without holding `crm.manage` — a volunteer given a follow-up should not need the permission that lets them rewrite the CRM in order to tick it off.
 
 ### Tags
 
 `crm_tags` + polymorphic `crm_taggables`, applying to members and contacts alike.
+
+Tags are shared vocabulary rather than personal bookmarks, so creating one needs `crm.manage`: a CRM where everybody invents their own labels stops being searchable within a month. Colours are validated as hex — free text there ends up in a style attribute.
+
+### Ownership
+
+`owner_id` answers "whose job is this", **not** "who may look". Reading is deliberately not owner-scoped: a volunteer coordinator needs to see that the membership secretary already called someone, and a contact only one person can see is a contact only one person follows up.
+
+Taking a contact off a colleague's list needs `crm.assign`; the owner can always hand it on themselves. A new contact belongs to whoever entered it, because an unowned contact is nobody's job — and the dashboard counts the unowned ones for exactly that reason.
 
 ---
 

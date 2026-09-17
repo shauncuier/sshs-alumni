@@ -8,6 +8,7 @@ use App\Enums\MemberStatus;
 use App\Models\Member;
 use App\Models\MemberVerification;
 use App\Models\User;
+use App\Services\Crm\ActivityLogger;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -66,6 +67,7 @@ class VerificationService
 
     public function __construct(
         private readonly MembershipNumberGenerator $numbers,
+        private readonly ActivityLogger $activities,
     ) {}
 
     public function canTransition(MemberStatus $from, MemberStatus $to): bool
@@ -195,5 +197,20 @@ class VerificationService
             'note' => $note,
             'created_at' => now(),
         ]);
+
+        // The CRM timeline is written HERE rather than by the caller, so a
+        // verification can never happen without appearing in the member's
+        // history. `member_verifications` is the formal record;
+        // `crm_activities` is the feed the committee reads alongside calls,
+        // emails and registrations.
+        $this->activities->system(
+            subject: $member,
+            subjectLine: __('admin.crm.system.status_changed', [
+                'from' => $from->label(),
+                'to' => $to->label(),
+            ]),
+            body: $note,
+            meta: ['from' => $from->value, 'to' => $to->value],
+        );
     }
 }

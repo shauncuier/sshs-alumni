@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\MemberStatus;
+use App\Enums\TaskStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
+use App\Models\CrmContact;
+use App\Models\CrmTask;
 use App\Models\Event;
 use App\Models\Member;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,7 +25,7 @@ class DashboardController extends Controller
      * at fifty thousand members, `Member::all()->count()` is a memory problem
      * and a COUNT(*) is not.
      */
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
         return Inertia::render('admin/dashboard', [
             'stats' => [
@@ -53,6 +57,42 @@ class DashboardController extends Controller
                     'starts_at' => $event->starts_at?->toIso8601String(),
                 ];
             }),
+
+            // The CRM's own numbers, for whoever can actually open it.
+            // Deferred because they are three more queries and the member
+            // counts above are what the page is mostly for.
+            'crm' => Inertia::defer(fn (): ?array => $this->crmSummary($request)),
         ]);
+    }
+
+    /**
+     * What is outstanding in the CRM, for the dashboard.
+     *
+     * Null for anybody without `crm.view` — a widget that renders zeroes at
+     * someone who cannot open the section is just clutter.
+     *
+     * @return array{contacts: int, unassigned: int, my_open_tasks: int, overdue_tasks: int}|null
+     */
+    private function crmSummary(Request $request): ?array
+    {
+        $user = $request->user();
+
+        if ($user === null || ! $user->can('crm.view')) {
+            return null;
+        }
+
+        $open = CrmTask::query()->whereNotIn('status', [TaskStatus::Done, TaskStatus::Cancelled]);
+
+        return [
+            'contacts' => CrmContact::query()->count(),
+            // An unowned contact is nobody's job, which is how prospects go
+            // cold. Surfacing the count is the cheapest fix for that.
+            'unassigned' => CrmContact::query()->whereNull('owner_id')->count(),
+            'my_open_tasks' => (clone $open)->where('assigned_to', $user->id)->count(),
+            'overdue_tasks' => (clone $open)
+                ->whereNotNull('due_at')
+                ->where('due_at', '<', now())
+                ->count(),
+        ];
     }
 }

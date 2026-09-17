@@ -6,6 +6,69 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 4 — CRM · 2026-09-18
+
+**Status: complete**
+
+### Added
+
+- **Contacts** — prospects, volunteers, donors, sponsors, guests, partners and organizations. Search, filter by type, stage, owner and tag; a stage strip that doubles as a one-click filter.
+- **Pipeline board** — eight columns, drag to advance, and a select on every card so it works without a mouse. Columns cap at 25 cards with "and N more" linking into the filtered list; a column showing four hundred contacts is a list with extra scrolling, not a board.
+- **Activity timeline** — one polymorphic feed over members and contacts.
+- **Tasks** — hanging off a contact, a member, or nothing at all. `is_overdue` is computed server-side.
+- **Tags** — polymorphic over members and contacts, colour-validated as hex.
+- **Owner assignment**, member↔contact linking, and CRM counts on the admin dashboard.
+
+### The timeline is a union, not a list
+
+A person may exist as a member AND as a contact — entered as a prospect, later registering, the two records linked. Their history is then split across two subjects.
+
+A timeline showing one half would be **worse than no timeline**: it would look complete while hiding the call that preceded the registration. So `ActivityLogger::timelineFor()` resolves both subjects and orders the union, and the feed reads identically from either end.
+
+Unlinking does **not** rewrite history. The activities stay where they were written — moving them to follow a correction would lose the record of the mistake.
+
+### `system` rows write themselves, and cannot be forged
+
+They are written by the services that do the thing — `VerificationService` on a status change, `EventRegistrar` on a registration, `PipelineService` on a stage move or an owner handover — not by callers remembering to.
+
+**`system` is absent from the type list a form may post.** Those rows are the platform vouching that something happened; anyone able to write one could fabricate a history. A test asserts the endpoint rejects it.
+
+Activities may be backdated (a call made yesterday is real) but not postdated.
+
+### The pipeline is not a state machine
+
+Membership verification is. A relationship is not: a donor who went quiet may be moved straight back to `contacted`, and a prospect who walks in already registered skips three stages. Constraining that would make the committee fight the tool.
+
+What is enforced is that every move is **recorded**. The ordinary edit form strips `pipeline_status` and `owner_id`, so neither can change without going through `PipelineService` and landing on the timeline — a test posts a stage through the edit endpoint and asserts it does not move.
+
+A move to the stage something is already at writes nothing.
+
+### Ownership answers "whose job", not "who may look"
+
+Reading is deliberately not owner-scoped: a volunteer coordinator needs to see that the membership secretary already called someone, and a contact only one person can see is a contact only one person follows up.
+
+Taking a contact off a colleague's list needs `crm.assign`; the owner can always hand it on themselves. A new contact belongs to whoever entered it, and the dashboard counts the unowned ones — an unowned contact is how a prospect goes cold.
+
+### Bugs found and fixed during the phase
+
+| Bug                                             | Why it mattered                                                                                                                              |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| A re-run of a patch script duplicated an import | `VerificationService` ended with `use ActivityLogger;` twice — a fatal error, caught immediately because the script was not idempotent.      |
+| `User::query()->find()` widened to a Collection | PHPStan: `find()` accepts an array, so the return type is not just `?User`. `whereKey(...)->first()` says what was meant.                    |
+| `__()` returns `array\|string`                  | The registrar passed one straight into a `?string` parameter.                                                                                |
+| The plurals test was too strict                 | "and 1 more" and "and 3 more" are both correct English. The rule now lists genuinely invariant phrases rather than forcing a duplicate form. |
+
+### Verified, not assumed
+
+- `/admin/crm/contacts`, `/pipeline`, `/tasks`, `/tags` and the dashboard driven in a real browser; no console errors. A stale bundle produced a "Page not found" resolver error on the first load — a rebuild cleared it, and it is noted here because it looks like a routing bug and is not.
+- **369 tests, 1,166 assertions.** PHPStan level 7, TypeScript and the frontend linter clean.
+
+### Not done in this phase
+
+Donation and payment entries on the timeline wait for Phase 5, where those services exist. The specification's example flow shows a donation row; the hook is `ActivityLogger::system()` and the caller will be `PaymentRecorder`.
+
+---
+
 ## Phase 3 — Events, Golden Jubilee, QR passes, check-in · 2026-09-17
 
 **Status: complete**
@@ -332,7 +395,6 @@ Written before any application code, so the design could be reviewed and correct
 
 | Phase                                 | Scope                                                                                                                                                 |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **4 — CRM**                           | contacts · pipeline · activity timeline · tasks · tags                                                                                                |
 | **5 — Money, volunteers, committees** | payment abstraction · fees · donations · sponsors · receipts · volunteers · committees                                                                |
 | **6 — Community**                     | posts · comments · reactions · reports · moderation                                                                                                   |
 | **7 — CMS**                           | pages · news · announcements · gallery · stories · school history · FAQs · media library                                                              |

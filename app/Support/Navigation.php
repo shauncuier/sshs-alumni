@@ -32,6 +32,9 @@ final class Navigation
         'people' => [
             ['key' => 'members', 'route' => 'admin.members.index', 'icon' => 'Users', 'permission' => 'members.view'],
             ['key' => 'crm', 'route' => 'admin.crm.contacts.index', 'icon' => 'Contact', 'permission' => 'crm.view'],
+            ['key' => 'pipeline', 'route' => 'admin.crm.pipeline', 'icon' => 'Kanban', 'permission' => 'crm.view'],
+            ['key' => 'tasks', 'route' => 'admin.crm.tasks.index', 'icon' => 'ListTodo', 'permission' => 'crm.view'],
+            ['key' => 'tags', 'route' => 'admin.crm.tags.index', 'icon' => 'Tags', 'permission' => 'crm.view'],
             ['key' => 'batches', 'route' => 'admin.batches.index', 'icon' => 'GraduationCap', 'permission' => 'batches.view'],
         ],
         'events' => [

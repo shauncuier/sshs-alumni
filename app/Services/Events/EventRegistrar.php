@@ -11,6 +11,7 @@ use App\Models\Event;
 use App\Models\EventRegistration;
 use App\Models\EventTicketType;
 use App\Models\Member;
+use App\Services\Crm\ActivityLogger;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -31,6 +32,10 @@ use RuntimeException;
  */
 class EventRegistrar
 {
+    public function __construct(
+        private readonly ActivityLogger $activities,
+    ) {}
+
     /**
      * Register a member for an event.
      *
@@ -241,12 +246,50 @@ class EventRegistrar
                 ]);
             }
 
+            $this->recordOnTimeline($registration, $locked, $status);
+
             if ($ticket !== null && $status === RegistrationStatus::Confirmed) {
                 $ticket->increment('sold_count');
             }
 
             return $registration->refresh();
         });
+    }
+
+    /**
+     * Put the registration on the registrant's CRM timeline.
+     *
+     * Written here rather than by the caller, so a registration can never
+     * happen without appearing in the person's history — which is the whole
+     * point of a timeline that spans members and contacts.
+     */
+    private function recordOnTimeline(
+        EventRegistration $registration,
+        Event $event,
+        RegistrationStatus $status,
+    ): void {
+        $subject = $registration->member ?? $registration->crmContact;
+
+        // A walk-in with neither a member nor a contact record has no timeline
+        // to write to. That is a real case, not an error.
+        if ($subject === null) {
+            return;
+        }
+
+        $this->activities->system(
+            subject: $subject,
+            subjectLine: __('admin.crm.system.registered_for', [
+                'event' => $event->title,
+            ]),
+            body: $status === RegistrationStatus::Waitlisted
+                ? (string) __('member.events.waitlisted')
+                : null,
+            meta: [
+                'event_id' => $event->id,
+                'registration_ulid' => $registration->ulid,
+                'status' => $status->value,
+            ],
+        );
     }
 
     /**

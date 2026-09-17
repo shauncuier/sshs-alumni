@@ -78,8 +78,17 @@ describe('plurals', function (): void {
     it('gives every counted string a singular and a plural form', function (): void {
         // The Bangla copy had no plural forms, so nothing needed them and
         // ":count members" rendered "1 members" once the site read in English.
+        //
+        // A few phrases genuinely do not inflect — "and 1 more" and "and 3
+        // more" are both correct. Those are listed here rather than given a
+        // duplicated second form, which would only obscure the rule.
+        $invariant = [
+            'admin.crm.and_more',
+        ];
+
         $counted = collect(Translations::flattened())
-            ->filter(fn (string $line): bool => str_contains($line, ':count'));
+            ->filter(fn (string $line): bool => str_contains($line, ':count'))
+            ->reject(fn (string $line, string $key): bool => in_array($key, $invariant, true));
 
         expect($counted)->not->toBeEmpty();
 

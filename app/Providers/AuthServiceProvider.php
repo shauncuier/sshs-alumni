@@ -6,12 +6,16 @@ namespace App\Providers;
 
 use App\Concerns\Auditable;
 use App\Models\Batch;
+use App\Models\CrmContact;
+use App\Models\CrmTask;
 use App\Models\Event;
 use App\Models\Member;
 use App\Models\User;
 use App\Observers\AuditObserver;
 use App\Observers\MemberObserver;
 use App\Policies\BatchPolicy;
+use App\Policies\CrmContactPolicy;
+use App\Policies\CrmTaskPolicy;
 use App\Policies\EventPolicy;
 use App\Policies\MemberPolicy;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +40,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Member::class, MemberPolicy::class);
         Gate::policy(Batch::class, BatchPolicy::class);
         Gate::policy(Event::class, EventPolicy::class);
+        Gate::policy(CrmContact::class, CrmContactPolicy::class);
+        Gate::policy(CrmTask::class, CrmTaskPolicy::class);
     }
 
     private function configureGates(): void

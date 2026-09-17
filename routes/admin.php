@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Admin\CheckinController;
+use App\Http\Controllers\Admin\CrmActivityController;
+use App\Http\Controllers\Admin\CrmContactController;
+use App\Http\Controllers\Admin\CrmPipelineController;
+use App\Http\Controllers\Admin\CrmTagController;
+use App\Http\Controllers\Admin\CrmTaskController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\MemberController;
@@ -145,6 +150,70 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
 
             Route::post('events/{event}/checkin/{registration}', [CheckinController::class, 'store'])
                 ->name('events.checkin.store');
+        });
+
+        /*
+        | CRM
+        |
+        | `crm.view` reads, `crm.manage` writes, `crm.assign` takes a contact
+        | off a colleague's list. Reading is deliberately NOT owner-scoped: a
+        | contact only one person can see is a contact only one person follows
+        | up.
+        */
+        Route::prefix('crm')->name('crm.')->group(function (): void {
+            Route::middleware('can:crm.view')->group(function (): void {
+                Route::get('contacts', [CrmContactController::class, 'index'])->name('contacts.index');
+                Route::get('contacts/{contact}', [CrmContactController::class, 'show'])->name('contacts.show');
+                Route::get('pipeline', CrmPipelineController::class)->name('pipeline');
+                Route::get('tasks', [CrmTaskController::class, 'index'])->name('tasks.index');
+                Route::get('tags', [CrmTagController::class, 'index'])->name('tags.index');
+            });
+
+            Route::middleware('can:crm.manage')->group(function (): void {
+                Route::post('contacts', [CrmContactController::class, 'store'])->name('contacts.store');
+                Route::put('contacts/{contact}', [CrmContactController::class, 'update'])->name('contacts.update');
+
+                // The stage moves through PipelineService so the change is
+                // recorded on the timeline, never as a bare column update.
+                Route::post('contacts/{contact}/stage', [CrmContactController::class, 'move'])->name('contacts.move');
+
+                Route::post('contacts/{contact}/link', [CrmContactController::class, 'link'])->name('contacts.link');
+                Route::delete('contacts/{contact}/link', [CrmContactController::class, 'unlink'])->name('contacts.unlink');
+
+                // Activities. `system` is never accepted from a request.
+                Route::post('contacts/{contact}/activities', [CrmActivityController::class, 'storeForContact'])
+                    ->name('contacts.activities.store');
+
+                Route::post('tags', [CrmTagController::class, 'store'])->name('tags.store');
+                Route::put('tags/{tag}', [CrmTagController::class, 'update'])->name('tags.update');
+                Route::delete('tags/{tag}', [CrmTagController::class, 'destroy'])->name('tags.destroy');
+                Route::post('contacts/{contact}/tags', [CrmTagController::class, 'toggle'])->name('contacts.tags.toggle');
+
+                Route::post('tasks', [CrmTaskController::class, 'store'])->name('tasks.store');
+            });
+
+            // The assignee works their own task without holding crm.manage;
+            // CrmTaskPolicy is what narrows it.
+            Route::middleware('can:crm.view')->group(function (): void {
+                Route::put('tasks/{task}', [CrmTaskController::class, 'update'])->name('tasks.update');
+                Route::delete('tasks/{task}', [CrmTaskController::class, 'destroy'])->name('tasks.destroy');
+            });
+
+            Route::middleware('can:crm.assign')->group(function (): void {
+                Route::post('contacts/{contact}/owner', [CrmContactController::class, 'assign'])->name('contacts.assign');
+            });
+
+            Route::middleware('can:crm.delete')->group(function (): void {
+                Route::delete('contacts/{contact}', [CrmContactController::class, 'destroy'])->name('contacts.destroy');
+            });
+        });
+
+        // A member gets called and emailed like anyone else, so the timeline
+        // is written against them directly rather than through a shadow
+        // contact row.
+        Route::middleware('can:crm.manage')->group(function (): void {
+            Route::post('members/{member}/activities', [CrmActivityController::class, 'storeForMember'])
+                ->name('members.activities.store');
         });
 
         /*

@@ -146,97 +146,105 @@ missing either gate.
 
 `LogAdminAction` middleware is applied to the whole group.
 
-| URI (under `/admin`)                              | Name prefix                          | Permission                                                            |
-| ------------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------- |
-| `/`                                               | `admin.dashboard`                    | `admin.access`                                                        |
-| `/search`                                         | `admin.search`                       | `admin.access`                                                        |
-| **Members**                                       |                                      |                                                                       |
-| `/members` (index, create, show, edit, destroy)   | `admin.members.*`                    | `members.view` / `members.create` / `members.edit` / `members.delete` |
-| `/members/{member}/verification`                  | `admin.members.verification`         | `members.verify`                                                      |
-| `/members/{member}/approve` (POST)                | `admin.members.approve`              | `members.verify`                                                      |
-| `/members/{member}/reject` (POST)                 | `admin.members.reject`               | `members.verify`                                                      |
-| `/members/{member}/request-correction` (POST)     | `admin.members.correction`           | `members.verify`                                                      |
-| `/members/{member}/suspend` (POST)                | `admin.members.suspend`              | `members.verify`                                                      |
-| `/members/{member}/membership-number` (POST)      | `admin.members.number`               | `members.verify`                                                      |
-| `/members/import`                                 | `admin.members.import`               | `members.create`                                                      |
-| **Batches**                                       |                                      |                                                                       |
-| `/batches` (index)                                | `admin.batches.index`                | `batches.view`                                                        |
-| `/batches/{batch}` (show)                         | `admin.batches.show`                 | `batches.view`                                                        |
-| `/batches` (POST)                                 | `admin.batches.store`                | `batches.create`                                                      |
-| `/batches/{batch}` (PUT)                          | `admin.batches.update`               | `batches.edit` + `BatchPolicy`                                        |
-| `/batches/{batch}/coordinators` (POST)            | `admin.batches.coordinators.store`   | `batches.edit` + `BatchPolicy`                                        |
-| `/batches/{batch}/coordinators/{member}` (DELETE) | `admin.batches.coordinators.destroy` | `batches.edit` + `BatchPolicy`                                        |
-| **Events**                                        |                                      |                                                                       |
-| `/events` (index, show)                           | `admin.events.*`                     | `events.view`                                                         |
-| `/events` (POST)                                  | `admin.events.store`                 | `events.create`                                                       |
-| `/events/{event}` (PUT)                           | `admin.events.update`                | `events.edit`                                                         |
-| `/events/{event}/status` (POST)                   | `admin.events.transition`            | `events.publish`                                                      |
-| `/events/{event}/date` (POST)                     | `admin.events.date`                  | `events.publish` — THE DATE RULE lives here                           |
-| `/events/{event}/tickets` (POST, PUT, DELETE)     | `admin.events.tickets.*`             | `events.edit`                                                         |
-| `/events/{event}/registrations`                   | `admin.events.registrations`         | `events.view`                                                         |
-| `/events/{event}/registrations` (POST, walk-in)   | `admin.events.registrations.store`   | `events.edit`                                                         |
-| `/events/{event}/registrations/{r}/promote`       | `admin.events.promote`               | `events.edit`                                                         |
-| `/events/{event}/checkin`                         | `admin.events.checkin`               | `events.checkin` + `throttle:120,1`                                   |
-| `/events/{event}/checkin/{ulid}` (scan, GET)      | `admin.events.checkin.scan`          | `events.checkin` — shows, does NOT admit                              |
-| `/events/{event}/checkin/{registration}` (POST)   | `admin.events.checkin.store`         | `events.checkin`                                                      |
-| **CRM**                                           |                                      |                                                                       |
-| `/crm/contacts` (resource)                        | `admin.crm.contacts.*`               | `crm.view` / `crm.manage`                                             |
-| `/crm/pipeline`                                   | `admin.crm.pipeline`                 | `crm.view`                                                            |
-| `/crm/contacts/{contact}/activities` (POST)       | `admin.crm.activities.store`         | `crm.manage`                                                          |
-| `/crm/tasks` (resource)                           | `admin.crm.tasks.*`                  | `crm.manage`                                                          |
-| `/crm/tags` (resource)                            | `admin.crm.tags.*`                   | `crm.manage`                                                          |
-| **Batches**                                       |                                      |                                                                       |
-| `/batches` (resource)                             | `admin.batches.*`                    | `batches.view` / `batches.edit`                                       |
-| `/batches/{batch}/coordinators`                   | `admin.batches.coordinators`         | `batches.edit`                                                        |
-| **Events**                                        |                                      |                                                                       |
-| `/events` (resource)                              | `admin.events.*`                     | `events.view` / `events.create` / `events.edit`                       |
-| `/events/{event}/publish` (POST)                  | `admin.events.publish`               | `events.publish`                                                      |
-| `/events/{event}/tickets`                         | `admin.events.tickets`               | `events.edit`                                                         |
-| `/events/{event}/registrations`                   | `admin.events.registrations`         | `events.view`                                                         |
-| `/events/{event}/checkin`                         | `admin.events.checkin`               | `events.checkin`                                                      |
-| `/events/{event}/checkin/scan` (POST)             | `admin.events.checkin.scan`          | `events.checkin` · `throttle:120,1`                                   |
-| **Golden Jubilee**                                |                                      |                                                                       |
-| `/jubilee`                                        | `admin.jubilee.edit`                 | `events.edit`                                                         |
-| `/jubilee/announce-date` (POST)                   | `admin.jubilee.announce`             | `events.publish`                                                      |
-| `/jubilee/schedule`                               | `admin.jubilee.schedule`             | `events.edit`                                                         |
-| **Money**                                         |                                      |                                                                       |
-| `/payments` (index, show)                         | `admin.payments.*`                   | `payments.view`                                                       |
-| `/payments/record` (GET/POST)                     | `admin.payments.record`              | `payments.create`                                                     |
-| `/payments/{payment}/refund` (POST)               | `admin.payments.refund`              | `payments.refund`                                                     |
-| `/membership-fees`                                | `admin.fees.*`                       | `payments.view`                                                       |
-| `/donations` (resource)                           | `admin.donations.*`                  | `donations.view` / `donations.manage`                                 |
-| `/sponsors` (resource)                            | `admin.sponsors.*`                   | `sponsors.view` / `sponsors.manage`                                   |
-| `/sponsorship-packages` (resource)                | `admin.packages.*`                   | `sponsors.manage`                                                     |
-| **People**                                        |                                      |                                                                       |
-| `/volunteers` (resource)                          | `admin.volunteers.*`                 | `volunteers.view` / `volunteers.manage`                               |
-| `/volunteer-teams` (resource)                     | `admin.volunteer-teams.*`            | `volunteers.manage`                                                   |
-| `/committees` (resource)                          | `admin.committees.*`                 | `committees.view` / `committees.manage`                               |
-| **Community**                                     |                                      |                                                                       |
-| `/community/posts`                                | `admin.community.posts`              | `community.moderate`                                                  |
-| `/community/reports`                              | `admin.community.reports`            | `community.moderate`                                                  |
-| **CMS**                                           |                                      |                                                                       |
-| `/news` (resource)                                | `admin.news.*`                       | `content.manage`                                                      |
-| `/announcements` (resource)                       | `admin.announcements.*`              | `content.manage`                                                      |
-| `/gallery` (resource) + `/gallery/{album}/images` | `admin.gallery.*`                    | `content.manage`                                                      |
-| `/pages` (resource)                               | `admin.pages.*`                      | `content.manage`                                                      |
-| `/stories` (resource)                             | `admin.stories.*`                    | `content.manage`                                                      |
-| `/school-history` (resource)                      | `admin.history.*`                    | `content.manage`                                                      |
-| `/faqs` (resource)                                | `admin.faqs.*`                       | `content.manage`                                                      |
-| `/media`                                          | `admin.media.*`                      | `content.manage`                                                      |
-| **Communication**                                 |                                      |                                                                       |
-| `/campaigns` (resource)                           | `admin.campaigns.*`                  | `campaigns.manage`                                                    |
-| `/campaigns/{campaign}/send` (POST)               | `admin.campaigns.send`               | `campaigns.send`                                                      |
-| `/message-templates` (resource)                   | `admin.templates.*`                  | `campaigns.manage`                                                    |
-| `/sms/balance`                                    | `admin.sms.balance`                  | `campaigns.manage` — BulkSMSBD balance check                          |
-| **Reports**                                       |                                      |                                                                       |
-| `/reports`                                        | `admin.reports.index`                | `reports.view`                                                        |
-| `/reports/{report}`                               | `admin.reports.show`                 | `reports.view`                                                        |
-| `/reports/{report}/export` (POST)                 | `admin.reports.export`               | `reports.export` · `throttle:10,1`                                    |
-| **System**                                        |                                      |                                                                       |
-| `/settings/{group}`                               | `admin.settings.*`                   | `settings.manage`                                                     |
-| `/users` (resource)                               | `admin.users.*`                      | `users.manage`                                                        |
-| `/roles` (resource)                               | `admin.roles.*`                      | `roles.manage`                                                        |
-| `/audit-logs`                                     | `admin.audit.index`                  | `audit.view`                                                          |
+| URI (under `/admin`)                              | Name prefix                           | Permission                                                            |
+| ------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------- |
+| `/`                                               | `admin.dashboard`                     | `admin.access`                                                        |
+| `/search`                                         | `admin.search`                        | `admin.access`                                                        |
+| **Members**                                       |                                       |                                                                       |
+| `/members` (index, create, show, edit, destroy)   | `admin.members.*`                     | `members.view` / `members.create` / `members.edit` / `members.delete` |
+| `/members/{member}/verification`                  | `admin.members.verification`          | `members.verify`                                                      |
+| `/members/{member}/approve` (POST)                | `admin.members.approve`               | `members.verify`                                                      |
+| `/members/{member}/reject` (POST)                 | `admin.members.reject`                | `members.verify`                                                      |
+| `/members/{member}/request-correction` (POST)     | `admin.members.correction`            | `members.verify`                                                      |
+| `/members/{member}/suspend` (POST)                | `admin.members.suspend`               | `members.verify`                                                      |
+| `/members/{member}/membership-number` (POST)      | `admin.members.number`                | `members.verify`                                                      |
+| `/members/import`                                 | `admin.members.import`                | `members.create`                                                      |
+| **Batches**                                       |                                       |                                                                       |
+| `/batches` (index)                                | `admin.batches.index`                 | `batches.view`                                                        |
+| `/batches/{batch}` (show)                         | `admin.batches.show`                  | `batches.view`                                                        |
+| `/batches` (POST)                                 | `admin.batches.store`                 | `batches.create`                                                      |
+| `/batches/{batch}` (PUT)                          | `admin.batches.update`                | `batches.edit` + `BatchPolicy`                                        |
+| `/batches/{batch}/coordinators` (POST)            | `admin.batches.coordinators.store`    | `batches.edit` + `BatchPolicy`                                        |
+| `/batches/{batch}/coordinators/{member}` (DELETE) | `admin.batches.coordinators.destroy`  | `batches.edit` + `BatchPolicy`                                        |
+| **Events**                                        |                                       |                                                                       |
+| `/events` (index, show)                           | `admin.events.*`                      | `events.view`                                                         |
+| `/events` (POST)                                  | `admin.events.store`                  | `events.create`                                                       |
+| `/events/{event}` (PUT)                           | `admin.events.update`                 | `events.edit`                                                         |
+| `/events/{event}/status` (POST)                   | `admin.events.transition`             | `events.publish`                                                      |
+| `/events/{event}/date` (POST)                     | `admin.events.date`                   | `events.publish` — THE DATE RULE lives here                           |
+| `/events/{event}/tickets` (POST, PUT, DELETE)     | `admin.events.tickets.*`              | `events.edit`                                                         |
+| `/events/{event}/registrations`                   | `admin.events.registrations`          | `events.view`                                                         |
+| `/events/{event}/registrations` (POST, walk-in)   | `admin.events.registrations.store`    | `events.edit`                                                         |
+| `/events/{event}/registrations/{r}/promote`       | `admin.events.promote`                | `events.edit`                                                         |
+| `/events/{event}/checkin`                         | `admin.events.checkin`                | `events.checkin` + `throttle:120,1`                                   |
+| `/events/{event}/checkin/{ulid}` (scan, GET)      | `admin.events.checkin.scan`           | `events.checkin` — shows, does NOT admit                              |
+| `/events/{event}/checkin/{registration}` (POST)   | `admin.events.checkin.store`          | `events.checkin`                                                      |
+| **CRM**                                           |                                       |                                                                       |
+| `/crm/contacts` (index, show)                     | `admin.crm.contacts.*`                | `crm.view`                                                            |
+| `/crm/contacts` (POST), `/{contact}` (PUT)        | `admin.crm.contacts.store/update`     | `crm.manage`                                                          |
+| `/crm/contacts/{contact}/stage` (POST)            | `admin.crm.contacts.move`             | `crm.manage` — the ONLY place a stage moves                           |
+| `/crm/contacts/{contact}/link` (POST, DELETE)     | `admin.crm.contacts.link/unlink`      | `crm.manage`                                                          |
+| `/crm/contacts/{contact}/activities` (POST)       | `admin.crm.contacts.activities.store` | `crm.manage` — `system` is never accepted                             |
+| `/crm/contacts/{contact}/tags` (POST, toggle)     | `admin.crm.contacts.tags.toggle`      | `crm.manage`                                                          |
+| `/crm/contacts/{contact}/owner` (POST)            | `admin.crm.contacts.assign`           | `crm.assign`                                                          |
+| `/crm/contacts/{contact}` (DELETE)                | `admin.crm.contacts.destroy`          | `crm.delete`                                                          |
+| `/crm/pipeline`                                   | `admin.crm.pipeline`                  | `crm.view`                                                            |
+| `/crm/tasks` (index, store)                       | `admin.crm.tasks.*`                   | `crm.view` / `crm.manage`                                             |
+| `/crm/tasks/{task}` (PUT, DELETE)                 | `admin.crm.tasks.update/destroy`      | `crm.view` + CrmTaskPolicy (the assignee works their own)             |
+| `/crm/tags` (index, store, update, destroy)       | `admin.crm.tags.*`                    | `crm.view` / `crm.manage`                                             |
+| `/members/{member}/activities` (POST)             | `admin.members.activities.store`      | `crm.manage`                                                          |
+| **Batches**                                       |                                       |                                                                       |
+| `/batches` (resource)                             | `admin.batches.*`                     | `batches.view` / `batches.edit`                                       |
+| `/batches/{batch}/coordinators`                   | `admin.batches.coordinators`          | `batches.edit`                                                        |
+| **Events**                                        |                                       |                                                                       |
+| `/events` (resource)                              | `admin.events.*`                      | `events.view` / `events.create` / `events.edit`                       |
+| `/events/{event}/publish` (POST)                  | `admin.events.publish`                | `events.publish`                                                      |
+| `/events/{event}/tickets`                         | `admin.events.tickets`                | `events.edit`                                                         |
+| `/events/{event}/registrations`                   | `admin.events.registrations`          | `events.view`                                                         |
+| `/events/{event}/checkin`                         | `admin.events.checkin`                | `events.checkin`                                                      |
+| `/events/{event}/checkin/scan` (POST)             | `admin.events.checkin.scan`           | `events.checkin` · `throttle:120,1`                                   |
+| **Golden Jubilee**                                |                                       |                                                                       |
+| `/jubilee`                                        | `admin.jubilee.edit`                  | `events.edit`                                                         |
+| `/jubilee/announce-date` (POST)                   | `admin.jubilee.announce`              | `events.publish`                                                      |
+| `/jubilee/schedule`                               | `admin.jubilee.schedule`              | `events.edit`                                                         |
+| **Money**                                         |                                       |                                                                       |
+| `/payments` (index, show)                         | `admin.payments.*`                    | `payments.view`                                                       |
+| `/payments/record` (GET/POST)                     | `admin.payments.record`               | `payments.create`                                                     |
+| `/payments/{payment}/refund` (POST)               | `admin.payments.refund`               | `payments.refund`                                                     |
+| `/membership-fees`                                | `admin.fees.*`                        | `payments.view`                                                       |
+| `/donations` (resource)                           | `admin.donations.*`                   | `donations.view` / `donations.manage`                                 |
+| `/sponsors` (resource)                            | `admin.sponsors.*`                    | `sponsors.view` / `sponsors.manage`                                   |
+| `/sponsorship-packages` (resource)                | `admin.packages.*`                    | `sponsors.manage`                                                     |
+| **People**                                        |                                       |                                                                       |
+| `/volunteers` (resource)                          | `admin.volunteers.*`                  | `volunteers.view` / `volunteers.manage`                               |
+| `/volunteer-teams` (resource)                     | `admin.volunteer-teams.*`             | `volunteers.manage`                                                   |
+| `/committees` (resource)                          | `admin.committees.*`                  | `committees.view` / `committees.manage`                               |
+| **Community**                                     |                                       |                                                                       |
+| `/community/posts`                                | `admin.community.posts`               | `community.moderate`                                                  |
+| `/community/reports`                              | `admin.community.reports`             | `community.moderate`                                                  |
+| **CMS**                                           |                                       |                                                                       |
+| `/news` (resource)                                | `admin.news.*`                        | `content.manage`                                                      |
+| `/announcements` (resource)                       | `admin.announcements.*`               | `content.manage`                                                      |
+| `/gallery` (resource) + `/gallery/{album}/images` | `admin.gallery.*`                     | `content.manage`                                                      |
+| `/pages` (resource)                               | `admin.pages.*`                       | `content.manage`                                                      |
+| `/stories` (resource)                             | `admin.stories.*`                     | `content.manage`                                                      |
+| `/school-history` (resource)                      | `admin.history.*`                     | `content.manage`                                                      |
+| `/faqs` (resource)                                | `admin.faqs.*`                        | `content.manage`                                                      |
+| `/media`                                          | `admin.media.*`                       | `content.manage`                                                      |
+| **Communication**                                 |                                       |                                                                       |
+| `/campaigns` (resource)                           | `admin.campaigns.*`                   | `campaigns.manage`                                                    |
+| `/campaigns/{campaign}/send` (POST)               | `admin.campaigns.send`                | `campaigns.send`                                                      |
+| `/message-templates` (resource)                   | `admin.templates.*`                   | `campaigns.manage`                                                    |
+| `/sms/balance`                                    | `admin.sms.balance`                   | `campaigns.manage` — BulkSMSBD balance check                          |
+| **Reports**                                       |                                       |                                                                       |
+| `/reports`                                        | `admin.reports.index`                 | `reports.view`                                                        |
+| `/reports/{report}`                               | `admin.reports.show`                  | `reports.view`                                                        |
+| `/reports/{report}/export` (POST)                 | `admin.reports.export`                | `reports.export` · `throttle:10,1`                                    |
+| **System**                                        |                                       |                                                                       |
+| `/settings/{group}`                               | `admin.settings.*`                    | `settings.manage`                                                     |
+| `/users` (resource)                               | `admin.users.*`                       | `users.manage`                                                        |
+| `/roles` (resource)                               | `admin.roles.*`                       | `roles.manage`                                                        |
+| `/audit-logs`                                     | `admin.audit.index`                   | `audit.view`                                                          |
 
 ---
 

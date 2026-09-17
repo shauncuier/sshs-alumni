@@ -1,4 +1,4 @@
-import { Deferred, Link } from '@inertiajs/react';
+import { Deferred, Link, usePage } from '@inertiajs/react';
 import {
     CalendarClock,
     GraduationCap,
@@ -30,7 +30,15 @@ type Jubilee = {
     starts_at: string | null;
 };
 
-type Props = { stats: Stats; jubilee?: Jubilee | null };
+type Crm = {
+    contacts: number;
+    /** An unowned contact is nobody's job, which is how prospects go cold. */
+    unassigned: number;
+    my_open_tasks: number;
+    overdue_tasks: number;
+};
+
+type Props = { stats: Stats; jubilee?: Jubilee | null; crm?: Crm | null };
 
 const CARDS: {
     key: keyof Stats;
@@ -86,6 +94,16 @@ export default function AdminDashboard({ stats }: Props) {
                     fallback={<Skeleton className="h-28 w-full rounded-xl" />}
                 >
                     <JubileeStatus />
+                </Deferred>
+
+                {/* The CRM's own numbers. Absent entirely for anybody without
+                    `crm.view` — a widget rendering zeroes at someone who
+                    cannot open the section is clutter. */}
+                <Deferred
+                    data="crm"
+                    fallback={<Skeleton className="h-28 w-full rounded-xl" />}
+                >
+                    <CrmSummary />
                 </Deferred>
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -159,5 +177,85 @@ function JubileeStatus({ jubilee }: { jubilee?: Jubilee | null }) {
                 </Link>
             </AlertDescription>
         </Alert>
+    );
+}
+
+/**
+ * What is outstanding in the CRM.
+ *
+ * Each figure links to the filter that shows exactly those records — a number
+ * you cannot click through to is trivia.
+ */
+function CrmSummary() {
+    const { t } = useTranslation();
+    const page = usePage();
+
+    const crm = page.props.crm as Crm | null | undefined;
+
+    if (!crm) {
+        return null;
+    }
+
+    const cells: Array<{
+        label: string;
+        value: number;
+        href: string;
+        alert?: boolean;
+    }> = [
+        {
+            label: t('admin.crm.contacts'),
+            value: crm.contacts,
+            href: '/admin/crm/contacts',
+        },
+        {
+            label: t('admin.crm.owner_unassigned'),
+            value: crm.unassigned,
+            href: '/admin/crm/contacts?owner=none',
+            alert: crm.unassigned > 0,
+        },
+        {
+            label: t('admin.crm.owner_mine'),
+            value: crm.my_open_tasks,
+            href: '/admin/crm/tasks?assignee=me',
+        },
+        {
+            label: t('admin.crm.task_overdue'),
+            value: crm.overdue_tasks,
+            href: '/admin/crm/tasks?overdue=1',
+            alert: crm.overdue_tasks > 0,
+        },
+    ];
+
+    return (
+        <Card>
+            <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                    {t('admin.nav.crm')}
+                </CardTitle>
+            </CardHeader>
+
+            <CardContent className="grid gap-4 sm:grid-cols-4">
+                {cells.map((cell) => (
+                    <Link
+                        key={cell.label}
+                        href={cell.href}
+                        className="hover:bg-accent -m-2 rounded-md p-2"
+                    >
+                        <p
+                            className={
+                                cell.alert
+                                    ? 'text-destructive text-2xl font-semibold tabular-nums'
+                                    : 'text-2xl font-semibold tabular-nums'
+                            }
+                        >
+                            {formatNumber(cell.value)}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                            {cell.label}
+                        </p>
+                    </Link>
+                ))}
+            </CardContent>
+        </Card>
     );
 }
