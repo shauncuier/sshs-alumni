@@ -25,15 +25,15 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ### Bugs found and fixed during the phase
 
-| Bug | Why it mattered |
-|---|---|
-| Font `subsets` defaulted to `['latin']` | Noto Sans Bengali downloaded with a unicode-range of U+0000–00FF only. The font looked installed but the browser would never apply it to a Bengali character — Bangla would fall back to a system font, or boxes. |
-| `SettingsSeeder` read `env()` directly | `env()` returns null once `config:cache` has run, which production always does. Seeding a cached install would have written empty organization and school values. |
-| `User` had a null locale in memory | Column defaults apply on insert, not in Eloquent — so the instance `actingAs()` and post-registration redirects use had no locale, and `SetLocale` crashed on it. |
-| SMS number normalisation dropped the trunk zero | Produced `881712345678` instead of the `8801712345678` the vendor documents. |
-| A Bangla OTP brand sanitised to `"-"`, not empty | Passed the emptiness check and would have produced a malformed OTP. |
-| BulkSMSBD code `1032` undocumented | IP not whitelisted. The send endpoint enforces it, the balance endpoint does not — so a green balance check proves nothing about sending. |
-| Intervention Image 4.3 API drift | `read()` → `decodePath()`, `encodeByExtension()` → `encodeUsingFileExtension()`. |
+| Bug                                              | Why it mattered                                                                                                                                                                                                   |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Font `subsets` defaulted to `['latin']`          | Noto Sans Bengali downloaded with a unicode-range of U+0000–00FF only. The font looked installed but the browser would never apply it to a Bengali character — Bangla would fall back to a system font, or boxes. |
+| `SettingsSeeder` read `env()` directly           | `env()` returns null once `config:cache` has run, which production always does. Seeding a cached install would have written empty organization and school values.                                                 |
+| `User` had a null locale in memory               | Column defaults apply on insert, not in Eloquent — so the instance `actingAs()` and post-registration redirects use had no locale, and `SetLocale` crashed on it.                                                 |
+| SMS number normalisation dropped the trunk zero  | Produced `881712345678` instead of the `8801712345678` the vendor documents.                                                                                                                                      |
+| A Bangla OTP brand sanitised to `"-"`, not empty | Passed the emptiness check and would have produced a malformed OTP.                                                                                                                                               |
+| BulkSMSBD code `1032` undocumented               | IP not whitelisted. The send endpoint enforces it, the balance endpoint does not — so a green balance check proves nothing about sending.                                                                         |
+| Intervention Image 4.3 API drift                 | `read()` → `decodePath()`, `encodeByExtension()` → `encodeUsingFileExtension()`.                                                                                                                                  |
 
 ### Verified, not assumed
 
@@ -155,13 +155,13 @@ Written before any application code, so the design could be reviewed and correct
 
 ## Upcoming
 
-| Phase                                     | Scope                                                                                                                                                                                                         |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1 — Auth, roles, registration**         | role admin UI · public, member and admin layouts · admin shell · five-step public registration                                                                                                                    |
-| **2 — Profiles, verification, directory** | member dashboard & profile · verification workflow · batches & coordinators · members-only directory                                                                                                          |
-| **3 — Events, Jubilee, QR**               | event CRUD & lifecycle · registration & tickets · QR passes · check-in with duplicate prevention · Jubilee microsite · membership card                                                                        |
-| **4 — CRM**                               | contacts · pipeline · activity timeline · tasks · tags                                                                                                                                                        |
-| **5 — Money, volunteers, committees**     | payment abstraction · fees · donations · sponsors · receipts · volunteers · committees                                                                                                                        |
-| **6 — Community**                         | posts · comments · reactions · reports · moderation                                                                                                                                                           |
-| **7 — CMS**                               | pages · news · announcements · gallery · stories · school history · FAQs · media library                                                                                                                      |
-| **8 — Reports & hardening**               | 11 reports · charts · global search · campaigns (mail + SMS) · notifications · audit viewer · SEO · performance · security sweep · doc reconciliation                                                         |
+| Phase                                     | Scope                                                                                                                                                 |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1 — Auth, roles, registration**         | role admin UI · public, member and admin layouts · admin shell · five-step public registration                                                        |
+| **2 — Profiles, verification, directory** | member dashboard & profile · verification workflow · batches & coordinators · members-only directory                                                  |
+| **3 — Events, Jubilee, QR**               | event CRUD & lifecycle · registration & tickets · QR passes · check-in with duplicate prevention · Jubilee microsite · membership card                |
+| **4 — CRM**                               | contacts · pipeline · activity timeline · tasks · tags                                                                                                |
+| **5 — Money, volunteers, committees**     | payment abstraction · fees · donations · sponsors · receipts · volunteers · committees                                                                |
+| **6 — Community**                         | posts · comments · reactions · reports · moderation                                                                                                   |
+| **7 — CMS**                               | pages · news · announcements · gallery · stories · school history · FAQs · media library                                                              |
+| **8 — Reports & hardening**               | 11 reports · charts · global search · campaigns (mail + SMS) · notifications · audit viewer · SEO · performance · security sweep · doc reconciliation |

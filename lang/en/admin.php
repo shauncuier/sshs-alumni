@@ -30,6 +30,14 @@ return [
         'audit' => 'Audit Logs',
     ],
 
+    'groups' => [
+        'people' => 'People',
+        'events' => 'Events',
+        'money' => 'Finance',
+        'content' => 'Content',
+        'system' => 'System',
+    ],
+
     'dashboard' => [
         'total_members' => 'Total members',
         'verified_members' => 'Verified members',

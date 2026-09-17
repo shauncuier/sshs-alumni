@@ -30,6 +30,14 @@ return [
         'audit' => 'অডিট লগ',
     ],
 
+    'groups' => [
+        'people' => 'সদস্য ও যোগাযোগ',
+        'events' => 'অনুষ্ঠান',
+        'money' => 'অর্থ',
+        'content' => 'কনটেন্ট',
+        'system' => 'সিস্টেম',
+    ],
+
     'dashboard' => [
         'total_members' => 'মোট সদস্য',
         'verified_members' => 'যাচাইকৃত সদস্য',

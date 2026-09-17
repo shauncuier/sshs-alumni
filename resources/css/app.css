@@ -172,6 +172,52 @@
     --sidebar-ring: oklch(0.439 0 0);
 }
 
+/*
+ * Forces light tokens regardless of the user's system preference.
+ *
+ * The public site is light-only by design: the gold-on-green identity does not
+ * survive inversion, and a public alumni site with a dark-mode toggle reads as
+ * a developer tool. Dark mode belongs to the member and admin surfaces.
+ *
+ * Re-declaring the values here rather than removing the `dark` class from
+ * <html> keeps the theme system intact for the rest of the application — the
+ * same browser tab can show a light public page and a dark admin page.
+ *
+ * @see docs/07-branding-ui.md section 2
+ */
+.theme-light {
+    /*
+     * Overrides the Tailwind THEME namespace (--color-*), not the raw tokens.
+     *
+     * `@theme` declares `--color-card: var(--card)` at :root, so the
+     * substitution happens once against the root's value and inherits down
+     * already resolved. Redefining `--card` further down the tree therefore
+     * has no effect — the utilities read --color-card.
+     */
+    --color-background: oklch(1 0 0);
+    --color-foreground: oklch(0.145 0 0);
+    --color-card: oklch(1 0 0);
+    --color-card-foreground: oklch(0.145 0 0);
+    --color-popover: oklch(1 0 0);
+    --color-popover-foreground: oklch(0.145 0 0);
+    --color-primary: oklch(0.205 0 0);
+    --color-primary-foreground: oklch(0.985 0 0);
+    --color-secondary: oklch(0.97 0 0);
+    --color-secondary-foreground: oklch(0.205 0 0);
+    --color-muted: oklch(0.97 0 0);
+    --color-muted-foreground: oklch(0.556 0 0);
+    --color-accent: oklch(0.97 0 0);
+    --color-accent-foreground: oklch(0.205 0 0);
+    --color-destructive: oklch(0.577 0.245 27.325);
+    --color-destructive-foreground: oklch(0.985 0 0);
+    --color-border: oklch(0.922 0 0);
+    --color-input: oklch(0.922 0 0);
+    --color-ring: oklch(0.87 0 0);
+
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+}
+
 @layer base {
     * {
         @apply border-border;

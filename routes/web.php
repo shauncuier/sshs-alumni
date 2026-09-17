@@ -1,16 +1,18 @@
 <?php
 
-use App\Http\Controllers\Public\LocaleController;
-use Illuminate\Support\Facades\Route;
+declare(strict_types=1);
 
-Route::inertia('/', 'welcome')->name('home');
+/*
+|--------------------------------------------------------------------------
+| Web routes
+|--------------------------------------------------------------------------
+|
+| Split by surface. Each file states the rules that govern it.
+|
+| @see docs/03-routes.md
+*/
 
-// Language switch. The locale is validated against the allow-list inside the
-// controller rather than trusted from the URL.
-Route::get('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
-});
-
+require __DIR__.'/public.php';
+require __DIR__.'/member.php';
+require __DIR__.'/admin.php';
 require __DIR__.'/settings.php';

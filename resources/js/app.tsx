@@ -14,6 +14,17 @@ void createInertiaApp({
         switch (true) {
             case name === 'welcome':
                 return null;
+
+            // These surfaces bring their own layout — PublicLayout,
+            // MemberLayout or AdminLayout — because each has a different
+            // shell, navigation and indexing policy. Applying AppLayout here
+            // too would nest one layout inside another.
+            case name.startsWith('public/'):
+            case name.startsWith('jubilee/'):
+            case name.startsWith('member/'):
+            case name.startsWith('admin/'):
+                return null;
+
             case name.startsWith('auth/'):
                 return AuthLayout;
             case name.startsWith('settings/'):
