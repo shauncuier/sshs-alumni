@@ -6,11 +6,13 @@ namespace App\Providers;
 
 use App\Concerns\Auditable;
 use App\Models\Batch;
+use App\Models\Event;
 use App\Models\Member;
 use App\Models\User;
 use App\Observers\AuditObserver;
 use App\Observers\MemberObserver;
 use App\Policies\BatchPolicy;
+use App\Policies\EventPolicy;
 use App\Policies\MemberPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
@@ -33,6 +35,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         Gate::policy(Member::class, MemberPolicy::class);
         Gate::policy(Batch::class, BatchPolicy::class);
+        Gate::policy(Event::class, EventPolicy::class);
     }
 
     private function configureGates(): void

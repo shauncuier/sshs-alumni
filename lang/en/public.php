@@ -53,6 +53,23 @@ return [
         'years' => 'Years',
     ],
 
+    'events' => [
+        'title' => 'Events',
+        'subtitle' => 'Reunions, seminars and gatherings of the association.',
+        'empty' => 'Nothing is scheduled yet. Check back soon.',
+        'upcoming' => 'Upcoming',
+        'past' => 'Past',
+        'date_tba' => 'Date to be announced',
+        'venue_tba' => 'Venue to be announced',
+        'register' => 'Register',
+        'registration_closed' => 'Registration is closed',
+        'registration_full' => 'This event is full. Registering now joins the waitlist.',
+        'members_only' => 'Log in as a member to register',
+        'free' => 'Free',
+        'details' => 'Details',
+        'organised_by' => 'Organised by :name',
+    ],
+
     'footer' => [
         'about' => 'About',
         'quick_links' => 'Quick links',

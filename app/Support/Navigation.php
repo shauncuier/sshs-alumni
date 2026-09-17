@@ -36,7 +36,9 @@ final class Navigation
         ],
         'events' => [
             ['key' => 'events', 'route' => 'admin.events.index', 'icon' => 'CalendarDays', 'permission' => 'events.view'],
-            ['key' => 'jubilee', 'route' => 'admin.jubilee.edit', 'icon' => 'Sparkles', 'permission' => 'events.view'],
+            // No separate Jubilee entry: it is the flagship EVENT, edited
+            // through the events list where it carries a gold mark. A second
+            // admin page for it would be the duplication the design avoids.
             ['key' => 'volunteers', 'route' => 'admin.volunteers.index', 'icon' => 'HandHeart', 'permission' => 'volunteers.view'],
             ['key' => 'committees', 'route' => 'admin.committees.index', 'icon' => 'UserSquare', 'permission' => 'committees.view'],
         ],

@@ -166,6 +166,19 @@ missing either gate.
 | `/batches/{batch}` (PUT)                          | `admin.batches.update`               | `batches.edit` + `BatchPolicy`                                        |
 | `/batches/{batch}/coordinators` (POST)            | `admin.batches.coordinators.store`   | `batches.edit` + `BatchPolicy`                                        |
 | `/batches/{batch}/coordinators/{member}` (DELETE) | `admin.batches.coordinators.destroy` | `batches.edit` + `BatchPolicy`                                        |
+| **Events**                                        |                                      |                                                                       |
+| `/events` (index, show)                           | `admin.events.*`                     | `events.view`                                                         |
+| `/events` (POST)                                  | `admin.events.store`                 | `events.create`                                                       |
+| `/events/{event}` (PUT)                           | `admin.events.update`                | `events.edit`                                                         |
+| `/events/{event}/status` (POST)                   | `admin.events.transition`            | `events.publish`                                                      |
+| `/events/{event}/date` (POST)                     | `admin.events.date`                  | `events.publish` — THE DATE RULE lives here                           |
+| `/events/{event}/tickets` (POST, PUT, DELETE)     | `admin.events.tickets.*`             | `events.edit`                                                         |
+| `/events/{event}/registrations`                   | `admin.events.registrations`         | `events.view`                                                         |
+| `/events/{event}/registrations` (POST, walk-in)   | `admin.events.registrations.store`   | `events.edit`                                                         |
+| `/events/{event}/registrations/{r}/promote`       | `admin.events.promote`               | `events.edit`                                                         |
+| `/events/{event}/checkin`                         | `admin.events.checkin`               | `events.checkin` + `throttle:120,1`                                   |
+| `/events/{event}/checkin/{ulid}` (scan, GET)      | `admin.events.checkin.scan`          | `events.checkin` — shows, does NOT admit                              |
+| `/events/{event}/checkin/{registration}` (POST)   | `admin.events.checkin.store`         | `events.checkin`                                                      |
 | **CRM**                                           |                                      |                                                                       |
 | `/crm/contacts` (resource)                        | `admin.crm.contacts.*`               | `crm.view` / `crm.manage`                                             |
 | `/crm/pipeline`                                   | `admin.crm.pipeline`                 | `crm.view`                                                            |

@@ -6,6 +6,64 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 3 — Events, Golden Jubilee, QR passes, check-in · 2026-09-17
+
+**Status: complete**
+
+### Added
+
+- **Events** — admin list, detail, create and edit; a six-state lifecycle; ticket types with a maintained `sold_count`; public listing and detail pages.
+- **Registration** — members register themselves with accompanying guests; the office records walk-ins for people with no alumni record. Guests occupy seats and are charged for them.
+- **Waitlist** — capacity produces a waitlist entry, never a rejection. Turning an alumnus away automatically is the wrong default for a reunion, and the committee can promote past capacity because that is their call to make.
+- **QR passes** — `App\Support\Qr` renders inline SVG through `bacon/bacon-qr-code`. SVG needs no imagick or GD, which is one less thing to be missing on the production host on event day, and it stays sharp when someone zooms into their phone at the gate.
+- **Check-in** — a full-width gate screen with large tap targets, live counts and the last ten admissions. Behind `events.checkin`, which a volunteer holds _without_ `events.edit`.
+- **Golden Jubilee microsite** — `/jubilee`, `/jubilee/schedule`, `/jubilee/sponsors`, `/jubilee/faq`. Not a subsystem: every page resolves the flagship event, so `is_flagship` can move to a future event and the microsite follows the flag. Nothing here becomes dead code on 1 January 2027.
+- **Digital membership card** — `/my/card`, with a QR pointing at `/verify/member/{ulid}`. The card shows exactly the six fields a scanner sees, so there are no surprises at the gate.
+
+### The date rule, enforced in three places
+
+The committee has not fixed a Jubilee date. Rather than trusting every component to remember that:
+
+1. **The resource omits it.** `PublicEventResource` does not serialise `starts_at` at all while `date_status` is `tba`. A component cannot leak a date it was never given.
+2. **The type says so.** `starts_at` is optional on `PublicEvent`, so TypeScript refuses code that reads it unconditionally.
+3. **Announcing is a separate act.** Saving a draft date through the ordinary edit form does not announce it; `date_status` moves only through `POST /admin/events/{event}/date`, behind `events.publish`. It can be retracted, because a date that has to be pulled back is exactly when the "to be announced" line matters most.
+
+`JubileeCountdown` returns `null` while the date is unannounced — no DOM node, so nothing for a screen reader to read, nothing in a screenshot, and no styling change that could reveal a date that does not exist yet. Verified in the browser: `[role=timer]` is absent and `data-date-status` reads `tba`.
+
+A test greps `config/` and `database/seeders/` for a `2026-MM-DD` literal and fails if one appears.
+
+### Duplicate check-in
+
+Prevented by the `UNIQUE` constraint on `event_checkins.event_registration_id`, not by an application `if`. Two volunteers scanning the same pass at two gates in the same second is exactly the case a read-then-write check loses, and exactly the case that causes an argument in front of a queue. The insert is attempted and a constraint violation is read as "already checked in" — which is the truth, whoever won the race.
+
+The test that matters goes **straight at the table**, past every service and controller, and asserts the second insert throws.
+
+Scanning is a GET that SHOWS the operator who is in front of them; admitting is a separate POST. A camera pointed at a wall of passes would otherwise admit all of them.
+
+### Bugs found and fixed during the phase
+
+| Bug                                                    | Why it mattered                                                                                                         |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| **`qr_token` generated after the insert**              | The column is `NOT NULL`, so every registration failed at the database. Now set in the same insert, still not fillable. |
+| **`$ticket->currency` without the nullsafe operator**  | A fatal error on any event with no ticket types. PHPStan found it while the code was still unreachable.                 |
+| `JubileeController::sponsors()` declared twice         | A public route method and a private helper with one name — a fatal parse error.                                         |
+| `useForm().transform()` is not chainable in Inertia v3 | It returns void. Three forms posted nothing.                                                                            |
+| Pass URL built from the event slug                     | Admin routes bind Event by ULID, so every QR pointed at a URL that would not resolve.                                   |
+| Tokens that do not exist (`brand-gold-300/400`)        | Tailwind generates nothing for an undeclared token, so the countdown would have rendered unstyled.                      |
+| "Next" as the end-date label                           | A placeholder key that shipped into the admin form. Found by reading the rendered page, not the code.                   |
+
+### Verified, not assumed
+
+- `/jubilee`, `/events`, `/admin/events` and an event's detail page driven in a real browser. No console errors; the date line reads "Date to be announced" and no countdown element exists.
+- The Bangla identity strings render on the Jubilee hero with `lang="bn"`, and the computed font resolves to Noto Sans Bengali on exactly those nodes.
+- **341 tests, 1,088 assertions.** PHPStan level 7, TypeScript and the frontend linter clean.
+
+### Not done in this phase
+
+The Jubilee programme schedule renders "to be announced" and holds no sessions — the committee has not built one, and inventing a table for it before they do would be guessing at its shape. Payment for a paid registration records an amount owed; taking the money is Phase 5.
+
+---
+
 ## Language change — English-only · 2026-09-17
 
 **Status: complete**
@@ -274,7 +332,6 @@ Written before any application code, so the design could be reviewed and correct
 
 | Phase                                 | Scope                                                                                                                                                 |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **3 — Events, Jubilee, QR**           | event CRUD & lifecycle · registration & tickets · QR passes · check-in with duplicate prevention · Jubilee microsite · membership card                |
 | **4 — CRM**                           | contacts · pipeline · activity timeline · tasks · tags                                                                                                |
 | **5 — Money, volunteers, committees** | payment abstraction · fees · donations · sponsors · receipts · volunteers · committees                                                                |
 | **6 — Community**                     | posts · comments · reactions · reports · moderation                                                                                                   |

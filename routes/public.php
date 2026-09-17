@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Public\BatchController;
+use App\Http\Controllers\Public\EventController;
+use App\Http\Controllers\Public\JubileeController;
 use App\Http\Controllers\Public\MemberVerifyController;
 use App\Http\Controllers\Public\RegistrationController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +48,30 @@ Route::prefix('join')->name('join.')->group(function (): void {
     Route::post('{step}', [RegistrationController::class, 'store'])
         ->middleware('throttle:20,1')
         ->name('store');
+});
+
+/*
+| Events.
+|
+| An event whose date is still TBA is listed here — that is the point of the
+| date rule. The Jubilee is announced and open for registration long before the
+| committee fixes a day.
+*/
+Route::get('events', [EventController::class, 'index'])->name('events.index');
+Route::get('events/{event:slug}', [EventController::class, 'show'])->name('events.show');
+
+/*
+| The Golden Jubilee microsite.
+|
+| Not a subsystem. Every page resolves the FLAGSHIP EVENT — one row in `events`
+| with `is_flagship = true` — and renders it with a distinct treatment plus
+| microsite-only copy from the `jubilee` settings group.
+*/
+Route::prefix('jubilee')->group(function (): void {
+    Route::get('/', [JubileeController::class, 'index'])->name('jubilee');
+    Route::get('schedule', [JubileeController::class, 'schedule'])->name('jubilee.schedule');
+    Route::get('sponsors', [JubileeController::class, 'sponsors'])->name('jubilee.sponsors');
+    Route::get('faq', [JubileeController::class, 'faq'])->name('jubilee.faq');
 });
 
 /*

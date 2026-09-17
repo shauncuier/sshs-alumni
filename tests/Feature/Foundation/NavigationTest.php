@@ -58,8 +58,6 @@ describe('navigation route names', function (): void {
         // unbuilt. Anything not on this list is a typo.
         $notBuiltYet = [
             'admin.crm.contacts.index',
-            'admin.events.index',
-            'admin.jubilee.edit',
             'admin.volunteers.index',
             'admin.committees.index',
             'admin.payments.index',
@@ -75,14 +73,10 @@ describe('navigation route names', function (): void {
             'admin.users.index',
             'admin.audit.index',
             'admin.settings.edit',
-            'my.card',
             'community.index',
-            'my.events',
             'my.payments',
             'my.donations',
-            'jubilee',
             'about',
-            'events.index',
             'news.index',
             'gallery.index',
             'contact',
@@ -105,6 +99,11 @@ describe('navigation route names', function (): void {
         // off the "not built yet" list, or that list quietly rots.
         expect(Route::has('admin.batches.index'))->toBeTrue();
         expect(Route::has('my.batch'))->toBeTrue();
+        expect(Route::has('admin.events.index'))->toBeTrue();
+        expect(Route::has('events.index'))->toBeTrue();
+        expect(Route::has('jubilee'))->toBeTrue();
+        expect(Route::has('my.events'))->toBeTrue();
+        expect(Route::has('my.card'))->toBeTrue();
     });
 });
 

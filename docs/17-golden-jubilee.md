@@ -82,9 +82,29 @@ $table->timestamp('ends_at')->nullable();
 'date_tba' => 'The date will be announced soon',
 ```
 
+### Enforced in three places
+
+Rather than trusting every component to remember the rule:
+
+1. **The resource omits it.** `PublicEventResource` does not serialise
+   `starts_at` at all while `date_status` is `tba`. It is ABSENT, not null —
+   a null key still tells a component the field exists, and a careless
+   `?? ''` would render something. A component cannot leak a date it was never
+   given.
+2. **The type says so.** `starts_at` is optional on the `PublicEvent` type,
+   so TypeScript refuses code that reads it unconditionally.
+3. **Announcing is a separate, permissioned act**, as above.
+
+`JubileeCountdown` returns `null` while the date is unannounced. Not hidden
+with CSS, not rendered as zeros — there is no DOM node, so nothing for a
+screen reader to read, nothing in a screenshot, and no styling change that
+could reveal a date that does not exist yet. It also returns `null` once the
+date has passed: a reunion that already happened does not need a timer
+counting up.
+
 ### Rules
 
-1. **No Golden Jubilee date literal exists anywhere in the codebase** — not in a migration, a seeder, a config file, an env variable or a component.
+1. **No Golden Jubilee date literal exists anywhere in the codebase** — not in a migration, a seeder, a config file, an env variable or a component. A test greps `config/` and `database/seeders/` for a `2026-MM-DD` literal and fails if one appears.
 2. `JubileeSeeder` creates the event with `date_status = 'tba'` and `starts_at = null`.
 3. The countdown component does not render while the date is TBA — it is not hidden with CSS, it is not rendered at all.
 4. Event reminders are scheduled relative to `starts_at` and therefore cannot fire while it is null.
@@ -92,7 +112,14 @@ $table->timestamp('ends_at')->nullable();
 
 ### Publishing the date
 
-`/admin/jubilee` → **Announce Date**, requires `events.publish`.
+There is no `/admin/jubilee`. The Jubilee is the flagship EVENT, so it is
+edited at `/admin/events/{ulid}` like any other — a second admin page for it
+would be the duplication this whole design avoids. The event list marks it with
+a gold star.
+
+`POST /admin/events/{event}/date`, behind `events.publish`. **This is the only
+place `date_status` moves.** Saving a draft date through the ordinary edit form
+does not announce it, and a test asserts exactly that.
 
 Setting the date:
 

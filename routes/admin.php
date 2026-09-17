@@ -3,9 +3,12 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\BatchController;
+use App\Http\Controllers\Admin\CheckinController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\TicketTypeController;
 use App\Http\Controllers\Admin\VerificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -77,6 +80,71 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
 
             Route::delete('batches/{batch}/coordinators/{member}', [BatchController::class, 'removeCoordinator'])
                 ->name('batches.coordinators.destroy');
+        });
+
+        /*
+        | Events
+        |
+        | `events.publish` is separate from `events.edit` because publishing an
+        | event and announcing its date are what make them public. `events.checkin`
+        | is separate again: a volunteer runs the gate on the day without being
+        | able to change the event.
+        */
+        Route::middleware('can:events.view')->group(function (): void {
+            Route::get('events', [EventController::class, 'index'])->name('events.index');
+            Route::get('events/{event}', [EventController::class, 'show'])->name('events.show');
+            Route::get('events/{event}/registrations', [EventController::class, 'registrations'])
+                ->name('events.registrations');
+        });
+
+        Route::middleware('can:events.create')->group(function (): void {
+            Route::post('events', [EventController::class, 'store'])->name('events.store');
+        });
+
+        Route::middleware('can:events.edit')->group(function (): void {
+            Route::put('events/{event}', [EventController::class, 'update'])->name('events.update');
+
+            // Ticket types. `sold_count` is the registrar's, never a form's.
+            Route::post('events/{event}/tickets', [TicketTypeController::class, 'store'])
+                ->name('events.tickets.store');
+            Route::put('events/{event}/tickets/{ticketType}', [TicketTypeController::class, 'update'])
+                ->name('events.tickets.update');
+            Route::delete('events/{event}/tickets/{ticketType}', [TicketTypeController::class, 'destroy'])
+                ->name('events.tickets.destroy');
+
+            // A walk-in: someone who turns up having never registered.
+            Route::post('events/{event}/registrations', [EventController::class, 'storeRegistration'])
+                ->name('events.registrations.store');
+
+            Route::post('events/{event}/registrations/{registration}/promote', [EventController::class, 'promote'])
+                ->name('events.promote');
+        });
+
+        Route::middleware('can:events.publish')->group(function (): void {
+            Route::post('events/{event}/status', [EventController::class, 'transition'])
+                ->name('events.transition');
+
+            // THE DATE RULE: the only place `date_status` moves.
+            Route::post('events/{event}/date', [EventController::class, 'announceDate'])
+                ->name('events.date');
+        });
+
+        /*
+        | The gate.
+        |
+        | Rate limited generously because a queue is bursty, and scanning is
+        | a GET that shows the operator who is in front of them — admitting
+        | someone is the separate POST below.
+        */
+        Route::middleware(['can:events.checkin', 'throttle:120,1'])->group(function (): void {
+            Route::get('events/{event}/checkin', [CheckinController::class, 'index'])
+                ->name('events.checkin');
+
+            Route::get('events/{event}/checkin/{ulid}', [CheckinController::class, 'scan'])
+                ->name('events.checkin.scan');
+
+            Route::post('events/{event}/checkin/{registration}', [CheckinController::class, 'store'])
+                ->name('events.checkin.store');
         });
 
         /*

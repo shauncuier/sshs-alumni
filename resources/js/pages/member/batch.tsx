@@ -138,7 +138,7 @@ function MemberCard({ member }: { member: DirectoryMember }) {
     const getInitials = useInitials();
 
     return (
-        <Card className="hover:border-brand-green-300 transition-colors">
+        <Card className="hover:border-brand-green-600 transition-colors">
             <CardContent className="flex items-start gap-3 p-4">
                 <Avatar className="size-12 shrink-0">
                     {member.photo_url !== null && (

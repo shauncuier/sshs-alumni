@@ -52,6 +52,24 @@ return [
         'contact' => 'Contact',
     ],
 
+    'schedule' => [
+        'title' => 'Programme',
+        'empty' => 'The programme will be published once the committee settles it.',
+    ],
+
+    'sponsors' => [
+        'title' => 'Our sponsors',
+        'empty' => 'Sponsors will be announced here.',
+        'become' => 'Sponsor the Jubilee',
+    ],
+
+    'faq' => [
+        'title' => 'Frequently asked questions',
+        'empty' => 'Questions will be answered here as they come in.',
+    ],
+
+    'no_event' => 'The Golden Jubilee has not been set up yet.',
+
     'cta' => [
         'register' => 'Register now',
         'become_member' => 'Become a member',
