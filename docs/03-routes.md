@@ -110,21 +110,30 @@ Route::middleware(['auth', 'verified'])->group(function () { … });
 Route::middleware(['auth', 'verified', 'member.approved'])->group(function () { … });
 ```
 
-| Method       | URI                          | Name                                     |
-| ------------ | ---------------------------- | ---------------------------------------- |
-| GET          | `/directory`                 | `directory.index`                        |
-| GET          | `/directory/{member:ulid}`   | `directory.show`                         |
-| GET          | `/community`                 | `community.index`                        |
-| GET          | `/community/{post:ulid}`     | `community.show`                         |
-| POST         | `/community`                 | `community.store` · `throttle:10,1`      |
-| PATCH/DELETE | `/community/{post}`          | `community.update` / `community.destroy` |
-| POST         | `/community/{post}/comments` | `community.comment` · `throttle:20,1`    |
-| DELETE       | `/comments/{comment}`        | `comments.destroy`                       |
-| POST         | `/community/{post}/react`    | `community.react`                        |
-| POST         | `/reports`                   | `reports.store` · `throttle:10,1`        |
-| GET/POST     | `/my/stories`                | `my.stories.*` — submit an alumni story  |
+| Method     | URI                                       | Name                                             |
+| ---------- | ----------------------------------------- | ------------------------------------------------ |
+| GET        | `/directory`                              | `directory.index`                                |
+| GET        | `/directory/{member:ulid}`                | `directory.show`                                 |
+| GET        | `/community`                              | `community.index`                                |
+| POST       | `/community`                              | `community.store` · `throttle:20,1`              |
+| GET        | `/community/{post:ulid}`                  | `community.show`                                 |
+| PUT/DELETE | `/community/{post:ulid}`                  | `community.update` / `community.destroy`         |
+| POST       | `/community/{post:ulid}/comments`         | `community.comments.store` · `throttle:30,1`     |
+| DELETE     | `/community/comments/{comment}`           | `community.comments.destroy`                     |
+| POST       | `/community/{post:ulid}/reactions`        | `community.reactions` · `throttle:60,1`          |
+| POST       | `/community/comments/{comment}/reactions` | `community.comments.reactions` · `throttle:60,1` |
+| POST       | `/community/{post:ulid}/reports`          | `community.reports` · `throttle:10,1`            |
+| POST       | `/community/comments/{comment}/reports`   | `community.comments.reports` · `throttle:10,1`   |
+| GET/POST   | `/my/stories`                             | `my.stories.*` — submit an alumni story          |
 
 `EnsureMemberApproved` rejects members whose `status` is not `approved`, and renders a status page explaining where they are in the verification workflow rather than a bare 403.
+
+**Declaration order matters in the community group.** The `community/comments/{comment}` routes are declared BEFORE `community/{post:ulid}`, because `DELETE community/comments/3` would otherwise be matched by the post route and fail on a ULID that is the word `comments`.
+
+**Two rules govern what a member sees**, and both live on the model (`Post::scopeVisibleTo()` for lists, `Post::isVisibleTo()` for a single row) so the feed and the post page cannot drift apart:
+
+1. Published only — unless you wrote it. An author still reads their own hidden post.
+2. A post with a `batch_id` belongs to that batch. A post the reader may not see is a **404, not a 403**: confirming that a batch post exists is itself a small disclosure.
 
 ---
 
@@ -234,6 +243,9 @@ missing either gate.
 | **Community**                                     |                                       |                                                                       |
 | `/community/posts`                                | `admin.community.posts`               | `community.moderate`                                                  |
 | `/community/reports`                              | `admin.community.reports`             | `community.moderate`                                                  |
+| PUT `/community/posts/{post:ulid}`                | `admin.community.posts.update`        | `community.moderate` — status, pin, comments open/closed              |
+| PUT `/community/comments/{comment}`               | `admin.community.comments.update`     | `community.moderate` — status only; a moderator never edits the text  |
+| PUT `/community/reports/{report}`                 | `admin.community.reports.resolve`     | `community.moderate` — resolve or dismiss                             |
 | **CMS**                                           |                                       |                                                                       |
 | `/news` (resource)                                | `admin.news.*`                        | `content.manage`                                                      |
 | `/announcements` (resource)                       | `admin.announcements.*`               | `content.manage`                                                      |
@@ -261,7 +273,6 @@ missing either gate.
 **There is deliberately no route to edit or delete a payment.** A mistake is
 corrected by refunding and re-recording, and both are audited. A test walks the
 live route list and fails if one appears.
-
 
 ---
 
@@ -295,7 +306,10 @@ Auth via Laravel Sanctum personal access tokens. Responses are the **same API Re
 | Registration submit                         | 5/min              | prevents bulk fake members                      |
 | Public forms (contact, donate, sponsorship) | 6/min              | spam                                            |
 | Member verification lookup                  | 30/min             | QR scanning is bursty but ULIDs are unguessable |
-| Post / comment / report creation            | 10–20/min          | community spam                                  |
+| Post creation                               | 20/min             | community spam                                  |
+| Comment creation                            | 30/min             | a lively thread is legitimate                   |
+| Reactions                                   | 60/min             | tapping through a feed is legitimate            |
+| Content reports                             | 10/min             | report-bombing                                  |
 | Event check-in scan                         | 120/min            | a volunteer scanning a queue at the gate        |
 | Report export                               | 10/min             | exports are expensive                           |
 | Global API                                  | 60/min per token   |                                                 |

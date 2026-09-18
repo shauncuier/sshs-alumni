@@ -27,9 +27,20 @@ class ContentReportFactory extends Factory
             'reportable_id' => Post::factory(),
             'reason' => fake()->randomElement(ReportReason::cases()),
             'note' => fake()->paragraph(),
-            'status' => fake()->randomElement(ReportStatus::cases()),
+            // Open, because that is what a report IS when it is filed. A
+            // random status would mean half the queue in a test is work that
+            // somebody already did.
+            'status' => ReportStatus::Open,
             'resolved_at' => null,
-            'resolution_note' => fake()->word(),
+            'resolution_note' => null,
         ];
+    }
+
+    public function resolved(): static
+    {
+        return $this->state(fn (): array => [
+            'status' => ReportStatus::Resolved,
+            'resolved_at' => now(),
+        ]);
     }
 }

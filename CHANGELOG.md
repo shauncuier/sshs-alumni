@@ -6,6 +6,86 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 6 — Community · 2026-09-18
+
+**Status: complete**
+
+### Added
+
+- **The feed** — posts in nine categories, filtered, searched, paginated; pinned first, then whatever was last talked on.
+- **Comments**, threaded one level. **Reactions** — four kinds, one per member per item. **Photos** — up to four per post, re-encoded through the existing media pipeline.
+- **Mentions** — `@member:{ulid}`, resolved at render time.
+- **Reports and a moderation queue** — two admin screens, every action audited with its reason.
+
+### Two rules decide what a member sees, and they live on the model
+
+`Post::scopeVisibleTo()` for lists and `Post::isVisibleTo()` for a single row are the same two rules written twice, on the model, so the feed and the post page cannot drift apart. A controller that reimplemented the batch rule would be exactly where they drifted.
+
+1. **Published only — unless you wrote it.** An author still reads their own hidden post. Being moderated is not the same as being lied to about whether your words still exist, and the post carries a notice saying a moderator has hidden it.
+2. **A post with a `batch_id` belongs to that batch.** Batch discussion is the one place members expect a smaller room than the whole association.
+
+A post the reader may not see is a **404, not a 403**. Confirming that a batch post exists is itself a small disclosure.
+
+### A moderator cannot edit a member's words
+
+`PostPolicy::update()` is the author and nobody else — there is no moderator branch in it, and a test asserts a Moderator gets a 403 from the edit endpoint. Moderators hide, remove, pin and close comments. All four are visible, all four are reversible, and all four are audited. **Nothing in this application publishes different words under somebody else's name.**
+
+Hiding and removing are different: hidden leaves a post readable by its author and by moderators, removed takes it from everyone but moderators. Neither deletes the row — a member who complains that their post disappeared is owed an answer, and an empty table cannot give one.
+
+### Reporting is not moderation
+
+Filing a report hides nothing and tells nobody else. It puts the item in a queue. **If a report took content down on its own, the community would have been handed a delete button for anybody with a grudge.**
+
+- The same member reporting the same item twice creates nothing — the second report tells a moderator no more than the first.
+- Reporting your own post is a 403. The author can simply delete it.
+- The reporter gets the same message either way. Learning that somebody else already reported a post tells you something about another member's opinion of it, which is not yours to know.
+- Closing a report closes **every other open report on the same item**, so two moderators cannot work the same post twice.
+- **`dismissed` is a first-class outcome.** Most reports of a heated batch argument are somebody wanting the argument to stop; recording that a moderator looked and decided nothing was wrong is exactly as valuable as recording a removal. Reports are never deleted — a queue that can be emptied by deleting the awkward entries is not a record of anything.
+
+### Where the privacy line falls here, and why it is not the directory's line
+
+Posting is a public act inside the community: you cannot write under a name nobody may see. So the **name is always present**. What a member controls is what follows from it — whether their face appears beside their words, and whether their name is a door into the profile they closed. `photo_url` and `url` are **absent** from the payload for a hidden member, not null, in keeping with the rest of the resource layer.
+
+The same rule governs mentions: an unresolvable `@member:{ulid}` renders as the literal characters the author typed. That is the honest failure — it says somebody was mentioned without inventing who.
+
+### Counters that cannot drift
+
+`posts.comments_count` and `posts.reactions_count` are maintained by observers on `Comment` and `Reaction`, and they **recount** rather than increment.
+
+A counter incremented on create and decremented on delete is correct only while those are the only two things that happen, and they are not: a moderator hides a comment, a soft-deleted comment is restored, comments go one by one from a moderation queue. Every path would have to remember, and the first one that forgot would leave a post permanently claiming four comments while showing three. A recount is one indexed aggregate over a handful of rows.
+
+`last_activity_at` is bumped by a comment and **not** by a reaction — a post should not climb back to the top of the feed because one person tapped a heart on it.
+
+### Rendered as text, never as markup
+
+The body is member-authored, so there is no `dangerouslySetInnerHTML` anywhere in the community components and there must never be one. The only thing that becomes a link is a mention, matched against a fixed `@member:{ulid}` pattern and looked up in a map the server built — never constructed from the text itself.
+
+### Smaller decisions worth their comment
+
+| Decision                                    | Why                                                                                                                                                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| One reaction per member, enforced by UNIQUE | Two taps on a phone with a bad connection arrive as two requests; a check-then-insert loses that race. Same pattern as event check-in.                                                           |
+| A reply to a reply re-points at the parent  | One level deep, because a thread that nests forever is unreadable on the phone most of this association reads it on. The member did nothing wrong, so their words are kept rather than rejected. |
+| The post's author can delete a comment      | Somebody who starts a thread is responsible for it. Waiting on a moderator to remove an insult under your own memorial post is not a reasonable ask.                                             |
+| A batch post goes to the author's own batch | There is no field for choosing one. Posting into a cohort you did not attend is not a thing this application does.                                                                               |
+| Category and batch are not editable         | Moving a post between rooms after people have replied changes who can read the replies.                                                                                                          |
+| Posts are not `Auditable`                   | Every member fixing their own typo would write an audit row, and the moderation record would be buried in ordinary traffic. Moderation writes its own row, with the reason.                      |
+
+### Verified
+
+- **449 tests, 1,618 assertions** (397 → 449). PHPStan level 7, TypeScript and the frontend linter clean.
+- 37 new tests across three files: the feed and its two visibility rules, reactions and reporting and the queue, and mentions and the author payload.
+- `PaginationShapeTest` now covers the three new paginated pages, so the envelope bug that shipped three times cannot come back through this phase.
+- Two tests were flaky before they were committed, both for the same reason: `batches.ssc_year` is UNIQUE and `BatchFactory` picks a year at random, so a test creating a batch per member collided roughly one run in fifteen. Fixed by sharing one batch where the batch does not matter and pinning explicit years where it does.
+
+**The authenticated pages were not driven in a browser this time.** The demo database was rebuilt during the phase, and signing back in means typing a password, which is not something I do. The rendering is covered by the suite — every page is requested through the real Vite manifest, so a missing or misnamed component is a 500 — but nobody has looked at the layout. Sign in as `member@example.test` and open `/community` if you want that pass.
+
+### Not done in this phase
+
+**The public home page is still the Laravel starter `welcome` page.** `/` renders `resources/js/pages/welcome.tsx` — the association's front door was never built, and it is the first thing Phase 7 does. Mention notifications wait for Phase 8 with the rest of the notification layer.
+
+---
+
 ## Phase 5 — Money, volunteers, committees · 2026-09-18
 
 **Status: complete**
@@ -54,13 +134,13 @@ Standing a committee member down keeps the row, marked `past` with an end date: 
 
 ### Bugs found and fixed during the phase
 
-| Bug                                                  | Why it mattered                                                                                                                       |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **Five pages returned a bare paginator, AGAIN**       | Third occurrence of this exact bug, in the third phase running. `->through()` keeps the page numbers at the top level; the Pagination component reads `meta` and throws. Found in the browser, invisible to every data assertion. Now fixed structurally — see below. |
-| `$payment->payerMember` does not exist                | The relation is `payer`. Written from the column name rather than from the model.                                                     |
-| `Donation::$donorMember` does not exist               | Same mistake, same cause — the relation is `donor`.                                                                                   |
-| Four more `?->` on the left of `??`                   | PHPStan enforces it across the codebase now. `Sponsor::amountDue()` was rewritten as explicit branches, because a triple `??` chain over a negotiated amount, a package price and a default is worth reading rather than parsing. |
-| `CrmContact::find()` widening to a Collection         | Third occurrence of this one. `whereKey(...)->first()` says what was meant.                                                           |
+| Bug                                             | Why it mattered                                                                                                                                                                                                                                                       |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Five pages returned a bare paginator, AGAIN** | Third occurrence of this exact bug, in the third phase running. `->through()` keeps the page numbers at the top level; the Pagination component reads `meta` and throws. Found in the browser, invisible to every data assertion. Now fixed structurally — see below. |
+| `$payment->payerMember` does not exist          | The relation is `payer`. Written from the column name rather than from the model.                                                                                                                                                                                     |
+| `Donation::$donorMember` does not exist         | Same mistake, same cause — the relation is `donor`.                                                                                                                                                                                                                   |
+| Four more `?->` on the left of `??`             | PHPStan enforces it across the codebase now. `Sponsor::amountDue()` was rewritten as explicit branches, because a triple `??` chain over a negotiated amount, a package price and a default is worth reading rather than parsing.                                     |
+| `CrmContact::find()` widening to a Collection   | Third occurrence of this one. `whereKey(...)->first()` says what was meant.                                                                                                                                                                                           |
 
 ### The pagination shape, finally nailed down
 
@@ -475,8 +555,7 @@ Written before any application code, so the design could be reviewed and correct
 
 ## Upcoming
 
-| Phase                                 | Scope                                                                                                                                                 |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **6 — Community**                     | posts · comments · reactions · reports · moderation                                                                                                   |
-| **7 — CMS**                           | pages · news · announcements · gallery · stories · school history · FAQs · media library                                                              |
-| **8 — Reports & hardening**           | 11 reports · charts · global search · campaigns (mail + SMS) · notifications · audit viewer · SEO · performance · security sweep · doc reconciliation |
+| Phase                       | Scope                                                                                                                                                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **7 — CMS**                 | pages · news · announcements · gallery · stories · school history · FAQs · media library                                                              |
+| **8 — Reports & hardening** | 11 reports · charts · global search · campaigns (mail + SMS) · notifications · audit viewer · SEO · performance · security sweep · doc reconciliation |

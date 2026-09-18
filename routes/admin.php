@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Admin\CheckinController;
 use App\Http\Controllers\Admin\CommitteeController;
+use App\Http\Controllers\Admin\CommunityController;
 use App\Http\Controllers\Admin\CrmActivityController;
 use App\Http\Controllers\Admin\CrmContactController;
 use App\Http\Controllers\Admin\CrmPipelineController;
@@ -310,6 +311,21 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
             // part of the association's record.
             Route::delete('committees/{committee}/members/{committeeMember}', [CommitteeController::class, 'removeMember'])
                 ->name('committees.members.destroy');
+        });
+
+        /*
+        | Community moderation
+        |
+        | Two screens on purpose: the posts list is everything, for a moderator
+        | who has been told about something; the reports queue is what members
+        | flagged, which is the actual work.
+        */
+        Route::middleware('can:community.moderate')->prefix('community')->name('community.')->group(function (): void {
+            Route::get('posts', [CommunityController::class, 'posts'])->name('posts');
+            Route::get('reports', [CommunityController::class, 'reports'])->name('reports');
+            Route::put('posts/{post:ulid}', [CommunityController::class, 'updatePost'])->name('posts.update');
+            Route::put('comments/{comment}', [CommunityController::class, 'updateComment'])->name('comments.update');
+            Route::put('reports/{report}', [CommunityController::class, 'resolveReport'])->name('reports.resolve');
         });
 
         /*

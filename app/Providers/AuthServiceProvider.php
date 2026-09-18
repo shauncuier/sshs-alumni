@@ -6,7 +6,9 @@ namespace App\Providers;
 
 use App\Concerns\Auditable;
 use App\Models\Batch;
+use App\Models\Comment;
 use App\Models\Committee;
+use App\Models\ContentReport;
 use App\Models\CrmContact;
 use App\Models\CrmTask;
 use App\Models\Donation;
@@ -14,13 +16,19 @@ use App\Models\Event;
 use App\Models\Member;
 use App\Models\MembershipFee;
 use App\Models\Payment;
+use App\Models\Post;
+use App\Models\Reaction;
 use App\Models\Sponsor;
 use App\Models\User;
 use App\Models\Volunteer;
 use App\Observers\AuditObserver;
+use App\Observers\CommentObserver;
 use App\Observers\MemberObserver;
+use App\Observers\ReactionObserver;
 use App\Policies\BatchPolicy;
+use App\Policies\CommentPolicy;
 use App\Policies\CommitteePolicy;
+use App\Policies\ContentReportPolicy;
 use App\Policies\CrmContactPolicy;
 use App\Policies\CrmTaskPolicy;
 use App\Policies\DonationPolicy;
@@ -28,6 +36,7 @@ use App\Policies\EventPolicy;
 use App\Policies\MemberPolicy;
 use App\Policies\MembershipFeePolicy;
 use App\Policies\PaymentPolicy;
+use App\Policies\PostPolicy;
 use App\Policies\SponsorPolicy;
 use App\Policies\VolunteerPolicy;
 use Illuminate\Database\Eloquent\Model;
@@ -60,6 +69,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Payment::class, PaymentPolicy::class);
         Gate::policy(Sponsor::class, SponsorPolicy::class);
         Gate::policy(Volunteer::class, VolunteerPolicy::class);
+        Gate::policy(Post::class, PostPolicy::class);
+        Gate::policy(Comment::class, CommentPolicy::class);
+        Gate::policy(ContentReport::class, ContentReportPolicy::class);
     }
 
     private function configureGates(): void
@@ -77,6 +89,13 @@ class AuthServiceProvider extends ServiceProvider
     private function registerObservers(): void
     {
         Member::observe(MemberObserver::class);
+
+        // Counter caches for the community feed. On the models rather than in
+        // the controllers, because a comment is written from more than one
+        // place and a count maintained by whoever remembers is a count that
+        // is wrong.
+        Comment::observe(CommentObserver::class);
+        Reaction::observe(ReactionObserver::class);
 
         // Every model using the Auditable concern is audited, discovered
         // rather than listed — so adding the trait to a new model is all that

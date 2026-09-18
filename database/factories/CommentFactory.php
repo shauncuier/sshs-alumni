@@ -27,7 +27,12 @@ class CommentFactory extends Factory
             'commentable_id' => Post::factory(),
             'author_member_id' => Member::factory(),
             'body' => fake()->paragraph(),
-            'status' => fake()->randomElement(CommentStatus::cases()),
+            'status' => CommentStatus::Published,
         ];
+    }
+
+    public function hidden(): static
+    {
+        return $this->state(fn (): array => ['status' => CommentStatus::Hidden]);
     }
 }

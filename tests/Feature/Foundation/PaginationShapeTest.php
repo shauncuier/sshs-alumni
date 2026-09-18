@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 use App\Models\Batch;
+use App\Models\ContentReport;
 use App\Models\CrmContact;
 use App\Models\Donation;
 use App\Models\Event;
 use App\Models\Member;
 use App\Models\MembershipFee;
+use App\Models\Post;
 use App\Models\Sponsor;
 use App\Models\User;
 use App\Models\Volunteer;
@@ -59,6 +61,8 @@ dataset('paginated pages', [
     'donations' => ['/admin/donations', 'donations'],
     'sponsors' => ['/admin/sponsors', 'sponsors'],
     'volunteers' => ['/admin/volunteers', 'volunteers'],
+    'community posts' => ['/admin/community/posts', 'posts'],
+    'community reports' => ['/admin/community/reports', 'reports'],
 ]);
 
 it('gives every paginated admin page a meta envelope', function (string $url, string $prop): void {
@@ -70,6 +74,10 @@ it('gives every paginated admin page a meta envelope', function (string $url, st
     Donation::factory()->create();
     Sponsor::factory()->create();
     Volunteer::factory()->create();
+    ContentReport::factory()->create([
+        'reportable_type' => Post::class,
+        'reportable_id' => Post::factory()->create(['author_member_id' => $member->id])->id,
+    ]);
 
     $this->actingAs(superAdmin())
         ->get($url)
@@ -93,8 +101,13 @@ it('gives the member pages the same envelope', function (): void {
     ]);
 
     Donation::factory()->create(['donor_member_id' => $member->id]);
+    Post::factory()->create(['author_member_id' => $member->id]);
 
-    foreach ([['/my/payments', 'payments'], ['/my/donations', 'donations']] as [$url, $prop]) {
+    foreach ([
+        ['/my/payments', 'payments'],
+        ['/my/donations', 'donations'],
+        ['/community', 'posts'],
+    ] as [$url, $prop]) {
         $this->actingAs($user)
             ->get($url)
             ->assertOk()

@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Member\BatchController;
 use App\Http\Controllers\Member\CardController;
+use App\Http\Controllers\Member\CommentController;
+use App\Http\Controllers\Member\CommunityController;
+use App\Http\Controllers\Member\ContentReportController;
 use App\Http\Controllers\Member\DashboardController;
 use App\Http\Controllers\Member\DirectoryController;
 use App\Http\Controllers\Member\EventController;
 use App\Http\Controllers\Member\PaymentController;
 use App\Http\Controllers\Member\ProfileController;
+use App\Http\Controllers\Member\ReactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -84,5 +88,47 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         // Bound by ULID so profiles cannot be walked by incrementing an id.
         Route::get('directory/{member:ulid}', [DirectoryController::class, 'show'])
             ->name('directory.show');
+
+        /*
+        | The community.
+        |
+        | ORDER MATTERS. The comment routes are declared BEFORE the
+        | `community/{post:ulid}` routes, because `DELETE community/comments/3`
+        | would otherwise be matched by the post route and fail on a ULID that
+        | is the word "comments".
+        |
+        | Writes are throttled. A feed is the one place in the application
+        | where a script can produce unbounded rows, and the limits are set
+        | where a real person will never meet them.
+        */
+        Route::prefix('community')->name('community.')->group(function (): void {
+            Route::delete('comments/{comment}', [CommentController::class, 'destroy'])
+                ->name('comments.destroy');
+            Route::post('comments/{comment}/reactions', [ReactionController::class, 'comment'])
+                ->middleware('throttle:60,1')
+                ->name('comments.reactions');
+            Route::post('comments/{comment}/reports', [ContentReportController::class, 'comment'])
+                ->middleware('throttle:10,1')
+                ->name('comments.reports');
+
+            Route::post('{post:ulid}/comments', [CommentController::class, 'store'])
+                ->middleware('throttle:30,1')
+                ->name('comments.store');
+            Route::post('{post:ulid}/reactions', [ReactionController::class, 'post'])
+                ->middleware('throttle:60,1')
+                ->name('reactions');
+            Route::post('{post:ulid}/reports', [ContentReportController::class, 'post'])
+                ->middleware('throttle:10,1')
+                ->name('reports');
+
+            Route::put('{post:ulid}', [CommunityController::class, 'update'])->name('update');
+            Route::delete('{post:ulid}', [CommunityController::class, 'destroy'])->name('destroy');
+            Route::get('{post:ulid}', [CommunityController::class, 'show'])->name('show');
+        });
+
+        Route::get('community', [CommunityController::class, 'index'])->name('community.index');
+        Route::post('community', [CommunityController::class, 'store'])
+            ->middleware('throttle:20,1')
+            ->name('community.store');
     });
 });

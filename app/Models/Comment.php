@@ -8,6 +8,7 @@ use App\Enums\CommentStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\CommentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -86,5 +87,27 @@ class Comment extends Model
     public function reactions(): MorphMany
     {
         return $this->morphMany(Reaction::class, 'reactable');
+    }
+
+    /**
+     * @return MorphMany<ContentReport, $this>
+     */
+    public function reports(): MorphMany
+    {
+        return $this->morphMany(ContentReport::class, 'reportable');
+    }
+
+    /**
+     * Comments a reader may see.
+     *
+     * A hidden comment leaves no gap and no "removed by moderator" placeholder
+     * in the thread: the placeholder is an invitation to guess what it said,
+     * and guessing is usually worse than the comment was.
+     *
+     * @param  Builder<$this>  $query
+     */
+    public function scopePublished(Builder $query): void
+    {
+        $query->where('status', CommentStatus::Published);
     }
 }

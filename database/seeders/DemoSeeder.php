@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\MemberStatus;
+use App\Enums\PostCategory;
+use App\Enums\ReactionType;
 use App\Enums\RelationType;
 use App\Models\Batch;
+use App\Models\Comment;
 use App\Models\Member;
+use App\Models\Post;
+use App\Models\Reaction;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -50,6 +55,7 @@ class DemoSeeder extends Seeder
         $this->approvedMember();
         $this->pendingMember();
         $this->sampleMembers();
+        $this->communityPosts();
     }
 
     private function admin(): void
@@ -127,6 +133,77 @@ class DemoSeeder extends Seeder
                         'full_name' => $member->full_name.' '.self::MARKER,
                     ])->save();
                 });
+        }
+    }
+
+    /**
+     * A handful of posts, so the feed, the thread and the moderation queue
+     * have something in them.
+     *
+     * One is a batch post, because the batch rule is the thing most worth
+     * seeing work: it should be invisible to everybody outside that cohort.
+     */
+    private function communityPosts(): void
+    {
+        if (Post::query()->exists()) {
+            return;
+        }
+
+        $author = Member::query()
+            ->whereNotNull('user_id')
+            ->where('status', MemberStatus::Approved)
+            ->first();
+
+        if ($author === null) {
+            return;
+        }
+
+        $others = Member::query()
+            ->where('status', MemberStatus::Approved)
+            ->whereKeyNot($author->id)
+            ->limit(3)
+            ->get();
+
+        $seed = [
+            [PostCategory::Memories, 'The old assembly ground', 'Does anybody have photographs of the assembly ground before the new block went up?'],
+            [PostCategory::Jubilee, 'Golden Jubilee volunteers', 'We need help with registration on the day. Reply here if you can spare a morning.'],
+            [PostCategory::Career, 'Graduates looking for placements', 'If your organisation takes interns, say so here. Several of our recent batches are looking.'],
+        ];
+
+        foreach ($seed as [$category, $title, $body]) {
+            $post = Post::query()->create([
+                'author_member_id' => $author->id,
+                'category' => $category,
+                'title' => $title,
+                'body' => $body,
+                'comments_enabled' => true,
+            ]);
+
+            foreach ($others as $index => $member) {
+                Comment::query()->create([
+                    'commentable_type' => $post->getMorphClass(),
+                    'commentable_id' => $post->id,
+                    'author_member_id' => $member->id,
+                    'body' => 'Demo comment '.($index + 1).' '.self::MARKER,
+                ]);
+
+                Reaction::query()->firstOrCreate([
+                    'reactable_type' => $post->getMorphClass(),
+                    'reactable_id' => $post->id,
+                    'member_id' => $member->id,
+                ], ['type' => ReactionType::Like]);
+            }
+        }
+
+        if ($author->batch_id !== null) {
+            Post::query()->create([
+                'author_member_id' => $author->id,
+                'category' => PostCategory::Batch,
+                'batch_id' => $author->batch_id,
+                'title' => 'Batch meetup',
+                'body' => 'Only our batch sees this one. Who is free on the last Friday of the month?',
+                'comments_enabled' => true,
+            ]);
         }
     }
 
