@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Concerns\Publishable;
 use App\Enums\ContentStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\NewsFactory;
@@ -44,7 +45,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class News extends Model
 {
     /** @use HasFactory<NewsFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, Publishable, SoftDeletes;
 
     protected $table = 'news';
 

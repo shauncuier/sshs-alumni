@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -42,6 +43,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  * @property CarbonImmutable|null $deleted_at
+ * @property-read int|null $gallery_images_count Loaded by withCount() in the media library.
  */
 #[Fillable([
     'model_type', 'model_id', 'collection', 'disk', 'path', 'thumb_path', 'original_name',
@@ -82,5 +84,19 @@ class Media extends Model
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    /**
+     * Gallery rows pointing at this file.
+     *
+     * The media library refuses to delete a file something still uses: a
+     * gallery image whose file vanished leaves a broken image on a public
+     * page, and whoever deleted it is never the person who finds out.
+     *
+     * @return HasMany<GalleryImage, $this>
+     */
+    public function galleryImages(): HasMany
+    {
+        return $this->hasMany(GalleryImage::class, 'media_id');
     }
 }

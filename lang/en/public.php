@@ -182,4 +182,104 @@ return [
         'member_count' => 'No members yet|:count member|:count members',
     ],
 
+    'home' => [
+        'jubilee_badge' => 'Golden Jubilee',
+        'members_cta' => 'Find your batch',
+        'read_all_news' => 'All news',
+        'all_events' => 'All events',
+        'all_photos' => 'All photos',
+        'all_stories' => 'All stories',
+        'full_timeline' => 'The full timeline',
+        'join_body' => 'Membership is open to former students, former and current teachers, and staff of the school.',
+        'seats_left' => 'No seats left|:count seat left|:count seats left',
+    ],
+
+    'news' => [
+        'title' => 'News',
+        'subtitle' => 'What the association has been doing.',
+        'empty' => 'Nothing published yet.',
+        'empty_filtered' => 'No article in this category.',
+        'all_categories' => 'Everything',
+        'featured' => 'Featured',
+        'published_on' => 'Published :date',
+        'related' => 'More like this',
+        'back' => 'Back to news',
+        'views' => 'No views|:count view|:count views',
+    ],
+
+    'announcements' => [
+        'title' => 'Announcements',
+        'subtitle' => 'Notices from the association.',
+        'empty' => 'Nothing at the moment.',
+        'pinned' => 'Pinned',
+        'until' => 'Until :date',
+        'batch_only' => 'For :batch',
+        'attachment' => 'Attachment',
+    ],
+
+    'gallery' => [
+        'title' => 'Gallery',
+        'subtitle' => 'Photographs from reunions, functions and school days.',
+        'empty' => 'No albums published yet.',
+        'album_empty' => 'This album has no photographs yet.',
+        'photos' => 'No photos|:count photo|:count photos',
+        'back' => 'Back to the gallery',
+        'open_full' => 'Open the full-size photograph',
+    ],
+
+    'stories' => [
+        'title' => 'Alumni Stories',
+        'subtitle' => 'Where the school\'s former students have got to.',
+        'empty' => 'No stories published yet.',
+        'featured' => 'Featured',
+        'by' => 'By :name',
+        'back' => 'Back to stories',
+        'submit_cta' => 'Log in as a member to tell yours.',
+    ],
+
+    'about' => [
+        'title' => 'About',
+        'subtitle' => 'The association, and the school it belongs to.',
+        'association' => 'The Association',
+        'association_body' => 'The Former Students Association exists to keep the school\'s alumni in touch with one another and with the school - through reunions, scholarships, and the work its committees do between them.',
+        'founded' => 'Founded :year',
+        'school' => 'The School',
+        'school_link' => 'The school\'s story',
+        'faqs' => 'Common questions',
+        'faqs_empty' => 'No questions published yet.',
+        'contact_cta' => 'Ask us something',
+    ],
+
+    'school' => [
+        'title' => 'The School',
+        'subtitle' => 'Fifty years, and the milestones along them.',
+        'founded' => 'Founded',
+        'eiin' => 'EIIN :number',
+        'board' => 'Board',
+        'head_teacher' => 'Head teacher',
+        'timeline' => 'Milestones',
+        'timeline_empty' => 'The timeline is still being collected.',
+        'timeline_partial' => 'The association is still collecting the school\'s history. If you remember something that belongs here, tell us.',
+    ],
+
+    'page' => [
+        'updated' => 'Last updated :date',
+    ],
+
+    'contact' => [
+        'title' => 'Contact',
+        'subtitle' => 'A person reads these. There is no automatic reply.',
+        'association' => 'The association',
+        'school' => 'The school',
+        'form_title' => 'Write to us',
+        'name' => 'Your name',
+        'email' => 'Your email',
+        'phone' => 'Your phone, if you would rather be called',
+        'subject' => 'What it is about',
+        'message' => 'Your message',
+        'send' => 'Send',
+        'sent' => 'Thank you. Somebody from the association will be in touch.',
+        'privacy_note' => 'What you write is stored with the association\'s records so whoever replies can see it. It is not published anywhere.',
+    ],
+
 ];

@@ -13,6 +13,7 @@ use App\Http\Controllers\Member\EventController;
 use App\Http\Controllers\Member\PaymentController;
 use App\Http\Controllers\Member\ProfileController;
 use App\Http\Controllers\Member\ReactionController;
+use App\Http\Controllers\Member\StoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,6 +53,21 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])
             ->name('payments.receipt');
         Route::get('donations', [PaymentController::class, 'donations'])->name('donations');
+
+        /*
+        | The member's own alumni story.
+        |
+        | Submitted as pending and read by somebody before it appears. The
+        | member sees it whatever state it is in, including rejected: a
+        | submission that silently never appears is how people conclude they
+        | were ignored.
+        */
+        Route::get('stories', [StoryController::class, 'index'])->name('stories');
+        Route::post('stories', [StoryController::class, 'store'])
+            ->middleware('throttle:5,1')
+            ->name('stories.store');
+        Route::put('stories/{story}', [StoryController::class, 'update'])->name('stories.update');
+        Route::delete('stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
 
         Route::get('events', [EventController::class, 'index'])->name('events');
         Route::get('events/{registration}', [EventController::class, 'show'])->name('events.ticket');

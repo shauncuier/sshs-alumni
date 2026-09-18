@@ -4,16 +4,26 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\AnnouncementKind;
+use App\Enums\AnnouncementLevel;
+use App\Enums\AudienceScope;
+use App\Enums\ContentStatus;
 use App\Enums\MemberStatus;
 use App\Enums\PostCategory;
 use App\Enums\ReactionType;
 use App\Enums\RelationType;
+use App\Enums\StoryStatus;
+use App\Models\AlumniStory;
+use App\Models\Announcement;
 use App\Models\Batch;
 use App\Models\Comment;
+use App\Models\GalleryAlbum;
 use App\Models\Member;
+use App\Models\News;
 use App\Models\Post;
 use App\Models\Reaction;
 use App\Models\User;
+use App\Support\SlugFactory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use RuntimeException;
@@ -56,6 +66,7 @@ class DemoSeeder extends Seeder
         $this->pendingMember();
         $this->sampleMembers();
         $this->communityPosts();
+        $this->content();
     }
 
     private function admin(): void
@@ -203,6 +214,91 @@ class DemoSeeder extends Seeder
                 'title' => 'Batch meetup',
                 'body' => 'Only our batch sees this one. Who is free on the last Friday of the month?',
                 'comments_enabled' => true,
+            ]);
+        }
+    }
+
+    /**
+     * A little published content, so the home page and the public site are not
+     * a set of empty sections in development.
+     *
+     * Everything here is marked [DEMO] and removed by `demo:purge`.
+     */
+    private function content(): void
+    {
+        if (News::query()->exists()) {
+            return;
+        }
+
+        $author = User::query()->where('email', 'admin@example.test')->first();
+
+        $articles = [
+            [
+                'title' => 'Golden Jubilee planning is under way',
+                'excerpt' => 'The committee has begun work on the fiftieth anniversary programme.',
+                'category' => 'Jubilee',
+                'is_featured' => true,
+            ],
+            [
+                'title' => 'Scholarship fund reaches its first target',
+                'excerpt' => 'Contributions from three batches have funded the first year of support.',
+                'category' => 'Association',
+                'is_featured' => false,
+            ],
+        ];
+
+        foreach ($articles as $article) {
+            $news = News::query()->create([
+                ...$article,
+                'slug' => SlugFactory::unique(News::class, $article['title'], 'news'),
+                'body' => $article['excerpt'].' '.self::MARKER,
+                'author_id' => $author?->id,
+                'status' => ContentStatus::Published,
+                'published_at' => now()->subDays(count($articles)),
+            ]);
+
+            unset($news);
+        }
+
+        Announcement::query()->create([
+            'kind' => AnnouncementKind::Notice,
+            'title' => 'Office hours during the holidays '.self::MARKER,
+            'body' => 'The association office is open on Sunday and Tuesday mornings only.',
+            'level' => AnnouncementLevel::Info,
+            'audience' => AudienceScope::Public,
+            'status' => ContentStatus::Published,
+            'starts_at' => now()->subDay(),
+            'ends_at' => now()->addMonth(),
+            'published_by' => $author?->id,
+        ]);
+
+        $album = GalleryAlbum::query()->create([
+            'slug' => SlugFactory::unique(GalleryAlbum::class, 'Reunion photographs', 'album'),
+            'title' => 'Reunion photographs '.self::MARKER,
+            'description' => 'Pictures from the last association gathering.',
+            'status' => ContentStatus::Published,
+            'published_at' => now()->subWeek(),
+        ]);
+
+        unset($album);
+
+        $member = Member::query()
+            ->whereNotNull('user_id')
+            ->where('status', MemberStatus::Approved)
+            ->first();
+
+        if ($member !== null) {
+            AlumniStory::query()->create([
+                'slug' => SlugFactory::unique(AlumniStory::class, 'What the school gave me', 'story'),
+                'member_id' => $member->id,
+                'author_name' => $member->full_name,
+                'batch_id' => $member->batch_id,
+                'title' => 'What the school gave me',
+                'body' => 'A short demo story. '.self::MARKER.' '.str_repeat('It goes on for a paragraph or so. ', 8),
+                'career_summary' => 'Engineer',
+                'status' => StoryStatus::Published,
+                'published_at' => now()->subDays(3),
+                'is_featured' => true,
             ]);
         }
     }

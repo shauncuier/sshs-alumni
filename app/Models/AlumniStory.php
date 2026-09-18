@@ -8,6 +8,7 @@ use App\Enums\StoryStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\AlumniStoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -89,5 +90,20 @@ class AlumniStory extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    /**
+     * Stories a visitor may read.
+     *
+     * StoryStatus rather than ContentStatus, which is why this model does not
+     * use the shared Publishable trait: a story is not drafted and published,
+     * it is SUBMITTED and then reviewed, and `rejected` is a state that
+     * `draft` does not describe.
+     *
+     * @param  Builder<$this>  $query
+     */
+    public function scopePublished(Builder $query): void
+    {
+        $query->where('status', StoryStatus::Published);
     }
 }

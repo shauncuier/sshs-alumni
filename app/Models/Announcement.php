@@ -11,6 +11,7 @@ use App\Enums\ContentStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\AnnouncementFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -78,5 +79,60 @@ class Announcement extends Model
     public function publisher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'published_by');
+    }
+
+    /**
+     * Announcements that are live right now.
+     *
+     * TIME-WINDOWED, which is why this model does not use the shared
+     * Publishable trait: an announcement is not published on a date and then
+     * permanent, it runs between two of them. "Registration closes on Friday"
+     * is worse than useless on Saturday, and expecting somebody to remember to
+     * take it down is expecting the wrong thing.
+     *
+     * Both ends are optional. No `starts_at` means it is live as soon as it is
+     * published; no `ends_at` means it stays until somebody drafts it.
+     *
+     * @param  Builder<$this>  $query
+     */
+    public function scopeLive(Builder $query): void
+    {
+        $query
+            ->where('status', ContentStatus::Published)
+            ->where(fn (Builder $inner) => $inner
+                ->whereNull('starts_at')
+                ->orWhere('starts_at', '<=', now()))
+            ->where(fn (Builder $inner) => $inner
+                ->whereNull('ends_at')
+                ->orWhere('ends_at', '>=', now()));
+    }
+
+    /**
+     * Narrowed to what one reader is entitled to see.
+     *
+     * A guest gets `public` only. A signed-in member also gets `members`, and
+     * the announcements aimed at their own batch. `role` audiences are
+     * deliberately NOT resolved here — no announcement targets a role yet, and
+     * a scope that guessed at the rule would be a guess nobody tested.
+     *
+     * @param  Builder<$this>  $query
+     */
+    public function scopeForAudience(Builder $query, ?Member $reader): void
+    {
+        if ($reader === null || ! $reader->isApproved()) {
+            $query->where('audience', AudienceScope::Public);
+
+            return;
+        }
+
+        $batchId = $reader->batch_id;
+
+        $query->where(function (Builder $inner) use ($batchId): void {
+            $inner
+                ->whereIn('audience', [AudienceScope::Public, AudienceScope::Members])
+                ->orWhere(fn (Builder $batch) => $batch
+                    ->where('audience', AudienceScope::Batch)
+                    ->where('batch_id', $batchId));
+        });
     }
 }

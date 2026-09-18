@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone } from 'lucide-react';
 import { BrandMark } from '@/components/shared/brand-mark';
 import { useSetting } from '@/hooks/use-setting';
 import { useTranslation } from '@/hooks/use-translation';
-import { formatNumber } from '@/lib/format';
+import { formatYear } from '@/lib/format';
 import type { PublicNavItem } from '@/types/shared';
 
 export function SiteFooter() {
@@ -58,13 +58,13 @@ export function SiteFooter() {
                         {schoolEstablished && (
                             <div className="flex gap-2">
                                 <dt>{t('public.nav.about_school')}:</dt>
-                                <dd>{formatNumber(schoolEstablished)}</dd>
+                                <dd>{formatYear(schoolEstablished)}</dd>
                             </div>
                         )}
                         {orgEstablished && (
                             <div className="flex gap-2">
                                 <dt>{t('public.nav.about_association')}:</dt>
-                                <dd>{formatNumber(orgEstablished)}</dd>
+                                <dd>{formatYear(orgEstablished)}</dd>
                             </div>
                         )}
                     </dl>
@@ -158,7 +158,7 @@ export function SiteFooter() {
 
             <div className="border-t border-white/10">
                 <p className="mx-auto max-w-7xl px-4 py-5 text-center text-xs text-white/50">
-                    © {formatNumber(year)} — {t('public.hero.organisation')}.{' '}
+                    © {formatYear(year)} — {t('public.hero.organisation')}.{' '}
                     {t('public.footer.rights')}
                 </p>
             </div>

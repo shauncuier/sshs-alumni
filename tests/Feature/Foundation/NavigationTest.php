@@ -7,8 +7,9 @@ use App\Models\Member;
 use App\Models\User;
 use App\Support\Navigation;
 use Database\Seeders\RolePermissionSeeder;
-use Illuminate\Routing\Route as RouteInstance;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * The navigation is built from route NAMES, and an unregistered name is simply
@@ -42,14 +43,22 @@ describe('navigation route names', function (): void {
 
         expect($hrefs)->not->toBeEmpty();
 
-        // Every rendered href must resolve back to a registered GET route.
-        $getUris = collect(Route::getRoutes()->getRoutes())
-            ->filter(fn (RouteInstance $route): bool => in_array('GET', $route->methods(), true))
-            ->map(fn (RouteInstance $route): string => '/'.ltrim($route->uri(), '/'))
-            ->all();
-
+        // Every rendered href must actually ROUTE.
+        //
+        // Not "must appear in the list of route URIs" — the legal pages
+        // resolve to `/p/privacy-policy` through a route declared as
+        // `p/{page:slug}`, and a string comparison cannot see that those are
+        // the same thing. Asking the router is both simpler and stricter.
         foreach ($hrefs as $href) {
-            expect($getUris)->toContain($href);
+            $routed = true;
+
+            try {
+                Route::getRoutes()->match(Request::create($href, 'GET'));
+            } catch (NotFoundHttpException) {
+                $routed = false;
+            }
+
+            expect($routed)->toBeTrue("Navigation renders {$href}, which does not route.");
         }
     });
 
@@ -57,23 +66,10 @@ describe('navigation route names', function (): void {
         // A name that does not resolve is allowed ONLY while its phase is
         // unbuilt. Anything not on this list is a typo.
         $notBuiltYet = [
-            'admin.news.index',
-            'admin.announcements.index',
-            'admin.gallery.index',
-            'admin.pages.index',
-            'admin.history.index',
-            'admin.community.posts',
             'admin.reports.index',
             'admin.users.index',
             'admin.audit.index',
             'admin.settings.edit',
-            'community.index',
-            'about',
-            'news.index',
-            'gallery.index',
-            'contact',
-            'stories.index',
-            'pages.show',
         ];
 
         $missing = collect(Navigation::allRouteNames())
@@ -100,6 +96,28 @@ describe('navigation route names', function (): void {
         expect(Route::has('admin.volunteers.index'))->toBeTrue();
         expect(Route::has('committees.index'))->toBeTrue();
         expect(Route::has('donate'))->toBeTrue();
+
+        // Phase 6.
+        expect(Route::has('community.index'))->toBeTrue();
+        expect(Route::has('admin.community.posts'))->toBeTrue();
+
+        // Phase 7.
+        expect(Route::has('home'))->toBeTrue();
+        expect(Route::has('about'))->toBeTrue();
+        expect(Route::has('news.index'))->toBeTrue();
+        expect(Route::has('gallery.index'))->toBeTrue();
+        expect(Route::has('stories.index'))->toBeTrue();
+        expect(Route::has('contact'))->toBeTrue();
+        expect(Route::has('pages.show'))->toBeTrue();
+        expect(Route::has('admin.news.index'))->toBeTrue();
+        expect(Route::has('admin.announcements.index'))->toBeTrue();
+        expect(Route::has('admin.gallery.index'))->toBeTrue();
+        expect(Route::has('admin.pages.index'))->toBeTrue();
+        expect(Route::has('admin.history.index'))->toBeTrue();
+        expect(Route::has('admin.stories.index'))->toBeTrue();
+        expect(Route::has('admin.faqs.index'))->toBeTrue();
+        expect(Route::has('admin.media.index'))->toBeTrue();
+        expect(Route::has('my.stories'))->toBeTrue();
     });
 });
 

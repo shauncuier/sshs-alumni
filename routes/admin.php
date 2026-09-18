@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Admin\CheckinController;
 use App\Http\Controllers\Admin\CommitteeController;
@@ -14,11 +15,18 @@ use App\Http\Controllers\Admin\CrmTaskController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DonationController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\HistoryController;
+use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\MembershipFeeController;
+use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SponsorController;
+use App\Http\Controllers\Admin\StoryController;
 use App\Http\Controllers\Admin\TicketTypeController;
 use App\Http\Controllers\Admin\VerificationController;
 use App\Http\Controllers\Admin\VolunteerController;
@@ -326,6 +334,72 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
             Route::put('posts/{post:ulid}', [CommunityController::class, 'updatePost'])->name('posts.update');
             Route::put('comments/{comment}', [CommunityController::class, 'updateComment'])->name('comments.update');
             Route::put('reports/{report}', [CommunityController::class, 'resolveReport'])->name('reports.resolve');
+        });
+
+        /*
+        | Content.
+        |
+        | WRITING AND PUBLISHING ARE DIFFERENT PERMISSIONS. `content.manage`
+        | writes; `content.publish` makes it public. A batch coordinator can
+        | draft an item about their own cohort without being able to put it on
+        | the front page, which is the whole reason there are two permissions
+        | rather than one.
+        */
+        Route::middleware('can:content.view')->group(function (): void {
+            Route::get('news', [NewsController::class, 'index'])->name('news.index');
+            Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
+            Route::get('gallery', [GalleryController::class, 'index'])->name('gallery.index');
+            Route::get('gallery/{album}', [GalleryController::class, 'show'])->name('gallery.show');
+            Route::get('pages', [PageController::class, 'index'])->name('pages.index');
+            Route::get('history', [HistoryController::class, 'index'])->name('history.index');
+            Route::get('faqs', [FaqController::class, 'index'])->name('faqs.index');
+            Route::get('stories', [StoryController::class, 'index'])->name('stories.index');
+            Route::get('media', [MediaController::class, 'index'])->name('media.index');
+        });
+
+        Route::middleware('can:content.manage')->group(function (): void {
+            Route::post('news', [NewsController::class, 'store'])->name('news.store');
+            Route::put('news/{news}', [NewsController::class, 'update'])->name('news.update');
+            Route::delete('news/{news}', [NewsController::class, 'destroy'])->name('news.destroy');
+
+            Route::post('announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
+            Route::put('announcements/{announcement}', [AnnouncementController::class, 'update'])->name('announcements.update');
+            Route::delete('announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+
+            Route::post('gallery', [GalleryController::class, 'store'])->name('gallery.store');
+            Route::put('gallery/{album}', [GalleryController::class, 'update'])->name('gallery.update');
+            Route::delete('gallery/{album}', [GalleryController::class, 'destroy'])->name('gallery.destroy');
+            Route::post('gallery/{album}/images', [GalleryController::class, 'upload'])->name('gallery.upload');
+            Route::put('gallery-images/{image}', [GalleryController::class, 'updateImage'])->name('gallery.images.update');
+            Route::delete('gallery-images/{image}', [GalleryController::class, 'destroyImage'])->name('gallery.images.destroy');
+
+            Route::post('pages', [PageController::class, 'store'])->name('pages.store');
+            Route::put('pages/{page}', [PageController::class, 'update'])->name('pages.update');
+            // The privacy policy and the terms refuse deletion with a 403,
+            // enforced in the controller rather than hidden in the UI.
+            Route::delete('pages/{page}', [PageController::class, 'destroy'])->name('pages.destroy');
+
+            Route::post('history', [HistoryController::class, 'store'])->name('history.store');
+            Route::put('history/{milestone}', [HistoryController::class, 'update'])->name('history.update');
+            Route::delete('history/{milestone}', [HistoryController::class, 'destroy'])->name('history.destroy');
+
+            Route::post('faqs', [FaqController::class, 'store'])->name('faqs.store');
+            Route::put('faqs/{faq}', [FaqController::class, 'update'])->name('faqs.update');
+            Route::delete('faqs/{faq}', [FaqController::class, 'destroy'])->name('faqs.destroy');
+
+            Route::put('stories/{story}', [StoryController::class, 'update'])->name('stories.update');
+
+            Route::post('media', [MediaController::class, 'store'])->name('media.store');
+            // Refuses with a 409 while a gallery still points at the file.
+            Route::delete('media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
+        });
+
+        Route::middleware('can:content.publish')->group(function (): void {
+            Route::put('news/{news}/publish', [NewsController::class, 'publish'])->name('news.publish');
+            Route::put('announcements/{announcement}/publish', [AnnouncementController::class, 'publish'])->name('announcements.publish');
+            Route::put('gallery/{album}/publish', [GalleryController::class, 'publish'])->name('gallery.publish');
+            Route::put('pages/{page}/publish', [PageController::class, 'publish'])->name('pages.publish');
+            Route::put('stories/{story}/review', [StoryController::class, 'review'])->name('stories.review');
         });
 
         /*

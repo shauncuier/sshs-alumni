@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Concerns\Publishable;
 use App\Enums\ContentStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\GalleryAlbumFactory;
@@ -39,7 +40,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class GalleryAlbum extends Model
 {
     /** @use HasFactory<GalleryAlbumFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, Publishable, SoftDeletes;
 
     /**
      * @return array<string, string>

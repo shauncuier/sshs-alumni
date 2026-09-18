@@ -15,6 +15,21 @@ export function formatNumber(value: number, decimals = 0): string {
     });
 }
 
+/**
+ * A year, ungrouped.
+ *
+ * `formatNumber` would render 1976 as "1,976" — which is what shipped on the
+ * footer, and reads as a quantity rather than a date. A year is an identifier,
+ * not a count, so it never takes a thousands separator.
+ */
+export function formatYear(value: number | string | null | undefined): string {
+    if (value === null || value === undefined || value === '') {
+        return '';
+    }
+
+    return String(value);
+}
+
 export function formatCurrency(amount: number): string {
     return `BDT ${formatNumber(amount, 2)}`;
 }

@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/select';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { useTranslation } from '@/hooks/use-translation';
-import { formatNumber } from '@/lib/format';
+import { formatNumber, formatYear } from '@/lib/format';
 import AdminLayout from '@/layouts/admin-layout';
 import type { Paginated } from '@/types/member';
 import type { AdminBatchRow, Option } from '@/types/batch';
@@ -133,7 +133,7 @@ export default function BatchesIndex({
                                             identifier, so it follows the
                                             reading language. */}
                                         <td className="hidden p-3 sm:table-cell">
-                                            {formatNumber(batch.ssc_year)}
+                                            {formatYear(batch.ssc_year)}
                                         </td>
                                         <td className="p-3">
                                             {formatNumber(batch.members_count)}

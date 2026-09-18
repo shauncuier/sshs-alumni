@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Concerns\Publishable;
 use App\Enums\ContentStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\PageFactory;
@@ -38,7 +39,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Page extends Model
 {
     /** @use HasFactory<PageFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, Publishable, SoftDeletes;
 
     /**
      * @return array<string, string>
