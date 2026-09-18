@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Concerns\HasUlid;
 use App\Enums\DonationStatus;
+use App\Services\Payments\Contracts\Payable;
 use Carbon\CarbonImmutable;
 use Database\Factories\DonationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -43,7 +44,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'event_id', 'amount', 'currency', 'is_anonymous', 'message', 'status',
     'is_public', 'received_at',
 ])]
-class Donation extends Model
+class Donation extends Model implements Payable
 {
     /** @use HasFactory<DonationFactory> */
     use HasFactory, HasUlid, SoftDeletes;
@@ -92,5 +93,47 @@ class Donation extends Model
     public function payments(): MorphMany
     {
         return $this->morphMany(Payment::class, 'payable');
+    }
+
+    public function amountDue(): float
+    {
+        return (float) $this->amount;
+    }
+
+    public function paymentCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    public function payerMember(): ?Member
+    {
+        return $this->donor;
+    }
+
+    public function payerName(): string
+    {
+        return $this->donor_name;
+    }
+
+    public function paymentDescription(): string
+    {
+        return $this->campaign === null
+            ? __('admin.donations.description')
+            : __('admin.donations.description_campaign', ['campaign' => $this->campaign]);
+    }
+
+    public function markPaid(Payment $payment): void
+    {
+        $this->forceFill([
+            'status' => DonationStatus::Received,
+            'received_at' => $payment->paid_at ?? now(),
+        ])->save();
+    }
+
+    public function markUnpaid(Payment $payment): void
+    {
+        $this->forceFill([
+            'status' => DonationStatus::Refunded,
+        ])->save();
     }
 }

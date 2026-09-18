@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Public\BatchController;
+use App\Http\Controllers\Public\CommitteeController;
 use App\Http\Controllers\Public\EventController;
+use App\Http\Controllers\Public\GivingController;
 use App\Http\Controllers\Public\JubileeController;
 use App\Http\Controllers\Public\MemberVerifyController;
 use App\Http\Controllers\Public\RegistrationController;
@@ -73,6 +75,20 @@ Route::prefix('jubilee')->group(function (): void {
     Route::get('sponsors', [JubileeController::class, 'sponsors'])->name('jubilee.sponsors');
     Route::get('faq', [JubileeController::class, 'faq'])->name('jubilee.faq');
 });
+
+/*
+| Giving.
+|
+| No online payment is taken. The association collects in cash, by transfer
+| and through mobile financial services settled outside the platform, so these
+| pages say how to give and the office records it. Pretending to take a card
+| would be worse than honest instructions.
+*/
+Route::get('donate', [GivingController::class, 'donate'])->name('donate');
+Route::get('sponsorship', [GivingController::class, 'sponsorship'])->name('sponsorship');
+
+// Who runs the association. Serving members only.
+Route::get('committees', CommitteeController::class)->name('committees.index');
 
 /*
 | Batches — AGGREGATE COUNTS ONLY.

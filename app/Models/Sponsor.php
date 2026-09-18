@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Concerns\HasUlid;
 use App\Enums\SponsorKind;
 use App\Enums\SponsorStatus;
+use App\Services\Payments\Contracts\Payable;
 use Carbon\CarbonImmutable;
 use Database\Factories\SponsorFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -49,7 +50,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'contact_email', 'contact_phone', 'logo_path', 'website', 'amount', 'currency',
     'agreement_path', 'status', 'is_public', 'display_order', 'notes',
 ])]
-class Sponsor extends Model
+class Sponsor extends Model implements Payable
 {
     /** @use HasFactory<SponsorFactory> */
     use HasFactory, HasUlid, SoftDeletes;
@@ -89,5 +90,56 @@ class Sponsor extends Model
     public function payments(): MorphMany
     {
         return $this->morphMany(Payment::class, 'payable');
+    }
+
+    public function amountDue(): float
+    {
+        // A sponsor may pay a negotiated figure rather than the package
+        // price, and a custom sponsorship has neither.
+        if ($this->amount !== null) {
+            return (float) $this->amount;
+        }
+
+        return (float) ($this->package->amount ?? 0);
+    }
+
+    public function paymentCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * A sponsor is an organisation or an individual outside the membership.
+     * Where one happens to be an alumnus, the link lives on their CRM contact.
+     */
+    public function payerMember(): ?Member
+    {
+        return null;
+    }
+
+    public function payerName(): string
+    {
+        return $this->name;
+    }
+
+    public function paymentDescription(): string
+    {
+        return __('admin.sponsors.description', [
+            'package' => $this->package->name ?? __('admin.sponsors.custom'),
+        ]);
+    }
+
+    public function markPaid(Payment $payment): void
+    {
+        $this->forceFill(['status' => SponsorStatus::Paid])->save();
+    }
+
+    /**
+     * Back to confirmed, not pending: the agreement still stands even when the
+     * money has been returned.
+     */
+    public function markUnpaid(Payment $payment): void
+    {
+        $this->forceFill(['status' => SponsorStatus::Confirmed])->save();
     }
 }

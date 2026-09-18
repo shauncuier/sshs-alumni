@@ -70,6 +70,32 @@ return [
         'organised_by' => 'Organised by :name',
     ],
 
+    'giving' => [
+        'donate_title' => 'Donate',
+        'donate_subtitle' => 'Every contribution goes to the association and the school.',
+        'how' => 'How to give',
+        'how_hint' => 'We do not take card payments online. Contact the association using the details below and we will record your contribution and issue a receipt.',
+        'total_raised' => 'Raised so far',
+        'donors' => 'No donors yet|:count donor|:count donors',
+        'wall' => 'Recent donors',
+        'wall_empty' => 'Be the first.',
+        'wall_note' => 'Donors who asked to remain anonymous are not listed.',
+
+        'sponsorship_title' => 'Sponsorship',
+        'sponsorship_subtitle' => 'Support the Golden Jubilee and the association behind it.',
+        'packages' => 'Packages',
+        'package_full' => 'Fully subscribed',
+        'enquire' => 'Enquire about sponsoring',
+        'our_sponsors' => 'Our sponsors',
+        'sponsors_empty' => 'Sponsors will be announced here.',
+    ],
+
+    'committees' => [
+        'title' => 'Committees',
+        'subtitle' => 'The people who run the association.',
+        'empty' => 'Committee details will be published here.',
+    ],
+
     'footer' => [
         'about' => 'About',
         'quick_links' => 'Quick links',

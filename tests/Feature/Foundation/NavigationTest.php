@@ -57,11 +57,6 @@ describe('navigation route names', function (): void {
         // A name that does not resolve is allowed ONLY while its phase is
         // unbuilt. Anything not on this list is a typo.
         $notBuiltYet = [
-            'admin.volunteers.index',
-            'admin.committees.index',
-            'admin.payments.index',
-            'admin.donations.index',
-            'admin.sponsors.index',
             'admin.news.index',
             'admin.announcements.index',
             'admin.gallery.index',
@@ -73,15 +68,11 @@ describe('navigation route names', function (): void {
             'admin.audit.index',
             'admin.settings.edit',
             'community.index',
-            'my.payments',
-            'my.donations',
             'about',
             'news.index',
             'gallery.index',
             'contact',
-            'committees.index',
             'stories.index',
-            'donate',
             'pages.show',
         ];
 
@@ -105,6 +96,10 @@ describe('navigation route names', function (): void {
         expect(Route::has('my.card'))->toBeTrue();
         expect(Route::has('admin.crm.contacts.index'))->toBeTrue();
         expect(Route::has('admin.crm.pipeline'))->toBeTrue();
+        expect(Route::has('admin.payments.index'))->toBeTrue();
+        expect(Route::has('admin.volunteers.index'))->toBeTrue();
+        expect(Route::has('committees.index'))->toBeTrue();
+        expect(Route::has('donate'))->toBeTrue();
     });
 });
 

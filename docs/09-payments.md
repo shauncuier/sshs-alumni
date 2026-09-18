@@ -83,12 +83,34 @@ An admin with `payments.create` records a payment at `/admin/payments/record`:
 
 1. Writes the `payments` row with `gateway = manual`, `status = paid`, `recorded_by = {admin}`.
 2. Issues a `receipt_no`.
-3. Updates the payable's own status (fee paid, registration confirmed, sponsor confirmed).
-4. Writes an `audit_logs` row naming the recording admin.
+3. Updates the payable's own status — by calling `markPaid()` on the payable itself, so adding a fifth kind of payable never means editing the recorder.
+4. Writes an `audit_logs` row naming the recording admin (the `Auditable` concern on `Payment`).
 5. Writes a `crm_activities` `system` row on the payer's timeline.
-6. Dispatches `PaymentReceived` to the payer.
+6. Dispatches `PaymentReceived` to the payer. **(Phase 8 — the notification layer does not exist yet.)**
 
 Every one of those steps is required. Skipping the audit row would make offline cash handling untraceable, which is the single largest financial risk in a volunteer-run organization.
+
+### The `Payable` contract
+
+`MembershipFee`, `EventRegistration`, `Donation` and `Sponsor` each implement `App\Services\Payments\Contracts\Payable`:
+
+```php
+amountDue()           what is owed
+paymentCurrency()
+payerMember()         the alumni record, where there is one
+payerName()           what goes on the receipt
+paymentDescription()  what it was for, in words
+markPaid($payment)    settle itself
+markUnpaid($payment)  undo that on a refund
+```
+
+The payable settles ITSELF, inside the recorder's transaction. A fee can therefore never read `paid` while the ledger row that paid it is missing, and the reverse cannot happen either.
+
+`markUnpaid()` is deliberately not symmetrical across types: a refunded fee goes back to `pending` (the member still owes it), a refunded sponsorship goes back to `confirmed` (the agreement still stands).
+
+### Waiving is not paying
+
+A volunteer-run association waives fees routinely — a founding member, someone in hardship, a teacher. `membership_fees.waived` records that, and **no payment row is written**, because no money was received and the accounts must not claim otherwise. The reason is required: a waiver with no reason is indistinguishable from an oversight.
 
 ## 4. Statuses
 
@@ -113,7 +135,11 @@ pending ──> paid ──> refunded
 - `receipt_no` — issued on transition to `paid`. Format `RCP-{YYYY}-{SEQ}`.
 - `invoice_no` — issued for sponsorships, which are invoiced before payment. Format `INV-{YYYY}-{SEQ}`.
 
-Both are generated inside a transaction with a row lock so concurrent writes cannot collide, and both stay in **Latin digits in both locales** so they can be quoted over the phone and searched reliably.
+Both are generated inside a transaction with a row lock so concurrent writes cannot collide — two administrators recording cash at the same desk at the same moment is not hypothetical, and a duplicate receipt number is the kind of error discovered a year later by somebody who cannot fix it.
+
+The generator reads the **highest existing number** for the year rather than counting rows: a refunded payment keeps its receipt number, so a count would eventually collide.
+
+Both stay in **Latin digits** so they can be quoted over the phone and searched reliably.
 
 The documents themselves are rendered on demand — there are no `invoices` or `receipts` tables. See [02-database-schema.md §1.4](02-database-schema.md).
 

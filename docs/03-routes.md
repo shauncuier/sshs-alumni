@@ -209,16 +209,28 @@ missing either gate.
 | `/jubilee/schedule`                               | `admin.jubilee.schedule`              | `events.edit`                                                         |
 | **Money**                                         |                                       |                                                                       |
 | `/payments` (index, show)                         | `admin.payments.*`                    | `payments.view`                                                       |
-| `/payments/record` (GET/POST)                     | `admin.payments.record`               | `payments.create`                                                     |
+| `/payments` (POST)                                | `admin.payments.store`                | `payments.create` — records money already received                    |
 | `/payments/{payment}/refund` (POST)               | `admin.payments.refund`               | `payments.refund`                                                     |
-| `/membership-fees`                                | `admin.fees.*`                        | `payments.view`                                                       |
-| `/donations` (resource)                           | `admin.donations.*`                   | `donations.view` / `donations.manage`                                 |
-| `/sponsors` (resource)                            | `admin.sponsors.*`                    | `sponsors.view` / `sponsors.manage`                                   |
-| `/sponsorship-packages` (resource)                | `admin.packages.*`                    | `sponsors.manage`                                                     |
+| `/fees`                                           | `admin.fees.index`                    | `payments.view`                                                       |
+| `/fees/generate` (POST)                           | `admin.fees.generate`                 | `payments.create`                                                     |
+| `/fees/{fee}/pay` (POST)                          | `admin.fees.pay`                      | `payments.create`                                                     |
+| `/fees/{fee}/waive` (POST)                        | `admin.fees.waive`                    | `payments.create` — NOT a payment; writes no ledger row               |
+| `/donations`                                      | `admin.donations.index`               | `donations.view`                                                      |
+| `/donations` (POST)                               | `admin.donations.store`               | `donations.manage`                                                    |
+| `/donations/{donation}/receive` (POST)            | `admin.donations.receive`             | `donations.manage`                                                    |
+| `/sponsors`                                       | `admin.sponsors.index`                | `sponsors.view`                                                       |
+| `/sponsors` (POST), `/{sponsor}` (PUT)            | `admin.sponsors.store/update`         | `sponsors.manage`                                                     |
+| `/sponsors/{sponsor}/invoice` (POST)              | `admin.sponsors.invoice`              | `sponsors.manage` — issues an invoice number                          |
+| `/sponsors/{sponsor}/payment` (POST)              | `admin.sponsors.record`               | `sponsors.manage` — issues a receipt                                  |
 | **People**                                        |                                       |                                                                       |
-| `/volunteers` (resource)                          | `admin.volunteers.*`                  | `volunteers.view` / `volunteers.manage`                               |
-| `/volunteer-teams` (resource)                     | `admin.volunteer-teams.*`             | `volunteers.manage`                                                   |
-| `/committees` (resource)                          | `admin.committees.*`                  | `committees.view` / `committees.manage`                               |
+| `/volunteers`                                     | `admin.volunteers.index`              | `volunteers.view`                                                     |
+| `/volunteers` (POST), `/{volunteer}` (PUT)        | `admin.volunteers.store/update`       | `volunteers.manage`                                                   |
+| `/volunteers/{volunteer}/assignments` (POST)      | `admin.volunteers.assign`             | `volunteers.manage`                                                   |
+| `/assignments/{assignment}` (PUT)                 | `admin.volunteers.assignments.update` | `volunteers.manage`                                                   |
+| `/committees`                                     | `admin.committees.index`              | `committees.view`                                                     |
+| `/committees` (POST), `/{committee}` (PUT)        | `admin.committees.store/update`       | `committees.manage`                                                   |
+| `/committees/{committee}/members` (POST)          | `admin.committees.members.store`      | `committees.manage`                                                   |
+| `/committees/{c}/members/{m}` (DELETE)            | `admin.committees.members.destroy`    | `committees.manage` — stands down, keeps the record                   |
 | **Community**                                     |                                       |                                                                       |
 | `/community/posts`                                | `admin.community.posts`               | `community.moderate`                                                  |
 | `/community/reports`                              | `admin.community.reports`             | `community.moderate`                                                  |
@@ -245,6 +257,11 @@ missing either gate.
 | `/users` (resource)                               | `admin.users.*`                       | `users.manage`                                                        |
 | `/roles` (resource)                               | `admin.roles.*`                       | `roles.manage`                                                        |
 | `/audit-logs`                                     | `admin.audit.index`                   | `audit.view`                                                          |
+
+**There is deliberately no route to edit or delete a payment.** A mistake is
+corrected by refunding and re-recording, and both are audited. A test walks the
+live route list and fails if one appears.
+
 
 ---
 

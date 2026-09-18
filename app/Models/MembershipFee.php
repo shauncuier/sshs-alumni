@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\FeeStatus;
+use App\Services\Payments\Contracts\Payable;
 use Carbon\CarbonImmutable;
 use Database\Factories\MembershipFeeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -34,7 +35,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 #[Fillable([
     'member_id', 'period_label', 'amount', 'currency', 'due_at', 'status', 'waived', 'waived_reason',
 ])]
-class MembershipFee extends Model
+class MembershipFee extends Model implements Payable
 {
     /** @use HasFactory<MembershipFeeFactory> */
     use HasFactory;
@@ -66,5 +67,44 @@ class MembershipFee extends Model
     public function payments(): MorphMany
     {
         return $this->morphMany(Payment::class, 'payable');
+    }
+
+    public function amountDue(): float
+    {
+        return (float) $this->amount;
+    }
+
+    public function paymentCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    public function payerMember(): ?Member
+    {
+        return $this->member;
+    }
+
+    public function payerName(): string
+    {
+        return $this->member->full_name ?? '';
+    }
+
+    public function paymentDescription(): string
+    {
+        return __('admin.fees.description', ['period' => $this->period_label]);
+    }
+
+    public function markPaid(Payment $payment): void
+    {
+        $this->forceFill(['status' => FeeStatus::Paid])->save();
+    }
+
+    /**
+     * A refunded fee goes back to pending rather than cancelled: the member
+     * still owes it, and the association still expects it.
+     */
+    public function markUnpaid(Payment $payment): void
+    {
+        $this->forceFill(['status' => FeeStatus::Pending])->save();
     }
 }

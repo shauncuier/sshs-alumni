@@ -7,6 +7,7 @@ use App\Http\Controllers\Member\CardController;
 use App\Http\Controllers\Member\DashboardController;
 use App\Http\Controllers\Member\DirectoryController;
 use App\Http\Controllers\Member\EventController;
+use App\Http\Controllers\Member\PaymentController;
 use App\Http\Controllers\Member\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,14 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         | The pass is bound by ULID so tickets cannot be walked, and the
         | controller checks ownership on top of that.
         */
+        /*
+        | The member's own money. Scoped to their own records throughout.
+        */
+        Route::get('payments', [PaymentController::class, 'index'])->name('payments');
+        Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])
+            ->name('payments.receipt');
+        Route::get('donations', [PaymentController::class, 'donations'])->name('donations');
+
         Route::get('events', [EventController::class, 'index'])->name('events');
         Route::get('events/{registration}', [EventController::class, 'show'])->name('events.ticket');
         Route::delete('events/{registration}', [EventController::class, 'destroy'])->name('events.cancel');

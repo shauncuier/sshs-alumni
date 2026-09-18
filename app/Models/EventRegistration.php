@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Concerns\HasUlid;
 use App\Enums\PaymentStatus;
 use App\Enums\RegistrationStatus;
+use App\Services\Payments\Contracts\Payable;
 use Carbon\CarbonImmutable;
 use Database\Factories\EventRegistrationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -50,7 +51,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'registrant_email', 'registrant_phone', 'guests_count', 'amount_due', 'currency', 'status',
     'notes', 'registered_at',
 ])]
-class EventRegistration extends Model
+class EventRegistration extends Model implements Payable
 {
     /** @use HasFactory<EventRegistrationFactory> */
     use HasFactory, HasUlid, SoftDeletes;
@@ -123,5 +124,42 @@ class EventRegistration extends Model
     public function payments(): MorphMany
     {
         return $this->morphMany(Payment::class, 'payable');
+    }
+
+    public function amountDue(): float
+    {
+        return (float) $this->amount_due;
+    }
+
+    public function paymentCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    public function payerMember(): ?Member
+    {
+        return $this->member;
+    }
+
+    public function payerName(): string
+    {
+        return $this->registrant_name;
+    }
+
+    public function paymentDescription(): string
+    {
+        return __('admin.payments.for_event', [
+            'event' => $this->event->title ?? '',
+        ]);
+    }
+
+    public function markPaid(Payment $payment): void
+    {
+        $this->forceFill(['payment_status' => PaymentStatus::Paid])->save();
+    }
+
+    public function markUnpaid(Payment $payment): void
+    {
+        $this->forceFill(['payment_status' => PaymentStatus::Pending])->save();
     }
 }

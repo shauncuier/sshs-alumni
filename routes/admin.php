@@ -4,17 +4,23 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Admin\CheckinController;
+use App\Http\Controllers\Admin\CommitteeController;
 use App\Http\Controllers\Admin\CrmActivityController;
 use App\Http\Controllers\Admin\CrmContactController;
 use App\Http\Controllers\Admin\CrmPipelineController;
 use App\Http\Controllers\Admin\CrmTagController;
 use App\Http\Controllers\Admin\CrmTaskController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DonationController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\MemberController;
+use App\Http\Controllers\Admin\MembershipFeeController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SponsorController;
 use App\Http\Controllers\Admin\TicketTypeController;
 use App\Http\Controllers\Admin\VerificationController;
+use App\Http\Controllers\Admin\VolunteerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -214,6 +220,96 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
         Route::middleware('can:crm.manage')->group(function (): void {
             Route::post('members/{member}/activities', [CrmActivityController::class, 'storeForMember'])
                 ->name('members.activities.store');
+        });
+
+        /*
+        | Money
+        |
+        | One ledger. Fees, registrations, donations and sponsorships all
+        | resolve through `payments.payable`, so no two reports can disagree
+        | about income.
+        |
+        | There is no route to EDIT or DELETE a payment, deliberately: a
+        | mistake is corrected by refunding and re-recording, and both are
+        | audited. See docs/09-payments.md section 4.
+        */
+        Route::middleware('can:payments.view')->group(function (): void {
+            Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+            Route::get('payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+            Route::get('fees', [MembershipFeeController::class, 'index'])->name('fees.index');
+        });
+
+        Route::middleware('can:payments.create')->group(function (): void {
+            Route::post('payments', [PaymentController::class, 'store'])->name('payments.store');
+            Route::post('fees/generate', [MembershipFeeController::class, 'generate'])->name('fees.generate');
+            Route::post('fees/{fee}/pay', [MembershipFeeController::class, 'pay'])->name('fees.pay');
+            // Waiving is NOT paying: no ledger row, no receipt.
+            Route::post('fees/{fee}/waive', [MembershipFeeController::class, 'waive'])->name('fees.waive');
+        });
+
+        Route::middleware('can:payments.refund')->group(function (): void {
+            Route::post('payments/{payment}/refund', [PaymentController::class, 'refund'])->name('payments.refund');
+        });
+
+        /*
+        | Donations
+        */
+        Route::middleware('can:donations.view')->group(function (): void {
+            Route::get('donations', [DonationController::class, 'index'])->name('donations.index');
+        });
+
+        Route::middleware('can:donations.manage')->group(function (): void {
+            Route::post('donations', [DonationController::class, 'store'])->name('donations.store');
+            Route::post('donations/{donation}/receive', [DonationController::class, 'receive'])
+                ->name('donations.receive');
+        });
+
+        /*
+        | Sponsors
+        */
+        Route::middleware('can:sponsors.view')->group(function (): void {
+            Route::get('sponsors', [SponsorController::class, 'index'])->name('sponsors.index');
+        });
+
+        Route::middleware('can:sponsors.manage')->group(function (): void {
+            Route::post('sponsors', [SponsorController::class, 'store'])->name('sponsors.store');
+            Route::put('sponsors/{sponsor}', [SponsorController::class, 'update'])->name('sponsors.update');
+            Route::post('sponsors/{sponsor}/invoice', [SponsorController::class, 'invoice'])->name('sponsors.invoice');
+            Route::post('sponsors/{sponsor}/payment', [SponsorController::class, 'record'])->name('sponsors.record');
+        });
+
+        /*
+        | Volunteers
+        */
+        Route::middleware('can:volunteers.view')->group(function (): void {
+            Route::get('volunteers', [VolunteerController::class, 'index'])->name('volunteers.index');
+        });
+
+        Route::middleware('can:volunteers.manage')->group(function (): void {
+            Route::post('volunteers', [VolunteerController::class, 'store'])->name('volunteers.store');
+            Route::put('volunteers/{volunteer}', [VolunteerController::class, 'update'])->name('volunteers.update');
+            Route::post('volunteers/{volunteer}/assignments', [VolunteerController::class, 'assign'])
+                ->name('volunteers.assign');
+            Route::put('assignments/{assignment}', [VolunteerController::class, 'updateAssignment'])
+                ->name('volunteers.assignments.update');
+        });
+
+        /*
+        | Committees
+        */
+        Route::middleware('can:committees.view')->group(function (): void {
+            Route::get('committees', [CommitteeController::class, 'index'])->name('committees.index');
+        });
+
+        Route::middleware('can:committees.manage')->group(function (): void {
+            Route::post('committees', [CommitteeController::class, 'store'])->name('committees.store');
+            Route::put('committees/{committee}', [CommitteeController::class, 'update'])->name('committees.update');
+            Route::post('committees/{committee}/members', [CommitteeController::class, 'addMember'])
+                ->name('committees.members.store');
+            // Standing somebody down keeps the row: a committee's history is
+            // part of the association's record.
+            Route::delete('committees/{committee}/members/{committeeMember}', [CommitteeController::class, 'removeMember'])
+                ->name('committees.members.destroy');
         });
 
         /*

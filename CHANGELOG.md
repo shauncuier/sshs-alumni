@@ -6,6 +6,88 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 5 — Money, volunteers, committees · 2026-09-18
+
+**Status: complete**
+
+### Added
+
+- **The ledger** — one `payments` table for every kind of money. Fees, event registrations, donations and sponsorships all resolve through `payments.payable`, so no two reports can disagree about income.
+- **Gateway abstraction** — `PaymentGateway` contract, `ManualGateway`, `PaymentManager`, `config/payments.php`. Adding bKash, Nagad or SSLCommerz later is one class plus one config entry; nothing outside the namespace knows which driver is in use.
+- **Membership fees** — raised per period in bulk, paid, or waived.
+- **Donations** — recorded with or without a donor record, campaign-tagged, with a public wall.
+- **Sponsors and packages** — invoiced before payment, with slot counts so a tier is not promised twice.
+- **Volunteers, teams and assignments**; **committees** and who sits on them.
+- **Public pages** — `/donate`, `/sponsorship`, `/committees`. **Member pages** — payments, donations, and a printable receipt.
+
+### The ledger's invariants
+
+**Payments are never edited into a different amount and never deleted.** A mistake is corrected by refunding and re-recording, and both are audited. There is no `update` and no `delete` on `PaymentPolicy`, no route for either, and a test walks the live route list to prove it — a policy method for editing one would only invite a controller to exist for it.
+
+A refund preserves the original row **and its receipt number**. A ledger that erases its mistakes cannot be audited.
+
+**Every path that takes money goes through `PaymentRecorder`**, so the six things that must happen together cannot be half-done: the ledger row, the receipt number, the payable's own status, the audit row naming whoever recorded it, the CRM timeline entry, and (Phase 8) the notification. Skipping the audit row would make offline cash handling untraceable, which is the single largest financial risk in a volunteer-run organization — so it is not the caller's job to remember.
+
+### The `Payable` contract
+
+`MembershipFee`, `EventRegistration`, `Donation` and `Sponsor` each implement it. **The payable settles itself**, inside the recorder's transaction, so a fee can never read `paid` while the ledger row that paid it is missing — and adding a fifth kind of payable never means editing the recorder.
+
+`markUnpaid()` is deliberately asymmetric: a refunded fee goes back to `pending` (the member still owes it), a refunded sponsorship goes back to `confirmed` (the agreement still stands).
+
+### Waiving is not paying
+
+A volunteer-run association waives fees routinely — a founding member, someone in hardship, a teacher. Waiving sets `waived` and **writes no payment row**, because no money was received and the accounts must not claim it was. The reason is required: a waiver with no reason is indistinguishable from an oversight. The fees page shows waived separately from collected for the same reason.
+
+### Receipt numbers
+
+`RCP-2026-0001`, sequential within a calendar year, generated inside a transaction with a row lock. Two administrators recording cash at the same desk at the same moment is not hypothetical, and a duplicate receipt number is discovered a year later by somebody who cannot fix it.
+
+The generator reads the **highest existing number** rather than counting rows — a refunded payment keeps its number, so a count would eventually collide. There is a test for exactly that.
+
+### Honest about what the platform does not do
+
+`/donate` takes no card. The association collects in cash, by transfer and through mobile financial services settled outside the platform, so the page says how to give and the office records it. A payment button that did not work would be worse than honest instructions.
+
+The public donor wall is **opt-in twice over** — received, not anonymous, and marked public — and anonymous wins over everything. Somebody who asked not to be named must not be named because a checkbox elsewhere said otherwise. Three tests cover those three doors.
+
+Standing a committee member down keeps the row, marked `past` with an end date: a committee's history is part of the association's record, and deleting it would make the 2019 committee unreconstructable.
+
+### Bugs found and fixed during the phase
+
+| Bug                                                  | Why it mattered                                                                                                                       |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Five pages returned a bare paginator, AGAIN**       | Third occurrence of this exact bug, in the third phase running. `->through()` keeps the page numbers at the top level; the Pagination component reads `meta` and throws. Found in the browser, invisible to every data assertion. Now fixed structurally — see below. |
+| `$payment->payerMember` does not exist                | The relation is `payer`. Written from the column name rather than from the model.                                                     |
+| `Donation::$donorMember` does not exist               | Same mistake, same cause — the relation is `donor`.                                                                                   |
+| Four more `?->` on the left of `??`                   | PHPStan enforces it across the codebase now. `Sponsor::amountDue()` was rewritten as explicit branches, because a triple `??` chain over a negotiated amount, a package price and a default is worth reading rather than parsing. |
+| `CrmContact::find()` widening to a Collection         | Third occurrence of this one. `whereKey(...)->first()` says what was meant.                                                           |
+
+### The pagination shape, finally nailed down
+
+This bug has now shipped in Phase 2, Phase 3 and Phase 5, because the broken
+shape is invisible to a `->has('rows.data', 3)` assertion — the data is all
+there, only the envelope is wrong, and the page throws on render.
+
+Two things changed so it cannot happen a fourth time:
+
+- `App\Support\Paginated::from()` builds the `{data, meta}` envelope for every
+  controller that maps rows inline. Controllers with a Resource keep using the
+  Resource.
+- `tests/Feature/Foundation/PaginationShapeTest.php` walks **every** paginated
+  admin and member page and asserts `meta.last_page`, `meta.total` and
+  `meta.links`, and greps the controllers for a remaining `->through()`.
+
+### Verified, not assumed
+
+- **397 tests, 1,288 assertions** (369 → 397; the full suite, run at the phase boundary). PHPStan level 7, TypeScript and the frontend linter clean.
+- The admin payments, fees, donations, sponsors, volunteers and committees pages and the three public pages were opened in a real browser.
+
+### Not done in this phase
+
+`PaymentReceived` notifications: the notification layer arrives in Phase 8, and the hook is step six of `PaymentRecorder`. Receipts print through the browser rather than dompdf — Bengali conjunct shaping in dompdf is unreliable and the receipt carries the association's Bangla name, which is exactly the string that would break.
+
+---
+
 ## Phase 4 — CRM · 2026-09-18
 
 **Status: complete**
@@ -395,7 +477,6 @@ Written before any application code, so the design could be reviewed and correct
 
 | Phase                                 | Scope                                                                                                                                                 |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **5 — Money, volunteers, committees** | payment abstraction · fees · donations · sponsors · receipts · volunteers · committees                                                                |
 | **6 — Community**                     | posts · comments · reactions · reports · moderation                                                                                                   |
 | **7 — CMS**                           | pages · news · announcements · gallery · stories · school history · FAQs · media library                                                              |
 | **8 — Reports & hardening**           | 11 reports · charts · global search · campaigns (mail + SMS) · notifications · audit viewer · SEO · performance · security sweep · doc reconciliation |

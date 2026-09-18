@@ -6,18 +6,30 @@ namespace App\Providers;
 
 use App\Concerns\Auditable;
 use App\Models\Batch;
+use App\Models\Committee;
 use App\Models\CrmContact;
 use App\Models\CrmTask;
+use App\Models\Donation;
 use App\Models\Event;
 use App\Models\Member;
+use App\Models\MembershipFee;
+use App\Models\Payment;
+use App\Models\Sponsor;
 use App\Models\User;
+use App\Models\Volunteer;
 use App\Observers\AuditObserver;
 use App\Observers\MemberObserver;
 use App\Policies\BatchPolicy;
+use App\Policies\CommitteePolicy;
 use App\Policies\CrmContactPolicy;
 use App\Policies\CrmTaskPolicy;
+use App\Policies\DonationPolicy;
 use App\Policies\EventPolicy;
 use App\Policies\MemberPolicy;
+use App\Policies\MembershipFeePolicy;
+use App\Policies\PaymentPolicy;
+use App\Policies\SponsorPolicy;
+use App\Policies\VolunteerPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
@@ -42,6 +54,12 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Event::class, EventPolicy::class);
         Gate::policy(CrmContact::class, CrmContactPolicy::class);
         Gate::policy(CrmTask::class, CrmTaskPolicy::class);
+        Gate::policy(Committee::class, CommitteePolicy::class);
+        Gate::policy(Donation::class, DonationPolicy::class);
+        Gate::policy(MembershipFee::class, MembershipFeePolicy::class);
+        Gate::policy(Payment::class, PaymentPolicy::class);
+        Gate::policy(Sponsor::class, SponsorPolicy::class);
+        Gate::policy(Volunteer::class, VolunteerPolicy::class);
     }
 
     private function configureGates(): void

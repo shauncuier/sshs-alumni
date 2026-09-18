@@ -86,6 +86,22 @@ return [
         'not_approved' => 'Your card is issued once the committee approves your membership.',
     ],
 
+    'money' => [
+        'payments_title' => 'Payments',
+        'payments_empty' => 'Nothing recorded yet.',
+        'donations_title' => 'Donations',
+        'donations_empty' => 'You have not made a donation yet.',
+        'outstanding' => 'Outstanding',
+        'outstanding_empty' => 'Nothing owing.',
+        'total_paid' => 'Paid in total',
+        'total_given' => 'Given in total',
+        'receipt' => 'Receipt',
+        'view_receipt' => 'View receipt',
+        'print' => 'Print',
+        'overdue' => 'Overdue',
+        'pay_hint' => 'Contact the association to pay. We record it and issue a receipt.',
+    ],
+
     'directory' => [
         'count' => 'No members|:count member|:count members',
         'search_placeholder' => 'Search by name, organisation, city or membership number',
