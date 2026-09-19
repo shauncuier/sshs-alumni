@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\DonationController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\GlobalSearchController;
 use App\Http\Controllers\Admin\HistoryController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MemberController;
@@ -63,6 +64,7 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
     ->group(function (): void {
 
         Route::get('/', DashboardController::class)->name('dashboard');
+        Route::get('search', GlobalSearchController::class)->name('search');
 
         /*
         | Members & verification

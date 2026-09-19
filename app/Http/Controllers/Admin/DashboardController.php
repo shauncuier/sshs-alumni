@@ -5,13 +5,19 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\MemberStatus;
+use App\Enums\PaymentStatus;
 use App\Enums\TaskStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
 use App\Models\CrmContact;
 use App\Models\CrmTask;
+use App\Models\Donation;
 use App\Models\Event;
+use App\Models\EventRegistration;
 use App\Models\Member;
+use App\Models\Sponsor;
+use App\Models\Volunteer;
+use App\Services\Analytics\ChartDataService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -25,7 +31,7 @@ class DashboardController extends Controller
      * at fifty thousand members, `Member::all()->count()` is a memory problem
      * and a COUNT(*) is not.
      */
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request, ChartDataService $chartService): Response
     {
         return Inertia::render('admin/dashboard', [
             'stats' => [
@@ -37,9 +43,17 @@ class DashboardController extends Controller
                 'new_this_month' => Member::query()
                     ->where('created_at', '>=', now()->startOfMonth())
                     ->count(),
+                'active_members' => Member::query()->approved()->whereNotNull('user_id')->count(),
                 'batches' => Batch::query()->count(),
                 'events' => Event::query()->published()->count(),
+                'event_registrations' => EventRegistration::query()->count(),
+                'total_donations' => (float) Donation::query()->where('payment_status', PaymentStatus::Paid)->sum('amount'),
+                'total_sponsors' => Sponsor::query()->count(),
+                'total_volunteers' => Volunteer::query()->count(),
             ],
+
+            // Analytical charts, deferred behind animated skeletons.
+            'charts' => Inertia::defer(fn (): array => $chartService->getDashboardCharts()),
 
             // The flagship event, so the dashboard can say plainly whether the
             // Jubilee date has been published yet.

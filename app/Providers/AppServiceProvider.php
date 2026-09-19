@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Services\Communication\Contracts\SmsChannel;
 use App\Services\Communication\SmsManager;
+use App\Services\Search\Contracts\SearchDriver;
+use App\Services\Search\DatabaseSearchDriver;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Date;
@@ -25,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             SmsChannel::class,
             fn ($app): SmsChannel => $app->make(SmsManager::class)->driver(),
+        );
+
+        $this->app->bind(
+            SearchDriver::class,
+            DatabaseSearchDriver::class,
         );
     }
 

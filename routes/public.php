@@ -12,6 +12,7 @@ use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\JubileeController;
 use App\Http\Controllers\Public\MemberVerifyController;
 use App\Http\Controllers\Public\RegistrationController;
+use App\Http\Controllers\Public\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -157,3 +158,9 @@ Route::get('contact', [ContactController::class, 'show'])->name('contact');
 Route::post('contact', [ContactController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('contact.store');
+
+/*
+| SEO & Search Engine Discovery
+*/
+Route::get('sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('robots.txt', [SitemapController::class, 'robots'])->name('robots');

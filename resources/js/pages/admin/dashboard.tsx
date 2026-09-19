@@ -2,6 +2,9 @@ import { Deferred, Link, usePage } from '@inertiajs/react';
 import {
     CalendarClock,
     GraduationCap,
+    HeartHandshake,
+    ShieldCheck,
+    Ticket,
     UserCheck,
     UserPlus,
     Users,
@@ -13,14 +16,20 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from '@/hooks/use-translation';
 import { formatNumber } from '@/lib/format';
 import AdminLayout from '@/layouts/admin-layout';
+import { AdminCharts, type ChartData } from '@/components/admin/admin-charts';
 
 type Stats = {
     total_members: number;
     verified_members: number;
     pending_registrations: number;
     new_this_month: number;
+    active_members: number;
     batches: number;
     events: number;
+    event_registrations: number;
+    total_donations: number;
+    total_sponsors: number;
+    total_volunteers: number;
 };
 
 type Jubilee = {
@@ -38,9 +47,9 @@ type Crm = {
     overdue_tasks: number;
 };
 
-type Props = { stats: Stats; jubilee?: Jubilee | null; crm?: Crm | null };
+type Props = { stats: Stats; jubilee?: Jubilee | null; crm?: Crm | null; charts?: ChartData | null };
 
-const CARDS: {
+const PRIMARY_CARDS: {
     key: keyof Stats;
     label: string;
     icon: ComponentType<{ className?: string }>;
@@ -61,13 +70,19 @@ export default function AdminDashboard({ stats }: Props) {
     return (
         <AdminLayout title={t('admin.nav.dashboard')}>
             <div className="space-y-6">
-                <h1 className="text-2xl font-semibold">
-                    {t('admin.nav.dashboard')}
-                </h1>
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                        {t('admin.nav.dashboard')}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        Sabuj Shikshayatan Alumni Association administration and institutional command center.
+                    </p>
+                </div>
 
+                {/* Primary Membership KPI Cards */}
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    {CARDS.map((card) => (
-                        <Card key={card.key}>
+                    {PRIMARY_CARDS.map((card) => (
+                        <Card key={card.key} className="border-border/60 bg-card/60 backdrop-blur-sm shadow-xs">
                             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
                                 <CardTitle className="text-muted-foreground text-sm font-medium">
                                     {t(`admin.dashboard.${card.label}`)}
@@ -86,64 +101,111 @@ export default function AdminDashboard({ stats }: Props) {
                     ))}
                 </div>
 
-                {/* The Jubilee's date status, stated plainly — the committee
-                    should never have to guess whether the public site is
-                    showing a date. Deferred because it is a second query. */}
+                {/* Secondary Institutional Highlights */}
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-xs">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+                            <CardTitle className="text-muted-foreground text-sm font-medium">Total Giving</CardTitle>
+                            <HeartHandshake className="text-amber-400 size-4 shrink-0" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-semibold tabular-nums text-amber-500 font-mono">
+                                ৳{stats.total_donations.toLocaleString()}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Verified contributions</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-xs">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+                            <CardTitle className="text-muted-foreground text-sm font-medium">Event Passes</CardTitle>
+                            <Ticket className="text-sky-400 size-4 shrink-0" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-semibold tabular-nums">
+                                {formatNumber(stats.event_registrations)}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Across {stats.events} events</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-xs">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+                            <CardTitle className="text-muted-foreground text-sm font-medium">Active Cohorts</CardTitle>
+                            <GraduationCap className="text-teal-400 size-4 shrink-0" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-semibold tabular-nums">
+                                {formatNumber(stats.batches)}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">From SSC 1981 onwards</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-xs">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+                            <CardTitle className="text-muted-foreground text-sm font-medium">Volunteers & Staff</CardTitle>
+                            <ShieldCheck className="text-emerald-400 size-4 shrink-0" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-semibold tabular-nums">
+                                {formatNumber(stats.total_volunteers)}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Active team members</p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* The Jubilee's date status */}
                 <Deferred
                     data="jubilee"
-                    fallback={<Skeleton className="h-28 w-full rounded-xl" />}
+                    fallback={<Skeleton className="h-24 w-full rounded-xl" />}
                 >
                     <JubileeStatus />
                 </Deferred>
 
-                {/* The CRM's own numbers. Absent entirely for anybody without
-                    `crm.view` — a widget rendering zeroes at someone who
-                    cannot open the section is clutter. */}
+                {/* Analytical Charts */}
+                <Deferred
+                    data="charts"
+                    fallback={
+                        <div className="space-y-4">
+                            <Skeleton className="h-8 w-48 rounded" />
+                            <div className="grid gap-6 lg:grid-cols-2">
+                                <Skeleton className="h-72 w-full rounded-xl" />
+                                <Skeleton className="h-72 w-full rounded-xl" />
+                            </div>
+                            <div className="grid gap-6 md:grid-cols-3">
+                                <Skeleton className="h-60 w-full rounded-xl" />
+                                <Skeleton className="h-60 w-full rounded-xl" />
+                                <Skeleton className="h-60 w-full rounded-xl" />
+                            </div>
+                        </div>
+                    }
+                >
+                    <ChartsSection />
+                </Deferred>
+
+                {/* CRM Summary */}
                 <Deferred
                     data="crm"
                     fallback={<Skeleton className="h-28 w-full rounded-xl" />}
                 >
                     <CrmSummary />
                 </Deferred>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center gap-2 pb-2">
-                            <GraduationCap
-                                className="text-muted-foreground size-4"
-                                aria-hidden="true"
-                            />
-                            <CardTitle className="text-sm font-medium">
-                                {t('admin.nav.batches')}
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-2xl font-semibold tabular-nums">
-                                {formatNumber(stats.batches)}
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center gap-2 pb-2">
-                            <CalendarClock
-                                className="text-muted-foreground size-4"
-                                aria-hidden="true"
-                            />
-                            <CardTitle className="text-sm font-medium">
-                                {t('admin.nav.events')}
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-2xl font-semibold tabular-nums">
-                                {formatNumber(stats.events)}
-                            </p>
-                        </CardContent>
-                    </Card>
-                </div>
             </div>
         </AdminLayout>
     );
+}
+
+function ChartsSection() {
+    const page = usePage();
+    const charts = page.props.charts as ChartData | null | undefined;
+
+    if (!charts) {
+        return null;
+    }
+
+    return <AdminCharts data={charts} />;
 }
 
 function JubileeStatus({ jubilee }: { jubilee?: Jubilee | null }) {

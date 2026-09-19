@@ -6,6 +6,37 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 10 — Admin Dashboard Analytics, Global Search & SEO Suite · 2026-09-19
+
+**Status: complete**
+
+### Added
+
+- **Platform Analytics & Visual Charts Engine (`ChartDataService`, `AdminCharts`)** — database-driver-aware analytical aggregation engine supporting SQLite and MySQL, delivering 7 real-time SVG charts deferred via `Inertia::defer` with animated skeletons:
+  1. `members_over_time`: 12-month registration vs approved intake trends.
+  2. `members_by_batch`: Top 10 cohorts by membership strength.
+  3. `members_by_country`: International diaspora geographic distribution.
+  4. `members_by_district`: Domestic alumni presence across Bangladesh.
+  5. `members_by_profession`: Career & occupation distribution.
+  6. `event_registration_trend`: Recent event registration counts vs attended gate check-ins.
+  7. `donation_trend`: Monthly contribution totals in BDT (৳) over the past 12 months.
+- **Enriched Executive KPI cards** — real-time metric cards on `/admin`: Active verified members, total donations in BDT, event passes, active SSC cohorts, and volunteer workforce count.
+- **Administrative Global Search (`GlobalSearchService`, `DatabaseSearchDriver`, `GlobalSearchController`)** — multi-domain instant search endpoint (`/admin/search?q=...`) spanning 7 areas (Members, Batches, Events, CRM Contacts, News, Announcements, Pages) with strict permission scoping and batch coordinator reach constraints.
+- **Command Palette Search Modal (`GlobalSearchModal`)** — keyboard-driven search interface accessible via top header trigger button and global `⌘K` / `Ctrl+K` shortcut, featuring live debouncing, category badge filters, and Arrow/Enter navigation.
+- **Search Engine Discovery & SEO Suite (`SitemapController`)**:
+  - `GET /sitemap.xml` — dynamic UTF-8 XML sitemap indexing all public landing routes and published dynamic entities (news, events, batches, gallery albums, stories, and pages) with RFC-3339 last modified timestamps and priority weighting.
+  - `GET /robots.txt` — automated crawler directives disallowing sensitive and authenticated prefixes (`/admin/`, `/my/`, `/directory/`, `/verify/`, `/join/`, auth paths) while pointing web crawlers to the sitemap index.
+
+### Verified
+
+- **512 tests, 1,999 assertions** (502 → 512). Full test suite passing 100%.
+- 10 new tests across `DashboardTest`, `GlobalSearchTest`, and `SeoTest`.
+- Code style verified with Laravel Pint (`0 violations`).
+- Frontend type safety verified with TypeScript (`tsc --noEmit` clean).
+- Frontend production bundle compiled with Vite (`npm run build` exit code 0).
+
+---
+
 ## Phase 9 — System Settings, Audit Logs, Staff Management & Reports · 2026-09-19
 
 **Status: complete**
