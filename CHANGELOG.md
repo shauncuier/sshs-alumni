@@ -6,6 +6,43 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 7 — Front door, news & media, and content management · 2026-09-19
+
+**Status: complete**
+
+### Added
+
+- **The association front door (`/`)** — full replacement of the default starter page with the complete institutional front door. Powered by `HomeController`, delivering live stats (approved members, active cohorts, verified events, years since school inception), the Golden Jubilee spotlight card honoring the Date Rule, latest announcements, featured news, alumni stories showcase, school history timeline preview, and photo gallery preview.
+- **Unified publishing engine (`Publishable`)** — trait backing `News`, `Announcement`, `GalleryAlbum`, `Page`, and `AlumniStory`. Enforces standard publication lifecycle (`draft` → `published` → `archived`), publication timestamps, and scope filters (`scopePublished()`, `scopeLive()`).
+- **Separation of drafting and publishing** — `content.manage` authorizes drafting and local updates; `content.publish` authorizes public release. A Batch Coordinator can draft news for their own cohort without the ability to broadcast onto the association's public front page.
+- **Drafts are invisible, not forbidden** — returning a `404 Not Found` rather than a `403 Forbidden` for unpublished content. Strangers cannot probe for the existence of sensitive drafts or embargoed announcements by sniffing HTTP status codes.
+- **Audience scoping for announcements** — `public`, `members`, and `batch`. Public visitors read only general announcements; logged-in members see association-wide notices; batch announcements remain strictly isolated to the graduate's own SSC cohort.
+- **Member alumni stories** — graduates submit reflections through `/my/stories`. Submissions enter an admin review queue in `pending` status under the verified graduate's canonical name. Content managers approve, feature, or reject with reasoning preserved. Published stories are locked against author alteration to prevent post-approval defacement.
+- **School history milestones** — chronological milestone registry seeded from 1976 ("School journey begins") through modern expansion and Golden Jubilee preparations.
+- **Media library & gallery** — multi-photo album system with thumbnail generation, caption management, and referential integrity guards (409 Conflict if deleting media linked to active albums).
+- **System page safeguards** — core governance and compliance documents (Privacy Policy, Terms of Service) are tagged `is_system` and protected with controller-level deletion guards.
+- **Inquiry & contact portal** — rate-limited public contact channel with administrative management.
+- **Midnight Slate & Electric Teal visual redesign** — complete visual overhaul of all 22 public pages and auth layouts with dark frosted glassmorphism, responsive navigation bar, official institutional circular crest, and high-contrast typography.
+
+### Publication rules and audience isolation
+
+1. **Scheduled articles remain invisible until their date arrives.** Setting `published_at` in the future keeps an article out of index listings and returns a 404 until that instant passes.
+2. **Reading an article counts the view without touching `updated_at`.** Increments `views_count` directly using raw database operations so reader traffic does not corrupt the editorial modification timeline.
+3. **Republishing preserves original release chronology.** Re-activating or fixing typos in an older published article maintains its original `published_at` date so it does not falsely hijack the top of recent news feeds.
+
+### Verified
+
+- **475 tests, 1,782 assertions** (449 → 475). Full test suite passing 100%.
+- 26 new tests across `HomeAndAudienceTest` and `PublishingTest` covering audience boundaries, draft concealment, counter integrity, story submission lifecycles, and system page immutability.
+- Code style verified with Laravel Pint (`0 violations`).
+- Frontend type safety verified with TypeScript (`tsc --noEmit` clean).
+
+### Next up: Phase 8
+
+- **Communication & Notifications** — BulkSMSBD SMS gateway integration behind `SmsChannel`, transaction OTP formats, segmented SMS campaigns, email notifications, and the member in-app notification center.
+
+---
+
 ## Phase 6 — Community · 2026-09-18
 
 **Status: complete**
