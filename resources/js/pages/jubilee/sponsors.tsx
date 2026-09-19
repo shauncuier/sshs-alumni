@@ -38,19 +38,24 @@ export default function Sponsors({ event, sponsors }: Props) {
             title={t('jubilee.sponsors.title')}
         >
             {sponsors.length === 0 ? (
-                <EmptyState
-                    title={t('jubilee.sponsors.title')}
-                    description={t('jubilee.sponsors.empty')}
-                />
+                <div className="rounded-2xl border border-dashed border-teal-200/80 p-10 text-center">
+                    <EmptyState
+                        title={t('jubilee.sponsors.title')}
+                        description={t('jubilee.sponsors.empty')}
+                    />
+                </div>
             ) : (
-                <div className="space-y-10">
+                <div className="space-y-12">
                     {sponsors.map((group) => (
                         <section key={group.tier}>
-                            <h2 className="text-brand-gold-600 text-sm font-semibold tracking-wide uppercase">
-                                {group.label}
-                            </h2>
+                            <div className="flex items-center gap-3">
+                                <span className="inline-block h-4 w-1 rounded-full bg-amber-500" />
+                                <h2 className="text-sm font-bold tracking-widest text-amber-700 uppercase">
+                                    {group.label}
+                                </h2>
+                            </div>
 
-                            <ul className="mt-4 flex flex-wrap items-center gap-6">
+                            <ul className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                                 {group.sponsors.map((sponsor) => (
                                     <li key={sponsor.name}>
                                         <SponsorMark sponsor={sponsor} />
@@ -70,16 +75,19 @@ function SponsorMark({ sponsor }: { sponsor: Sponsor }) {
         <img
             src={sponsor.logo_url}
             alt={sponsor.name}
-            className="h-14 w-auto object-contain"
+            className="h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
         />
     ) : (
-        <span className="font-medium">{sponsor.name}</span>
+        <span className="text-center text-sm font-bold text-slate-800">
+            {sponsor.name}
+        </span>
     );
 
+    const baseClasses =
+        'glass-card-hover group flex h-28 w-full flex-col items-center justify-center rounded-2xl border border-teal-500/15 bg-white/80 p-5 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/50 hover:shadow-md';
+
     if (!sponsor.website) {
-        return (
-            <span className="bg-card block rounded-lg border p-4">{inner}</span>
-        );
+        return <div className={baseClasses}>{inner}</div>;
     }
 
     return (
@@ -87,7 +95,7 @@ function SponsorMark({ sponsor }: { sponsor: Sponsor }) {
             href={sponsor.website}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-card block rounded-lg border p-4 transition-opacity hover:opacity-80"
+            className={baseClasses}
         >
             {inner}
         </a>

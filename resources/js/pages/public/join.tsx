@@ -1,5 +1,16 @@
 import { router, useForm } from '@inertiajs/react';
-import { Check } from 'lucide-react';
+import {
+    ArrowLeft,
+    ArrowRight,
+    Briefcase,
+    Check,
+    GraduationCap,
+    Lock,
+    MapPin,
+    ShieldCheck,
+    Sparkles,
+    User,
+} from 'lucide-react';
 import type { FormEvent } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -58,6 +69,14 @@ const PRIVACY_FLAGS = [
     'show_in_batch_list',
 ] as const;
 
+const STEP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+    basic: User,
+    academic: GraduationCap,
+    professional: Briefcase,
+    location: MapPin,
+    review: ShieldCheck,
+};
+
 export default function Join({ step, steps, draft, options }: Props) {
     const { t } = useTranslation();
 
@@ -91,63 +110,130 @@ export default function Join({ step, steps, draft, options }: Props) {
             title={t('public.join.title')}
             description={t('public.join.subtitle')}
         >
-            <div className="bg-brand-cream">
-                <div className="mx-auto max-w-3xl px-4 py-10">
-                    <h1 className="text-brand-green-900 text-2xl font-semibold sm:text-3xl">
+            {/* ── Hero Header ────────────────────────────────────────────── */}
+            <header className="relative overflow-hidden bg-gradient-to-b from-[#060a17] via-[#0b1329] to-[#0d1b3a] text-white">
+                {/* Ambient Glow Orbs */}
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-96 w-[40rem] rounded-full bg-gradient-to-tr from-teal-500/15 via-cyan-500/15 to-transparent blur-3xl"
+                />
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-1/4 -right-20 h-72 w-72 rounded-full bg-amber-500/10 blur-3xl"
+                />
+
+                <div className="relative mx-auto max-w-4xl px-4 py-12 text-center sm:py-16">
+                    {/* Badge */}
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-500/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-teal-300 uppercase shadow-inner backdrop-blur-md">
+                        <Sparkles className="size-3.5 text-teal-400" />
+                        <span>Alumni Onboarding • প্রাক্তন শিক্ষার্থী নিবন্ধন</span>
+                    </div>
+
+                    <h1 className="bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl">
                         {t('public.join.title')}
                     </h1>
-                    <p className="text-muted-foreground mt-2 text-sm">
+                    <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-300 sm:text-base">
                         {t('public.join.subtitle')}
                     </p>
 
+                    {/* ── Modern Stepper ─────────────────────────────────────── */}
                     <ol
-                        className="mt-8 flex flex-wrap gap-2"
+                        className="mt-10 grid grid-cols-2 gap-2 sm:grid-cols-5"
                         aria-label={t('public.join.title')}
                     >
                         {steps.map((one, position) => {
                             const done = position < index;
                             const current = position === index;
+                            const Icon = STEP_ICONS[one] ?? User;
 
                             return (
-                                <li key={one} className="flex-1">
+                                <li key={one} className="col-span-1">
                                     <div
                                         aria-current={
                                             current ? 'step' : undefined
                                         }
                                         className={cn(
-                                            'flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium',
+                                            'group flex flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 text-center transition-all duration-300 backdrop-blur-md',
                                             current &&
-                                                'border-brand-green-800 bg-brand-green-800 text-white',
+                                                'border-teal-400/60 bg-gradient-to-b from-teal-500/20 to-teal-500/5 text-white shadow-lg shadow-teal-500/20 ring-2 ring-teal-400/30',
                                             done &&
-                                                'border-brand-green-600 text-brand-green-800 bg-card',
+                                                'border-teal-500/30 bg-teal-500/10 text-teal-300 shadow-xs',
                                             !current &&
                                                 !done &&
-                                                'text-muted-foreground bg-card/60 border-transparent',
+                                                'border-white/10 bg-white/5 text-slate-400 hover:border-white/20',
                                         )}
                                     >
-                                        {done ? (
-                                            <Check
-                                                className="size-3.5 shrink-0"
-                                                aria-hidden="true"
-                                            />
-                                        ) : (
-                                            <span className="tabular-id">
-                                                {position + 1}
-                                            </span>
-                                        )}
-                                        <span className="truncate">
-                                            {t(`public.join.steps.${one}`)}
-                                        </span>
+                                        <div
+                                            className={cn(
+                                                'flex size-7 items-center justify-center rounded-xl text-xs font-bold transition-transform group-hover:scale-105',
+                                                current &&
+                                                    'bg-gradient-to-br from-teal-400 to-cyan-500 text-slate-950 shadow-md',
+                                                done &&
+                                                    'bg-teal-500 text-slate-950 shadow-xs',
+                                                !current &&
+                                                    !done &&
+                                                    'bg-white/10 text-slate-400',
+                                            )}
+                                        >
+                                            {done ? (
+                                                <Check
+                                                    className="size-3.5 stroke-[3]"
+                                                    aria-hidden="true"
+                                                />
+                                            ) : (
+                                                <Icon className="size-3.5" />
+                                            )}
+                                        </div>
+                                        <div className="w-full">
+                                            <p className="text-[0.65rem] font-semibold tracking-wider text-slate-400 uppercase">
+                                                Step {position + 1}
+                                            </p>
+                                            <p
+                                                className={cn(
+                                                    'truncate text-xs font-semibold',
+                                                    current
+                                                        ? 'text-white'
+                                                        : done
+                                                          ? 'text-teal-200'
+                                                          : 'text-slate-400',
+                                                )}
+                                            >
+                                                {t(`public.join.steps.${one}`)}
+                                            </p>
+                                        </div>
                                     </div>
                                 </li>
                             );
                         })}
                     </ol>
+                </div>
+            </header>
 
+            {/* ── Main Form Canvas ────────────────────────────────────────── */}
+            <div className="relative min-h-[60vh] bg-gradient-to-b from-[#f0f7f9] via-white to-[#f0f7f9] py-12 sm:py-16">
+                <div className="relative mx-auto max-w-3xl px-4">
                     <form
                         onSubmit={submit}
-                        className="bg-card mt-8 space-y-6 rounded-xl border p-6 shadow-sm"
+                        className="glass-panel-light relative overflow-hidden rounded-3xl border border-teal-500/15 p-6 shadow-xl shadow-teal-900/5 sm:p-10"
                     >
+                        {/* Decorative Top Accent Gradient */}
+                        <div
+                            aria-hidden="true"
+                            className="absolute top-0 left-0 h-1.5 w-full bg-gradient-to-r from-amber-400 via-teal-500 to-cyan-600"
+                        />
+
+                        {/* Step Title Header */}
+                        <div className="mb-8 border-b border-teal-100/70 pb-5">
+                            <span className="inline-block rounded-full bg-teal-50 px-3 py-1 text-xs font-bold text-teal-800">
+                                {t(`public.join.steps.${step}`)}
+                            </span>
+                            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                                {t(`public.join.steps.${step}`)}
+                            </h2>
+                            <p className="mt-1 text-xs text-slate-500">
+                                Please provide accurate information to verify your alumni credentials.
+                            </p>
+                        </div>
                         {step === 'basic' && (
                             <>
                                 <Field
@@ -614,7 +700,8 @@ export default function Join({ step, steps, draft, options }: Props) {
                                 >
                                     <textarea
                                         rows={4}
-                                        className="border-input focus-visible:ring-ring w-full rounded-md border bg-transparent px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
+                                        className="w-full rounded-2xl border border-slate-200/80 bg-white/80 p-4 text-sm text-slate-900 shadow-xs transition-all placeholder:text-slate-400 focus-visible:border-teal-500 focus-visible:ring-2 focus-visible:ring-teal-500/20 focus-visible:outline-none"
+                                        placeholder="Tell fellow alumni about your journey, interests, or fond school memories..."
                                         value={value('bio')}
                                         onChange={(e) =>
                                             set('bio', e.target.value)
@@ -622,61 +709,71 @@ export default function Join({ step, steps, draft, options }: Props) {
                                     />
                                 </Field>
 
-                                <fieldset className="space-y-3">
-                                    <legend className="text-sm font-semibold">
-                                        {t('public.join.privacy.legend')}
-                                    </legend>
-                                    <p className="text-muted-foreground text-sm">
-                                        {t('public.join.privacy.note')}
-                                    </p>
+                                <fieldset className="glass-card-hover rounded-2xl border border-teal-500/15 bg-white/70 p-6 space-y-4 shadow-xs">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="flex size-8 items-center justify-center rounded-xl bg-teal-100 text-teal-800">
+                                            <ShieldCheck className="size-4" />
+                                        </div>
+                                        <div>
+                                            <legend className="text-base font-bold text-slate-900">
+                                                {t('public.join.privacy.legend')}
+                                            </legend>
+                                            <p className="text-xs text-slate-500">
+                                                {t('public.join.privacy.note')}
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                    {PRIVACY_FLAGS.map((flag) => {
-                                        const privacy = form.data
-                                            .privacy as Record<string, boolean>;
+                                    <div className="grid gap-3 pt-2 sm:grid-cols-2">
+                                        {PRIVACY_FLAGS.map((flag) => {
+                                            const privacy = form.data
+                                                .privacy as Record<string, boolean>;
 
-                                        return (
-                                            <div
-                                                key={flag}
-                                                className="flex items-center gap-2"
-                                            >
-                                                <Checkbox
-                                                    id={flag}
-                                                    checked={privacy[flag]}
-                                                    onCheckedChange={(
-                                                        checked,
-                                                    ) =>
-                                                        set('privacy', {
-                                                            ...privacy,
-                                                            [flag]:
-                                                                checked ===
-                                                                true,
-                                                        })
-                                                    }
-                                                />
-                                                <Label
-                                                    htmlFor={flag}
-                                                    className="cursor-pointer text-sm font-normal"
+                                            return (
+                                                <div
+                                                    key={flag}
+                                                    className="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-white/60 p-2.5 transition-colors hover:bg-white"
                                                 >
-                                                    {t(
-                                                        `public.join.privacy.${flag}`,
-                                                    )}
-                                                </Label>
-                                            </div>
-                                        );
-                                    })}
+                                                    <Checkbox
+                                                        id={flag}
+                                                        checked={privacy[flag]}
+                                                        onCheckedChange={(
+                                                            checked,
+                                                        ) =>
+                                                            set('privacy', {
+                                                                ...privacy,
+                                                                [flag]:
+                                                                    checked ===
+                                                                    true,
+                                                                })
+                                                        }
+                                                    />
+                                                    <Label
+                                                        htmlFor={flag}
+                                                        className="cursor-pointer text-xs font-medium text-slate-700 select-none"
+                                                    >
+                                                        {t(
+                                                            `public.join.privacy.${flag}`,
+                                                        )}
+                                                    </Label>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </fieldset>
 
-                                <div className="flex items-start gap-2">
+                                <div className="flex items-start gap-3 rounded-2xl border border-teal-500/20 bg-teal-50/50 p-4 shadow-xs">
                                     <Checkbox
                                         id="terms"
                                         checked={form.data.terms === true}
                                         onCheckedChange={(checked) =>
                                             set('terms', checked === true)
                                         }
+                                        className="mt-0.5"
                                     />
                                     <Label
                                         htmlFor="terms"
-                                        className="cursor-pointer text-sm font-normal"
+                                        className="cursor-pointer text-xs leading-relaxed font-medium text-slate-700 select-none sm:text-sm"
                                     >
                                         {t('public.join.terms')}
                                     </Label>
@@ -685,27 +782,32 @@ export default function Join({ step, steps, draft, options }: Props) {
                             </>
                         )}
 
-                        <div className="flex items-center gap-3 border-t pt-4">
+                        <div className="flex items-center gap-3 border-t border-teal-100/70 pt-6">
                             {index > 0 && (
                                 <Button
                                     type="button"
                                     variant="outline"
+                                    className="h-11 rounded-xl border-slate-300 px-6 font-semibold text-slate-700 hover:bg-slate-100"
                                     onClick={() =>
                                         router.get(`/join/${steps[index - 1]}`)
                                     }
                                 >
-                                    {t('common.actions.previous')}
+                                    <ArrowLeft className="size-4" />
+                                    <span>{t('common.actions.previous')}</span>
                                 </Button>
                             )}
 
                             <Button
                                 type="submit"
                                 disabled={form.processing}
-                                className="ms-auto"
+                                className="ms-auto h-11 rounded-xl bg-gradient-to-r from-teal-600 via-teal-500 to-cyan-600 px-8 font-bold text-white shadow-lg shadow-teal-500/25 transition-all duration-300 hover:from-teal-500 hover:to-cyan-500 hover:shadow-xl hover:shadow-teal-500/35 hover:-translate-y-0.5"
                             >
-                                {index === steps.length - 1
-                                    ? t('common.actions.submit')
-                                    : t('common.actions.next')}
+                                <span>
+                                    {index === steps.length - 1
+                                        ? t('common.actions.submit')
+                                        : t('common.actions.next')}
+                                </span>
+                                <ArrowRight className="size-4" />
                             </Button>
                         </div>
                     </form>
@@ -728,18 +830,20 @@ function Field({
 }) {
     return (
         <div className="space-y-1.5">
-            <Label className="text-sm font-medium">
+            <Label className="text-xs font-bold text-slate-800 tracking-wide sm:text-sm">
                 {label}
                 {required && (
                     <span
-                        className="text-brand-red-700 ms-1"
+                        className="text-rose-600 ms-1 font-bold"
                         aria-hidden="true"
                     >
                         *
                     </span>
                 )}
             </Label>
-            {children}
+            <div className="[&>input]:rounded-xl [&>input]:border-slate-200/80 [&>input]:bg-white/80 [&>input]:shadow-xs [&>input:focus-visible]:border-teal-500 [&>input:focus-visible]:ring-2 [&>input:focus-visible]:ring-teal-500/20">
+                {children}
+            </div>
             <InputError message={error} />
         </div>
     );
@@ -758,10 +862,10 @@ function Choice({
 
     return (
         <Select value={value} onValueChange={onChange}>
-            <SelectTrigger>
+            <SelectTrigger className="h-10 rounded-xl border-slate-200/80 bg-white/80 shadow-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 <SelectValue placeholder={t('common.states.optional')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-xl shadow-xl">
                 {options.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                         {option.label}

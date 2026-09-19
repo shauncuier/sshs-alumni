@@ -30,20 +30,31 @@ export default function Schedule({ event, sessions }: Props) {
             title={t('jubilee.schedule.title')}
         >
             {sessions.length === 0 ? (
-                <EmptyState
-                    title={t('jubilee.schedule.title')}
-                    description={t('jubilee.schedule.empty')}
-                />
+                <div className="rounded-2xl border border-dashed border-teal-200/80 p-10 text-center">
+                    <EmptyState
+                        title={t('jubilee.schedule.title')}
+                        description={t('jubilee.schedule.empty')}
+                    />
+                </div>
             ) : (
                 <ol className="space-y-4">
                     {sessions.map((session) => (
                         <li
                             key={session.title}
-                            className="bg-card rounded-lg border p-5"
+                            className="glass-card-hover rounded-2xl border border-teal-500/15 bg-white/80 p-6 shadow-xs transition-all duration-200 hover:border-teal-500/30"
                         >
-                            <p className="font-medium">{session.title}</p>
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                                <h3 className="text-lg font-bold text-slate-900">
+                                    {session.title}
+                                </h3>
+                                {session.starts_at && (
+                                    <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800">
+                                        {session.starts_at}
+                                    </span>
+                                )}
+                            </div>
                             {session.description && (
-                                <p className="text-muted-foreground mt-1 text-sm">
+                                <p className="mt-2 text-sm leading-relaxed text-slate-600">
                                     {session.description}
                                 </p>
                             )}

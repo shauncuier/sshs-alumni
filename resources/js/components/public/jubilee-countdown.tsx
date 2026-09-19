@@ -70,16 +70,16 @@ export function JubileeCountdown({ event, enabled = true }: Props) {
     ];
 
     return (
-        <div className="flex flex-wrap justify-center gap-3" role="timer">
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4" role="timer">
             {units.map(([unit, label]) => (
                 <div
                     key={unit}
-                    className="border-brand-gold-500/40 bg-brand-green-900/40 min-w-20 rounded-xl border px-4 py-3 text-center backdrop-blur"
+                    className="min-w-20 rounded-2xl border border-amber-400/30 bg-white/5 px-4 py-3.5 text-center shadow-xl shadow-amber-500/10 backdrop-blur-xl transition-all duration-300 hover:border-amber-400/60 hover:bg-white/10 sm:min-w-24"
                 >
-                    <div className="text-brand-gold-500 text-2xl font-semibold tabular-nums sm:text-3xl">
+                    <div className="bg-gradient-to-b from-amber-200 via-amber-400 to-amber-300 bg-clip-text text-3xl font-extrabold tabular-nums text-transparent drop-shadow-sm sm:text-4xl">
                         {formatNumber(remaining[unit])}
                     </div>
-                    <div className="mt-1 text-[0.7rem] tracking-wide text-white/60 uppercase">
+                    <div className="mt-1 text-[0.7rem] font-semibold tracking-wider text-amber-200/80 uppercase">
                         {label}
                     </div>
                 </div>

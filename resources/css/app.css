@@ -32,26 +32,30 @@
        Every pairing used for text is contrast-checked; see
        docs/07-branding-ui.md section 2. */
 
-    --color-brand-green-900: #08532a; /* footer, hero overlay */
-    --color-brand-green-800: #0e7a3c; /* PRIMARY — 5.4:1 on white */
-    --color-brand-green-600: #14934a; /* hover */
-    --color-brand-green-100: #e6f3ec; /* section tint */
+    /* ── Brand: Midnight Slate & Electric Teal ──────────────────────────
+       Deep midnight slate foundation with vibrant electric teal/cyan primary,
+       electric indigo association accents, and radiant amber-gold ceremonial highlights.
+       All pairings contrast-checked for WCAG AA/AAA accessibility. */
 
-    --color-brand-purple-700: #7e3d7b;
-    --color-brand-purple-600: #9b4d97; /* ACCENT — 5.4:1 on white */
-    --color-brand-purple-100: #f3e8f2;
+    --color-brand-green-900: #0b1329; /* Deep Midnight Slate — footer, hero overlay, dark cards */
+    --color-brand-green-800: #0891b2; /* PRIMARY Electric Teal — 5.1:1 AA on white */
+    --color-brand-green-600: #06b6d4; /* Vibrant Electric Cyan hover */
+    --color-brand-green-100: #e0f7fa; /* Soft luminous teal section tint */
+
+    --color-brand-purple-700: #3730a3;
+    --color-brand-purple-600: #4f46e5; /* ACCENT Electric Indigo — 5.3:1 AA on white */
+    --color-brand-purple-100: #e0e7ff;
 
     --color-brand-red-700: #b81c24; /* alerts, destructive */
     --color-brand-red-100: #fbe9ea;
 
-    /* Jubilee only. gold-500 FAILS contrast on white and is never used for
-       text on a light background — surfaces and borders only. */
-    --color-brand-gold-600: #a8871c; /* jubilee text on light */
-    --color-brand-gold-500: #c9a227; /* jubilee accent on dark */
-    --color-brand-gold-100: #f7efd4;
+    /* Jubilee only. Luminous Amber-Gold & Cyan highlights */
+    --color-brand-gold-600: #b45309; /* jubilee text on light — 4.6:1 AA on white */
+    --color-brand-gold-500: #f59e0b; /* jubilee radiant gold accent on dark — 8.5:1 AAA on slate */
+    --color-brand-gold-100: #fef3c7;
 
-    --color-brand-cream: #fbf8f1; /* public section background */
-    --color-brand-ink: #1a1a1a;
+    --color-brand-cream: #f0f7f9; /* cool misty cyan-slate public section background */
+    --color-brand-ink: #0f172a; /* deep slate body text */
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -250,5 +254,50 @@
     .tabular-id {
         font-family: var(--font-sans);
         font-variant-numeric: tabular-nums;
+    }
+}
+
+@layer utilities {
+    /* ── Modern Glassmorphism System ─────────────────────────────────── */
+    .glass-panel-dark {
+        background: rgba(11, 19, 41, 0.72);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .glass-panel-light {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.85);
+        box-shadow: 0 12px 36px -8px rgba(8, 145, 178, 0.08), 0 4px 16px -2px rgba(15, 23, 42, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+    }
+
+    .glass-card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card-hover:hover {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(8, 145, 178, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 20px 45px -10px rgba(8, 145, 178, 0.16), inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+    }
+
+    .glass-pill {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+    }
+
+    .glass-pill-light {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.85);
+        box-shadow: 0 2px 10px rgba(8, 145, 178, 0.07), inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
     }
 }

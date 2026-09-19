@@ -28,14 +28,14 @@ class SchoolHistorySeeder extends Seeder
             [
                 'year' => (int) (setting('school.established') ?? config('organization.school.established')),
                 'title' => 'School journey begins',
-                'description' => 'Sabuj Shikshayatan Government High School is established at Baro Aulia, Sitakunda, Chattogram.',
+                'description' => 'Sabuj Shikshayatan Government High School is established on 1 January 1976 at Hafiz Jute Mills, Baro Aulia, Sitakunda, Chattogram.',
                 'display_order' => 1,
                 'is_highlighted' => true,
             ],
             [
                 'year' => (int) (setting('organization.established') ?? config('organization.association.established')),
                 'title' => 'Former Students Association founded',
-                'description' => 'Alumni of the school form the Former Students Association to keep the community connected.',
+                'description' => 'Alumni of the school form the Former Students Association (প্রাক্তন ছাত্র-ছাত্রী পরিষদ) to unite graduates across SSC batches and foster student welfare.',
                 'display_order' => 2,
                 'is_highlighted' => true,
             ],

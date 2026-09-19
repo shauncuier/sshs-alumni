@@ -1,5 +1,17 @@
 import { Deferred, Link } from '@inertiajs/react';
-import { MapPin } from 'lucide-react';
+import {
+    ArrowRight,
+    Award,
+    Calendar,
+    ChevronRight,
+    Clock,
+    GraduationCap,
+    HelpCircle,
+    Info,
+    MapPin,
+    Sparkles,
+    Users,
+} from 'lucide-react';
 import { EventDate } from '@/components/public/event-date';
 import { JubileeCountdown } from '@/components/public/jubilee-countdown';
 import { EmptyState } from '@/components/shared/empty-state';
@@ -71,11 +83,13 @@ export default function JubileeIndex({
     if (event === null) {
         return (
             <PublicLayout title={titleEn ?? t('jubilee.title')}>
-                <div className="mx-auto max-w-3xl px-4 py-16">
-                    <EmptyState
-                        title={titleEn ?? t('jubilee.title')}
-                        description={t('jubilee.no_event')}
-                    />
+                <div className="mx-auto max-w-3xl px-4 py-20">
+                    <div className="glass-panel-light rounded-3xl p-10 text-center shadow-sm">
+                        <EmptyState
+                            title={titleEn ?? t('jubilee.title')}
+                            description={t('jubilee.no_event')}
+                        />
+                    </div>
                 </div>
             </PublicLayout>
         );
@@ -86,82 +100,132 @@ export default function JubileeIndex({
             title={titleEn ?? event.title}
             description={event.summary ?? themeEn ?? undefined}
         >
-            {/* ── Hero ──────────────────────────────────────────────── */}
-            <header className="from-brand-green-900 to-brand-green-800 bg-gradient-to-b text-white">
-                <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:py-24">
+            {/* ── Hero Section ──────────────────────────────────────────────── */}
+            <header className="relative overflow-hidden bg-gradient-to-b from-[#060a17] via-[#0b1329] to-[#0d1b3a] text-white">
+                {/* Background Ambient Glow Orbs */}
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-96 w-[42rem] rounded-full bg-gradient-to-tr from-amber-500/15 via-teal-500/15 to-transparent blur-3xl"
+                />
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-1/4 -left-20 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl"
+                />
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute bottom-10 -right-20 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl"
+                />
+
+                {/* Subtle Geometric Overlay */}
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] opacity-[0.04] [background-size:24px_24px]"
+                />
+
+                <div className="relative mx-auto max-w-4xl px-4 py-16 text-center sm:py-24">
+                    {/* Dual Founding Identity Badges */}
+                    <div className="mb-6 flex flex-wrap items-center justify-center gap-3">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-4 py-1.5 text-xs font-semibold text-amber-300 shadow-inner backdrop-blur-md sm:text-sm">
+                            <GraduationCap className="size-4 text-amber-400" />
+                            <span>বিদ্যালয় প্রতিষ্ঠা ১৯৭৬ (৫০ বছর পূর্তি)</span>
+                        </div>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-500/10 px-4 py-1.5 text-xs font-semibold text-teal-300 shadow-inner backdrop-blur-md sm:text-sm">
+                            <Users className="size-4 text-teal-400" />
+                            <span>আয়োজক: প্রাক্তন ছাত্র-ছাত্রী পরিষদ (প্রতিষ্ঠা ২০১৫)</span>
+                        </div>
+                    </div>
+
+                    {/* Theme Line */}
                     {themeBn && (
                         <p
                             lang="bn"
-                            className="text-brand-gold-500 text-lg font-medium sm:text-xl"
+                            className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-200 bg-clip-text text-lg font-bold text-transparent sm:text-2xl"
                         >
                             {themeBn}
                         </p>
                     )}
                     {themeEn && (
-                        <p className="mt-1 text-sm tracking-wide text-white/60 uppercase">
+                        <p className="mt-1 text-xs font-semibold tracking-widest text-slate-300 uppercase sm:text-sm">
                             {themeEn}
                         </p>
                     )}
 
+                    {/* Main Jubilee Title */}
                     {titleBn && (
                         <h1
                             lang="bn"
-                            className="text-brand-gold-500 mt-6 text-4xl font-bold sm:text-6xl"
+                            className="mt-6 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100 bg-clip-text text-4xl font-extrabold text-transparent drop-shadow-md sm:text-6xl md:text-7xl"
                         >
                             {titleBn}
                         </h1>
                     )}
-                    <p className="mt-2 text-xl font-semibold text-white sm:text-2xl">
+                    <p className="mt-2 text-xl font-bold tracking-tight text-white/95 sm:text-3xl">
                         {titleEn ?? event.title}
                     </p>
 
-                    {/* The fifty years are the school's. */}
+                    {/* School Identity */}
                     <div className="mt-8 space-y-1">
                         {schoolNameBn && (
-                            <p lang="bn" className="text-base text-white/90">
+                            <p lang="bn" className="text-lg font-medium text-slate-200">
                                 {schoolNameBn}
                             </p>
                         )}
                         {schoolNameEn && (
-                            <p className="text-sm text-white/60">
+                            <p className="text-sm text-slate-400">
                                 {schoolNameEn}
                             </p>
                         )}
                     </div>
 
+                    {/* Milestone Ribbon (1976 - 2026) */}
                     {fromYear && toYear && (
-                        <p className="text-brand-gold-500 mt-6 flex items-center justify-center gap-4 text-lg tracking-widest tabular-nums">
-                            <span>{fromYear}</span>
-                            <span
-                                aria-hidden="true"
-                                className="bg-brand-gold-500/50 h-px w-16 sm:w-28"
-                            />
-                            <span>{toYear}</span>
-                        </p>
+                        <div className="mt-8 flex items-center justify-center gap-3 text-sm font-semibold sm:text-base">
+                            <span className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-1.5 font-mono text-lg font-bold text-amber-300 shadow-sm backdrop-blur-sm sm:text-xl">
+                                {fromYear}
+                            </span>
+                            <div className="flex items-center gap-2">
+                                <span
+                                    aria-hidden="true"
+                                    className="h-px w-8 bg-gradient-to-r from-amber-400/40 to-amber-400 sm:w-16"
+                                />
+                                <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/20 px-3 py-0.5 text-xs font-bold text-amber-200 backdrop-blur-md">
+                                    <Sparkles className="size-3 text-amber-300" />
+                                    <span>৫০ বছর</span>
+                                </span>
+                                <span
+                                    aria-hidden="true"
+                                    className="h-px w-8 bg-gradient-to-l from-amber-400/40 to-amber-400 sm:w-16"
+                                />
+                            </div>
+                            <span className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-1.5 font-mono text-lg font-bold text-amber-300 shadow-sm backdrop-blur-sm sm:text-xl">
+                                {toYear}
+                            </span>
+                        </div>
                     )}
 
-                    {/* The association organises; it is not the subject of the
-                        anniversary. */}
-                    <p className="mt-8 text-sm text-white/70">
-                        {t('public.events.organised_by', {
-                            name: orgNameEn ?? '',
-                        })}
-                    </p>
-                    {orgNameBn && (
-                        <p lang="bn" className="text-sm text-white/90">
-                            {orgNameBn}
+                    {/* Organiser Attribution */}
+                    <div className="mt-8">
+                        <p className="text-xs tracking-wider text-slate-300 uppercase sm:text-sm">
+                            {t('public.events.organised_by', {
+                                name: orgNameEn ?? '',
+                            })}
                         </p>
-                    )}
+                        {orgNameBn && (
+                            <p lang="bn" className="mt-0.5 text-sm font-medium text-teal-300 sm:text-base">
+                                {orgNameBn}
+                            </p>
+                        )}
+                    </div>
 
-                    {/* THE DATE RULE. */}
+                    {/* THE DATE RULE */}
                     <div className="mt-10">
                         <EventDate
                             event={event}
-                            className="border-brand-gold-500/40 rounded-full border px-5 py-2 text-base text-white"
+                            className="glass-panel-dark inline-flex items-center gap-2.5 rounded-full border-amber-400/30 px-6 py-2.5 text-sm font-semibold text-amber-200 shadow-xl"
                         />
                     </div>
 
-                    {/* Not rendered at all while the date is unannounced. */}
+                    {/* Countdown Clock (Only rendered when announced) */}
                     <div className="mt-8">
                         <JubileeCountdown
                             event={event}
@@ -169,13 +233,21 @@ export default function JubileeIndex({
                         />
                     </div>
 
-                    <div className="mt-10 flex flex-wrap justify-center gap-3">
+                    {/* Action CTAs */}
+                    <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
                         {registration?.open && (
-                            <Button asChild size="lg">
-                                <Link href={`/events/${event.slug}`}>
-                                    {registration.full
-                                        ? t('public.events.registration_full')
-                                        : t('jubilee.cta.register')}
+                            <Button
+                                asChild
+                                size="lg"
+                                className="h-12 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-8 text-base font-bold text-slate-950 shadow-lg shadow-amber-500/25 transition-all duration-300 hover:from-amber-300 hover:to-amber-500 hover:shadow-xl hover:shadow-amber-500/35 hover:-translate-y-0.5"
+                            >
+                                <Link href={`/events/${event.slug}`} className="flex items-center gap-2">
+                                    <span>
+                                        {registration.full
+                                            ? t('public.events.registration_full')
+                                            : t('jubilee.cta.register')}
+                                    </span>
+                                    <ArrowRight className="size-4" />
                                 </Link>
                             </Button>
                         )}
@@ -183,56 +255,83 @@ export default function JubileeIndex({
                             asChild
                             size="lg"
                             variant="outline"
-                            className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                            className="h-12 rounded-xl border-white/20 bg-white/5 px-6 text-base font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/40 hover:bg-white/15 hover:text-white"
                         >
-                            <Link href="/jubilee/schedule">
-                                {t('jubilee.nav.schedule')}
+                            <Link href="/jubilee/schedule" className="flex items-center gap-2">
+                                <Calendar className="size-4 text-teal-300" />
+                                <span>{t('jubilee.nav.schedule')}</span>
                             </Link>
                         </Button>
                     </div>
                 </div>
             </header>
 
-            <div className="bg-brand-cream">
-                <div className="mx-auto max-w-4xl space-y-14 px-4 py-14">
-                    {/* ── About ─────────────────────────────────────── */}
+            {/* ── Main Content Area ────────────────────────────────────────── */}
+            <div className="relative min-h-[60vh] bg-gradient-to-b from-[#f0f7f9] via-white to-[#f0f7f9]">
+                <div className="relative mx-auto max-w-4xl space-y-12 px-4 py-16">
+                    {/* ── About Section ─────────────────────────────────────── */}
                     {event.description && (
-                        <section>
-                            <h2 className="text-brand-green-900 text-2xl font-semibold">
-                                {t('jubilee.sections.about')}
-                            </h2>
-                            <p className="text-muted-foreground mt-4 leading-relaxed whitespace-pre-line">
+                        <section className="glass-panel-light relative overflow-hidden rounded-3xl border border-teal-500/15 p-8 shadow-sm sm:p-10">
+                            <div className="mb-4 flex items-center gap-3">
+                                <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-md shadow-amber-500/20">
+                                    <Sparkles className="size-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                                        {t('jubilee.sections.about')}
+                                    </h2>
+                                    <p className="text-xs font-semibold tracking-wider text-teal-700 uppercase">
+                                        স্বর্ণালী অধ্যায় ও স্মৃতিচারণ
+                                    </p>
+                                </div>
+                            </div>
+                            <p className="mt-4 text-base leading-relaxed text-slate-700 whitespace-pre-line sm:text-lg">
                                 {event.description}
                             </p>
                         </section>
                     )}
 
-                    {/* ── Venue ─────────────────────────────────────── */}
+                    {/* ── Venue Section ─────────────────────────────────────── */}
                     {(event.venue || event.address) && (
-                        <section className="flex items-start gap-3">
-                            <MapPin
-                                className="text-brand-green-800 mt-1 size-5 shrink-0"
-                                aria-hidden="true"
-                            />
-                            <div>
-                                <p className="font-medium">
-                                    {event.venue ??
-                                        t('public.events.venue_tba')}
-                                </p>
-                                {event.address && (
-                                    <p className="text-muted-foreground text-sm">
-                                        {event.address}
+                        <section className="glass-panel-light rounded-3xl border border-teal-500/15 p-6 shadow-sm sm:p-8">
+                            <div className="flex items-start gap-4">
+                                <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 text-white shadow-md shadow-teal-500/20">
+                                    <MapPin className="size-6" aria-hidden="true" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-800">
+                                        <span>স্থান ও ক্যাম্পাস</span>
+                                    </div>
+                                    <p className="mt-1 text-lg font-bold text-slate-900 sm:text-xl">
+                                        {event.venue ?? t('public.events.venue_tba')}
                                     </p>
-                                )}
+                                    {event.address && (
+                                        <p className="mt-1 text-sm text-slate-600">
+                                            {event.address}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </section>
                     )}
 
-                    {/* ── Timeline ──────────────────────────────────── */}
-                    <section>
-                        <h2 className="text-brand-green-900 text-2xl font-semibold">
-                            {t('jubilee.sections.timeline')}
-                        </h2>
+                    {/* ── Timeline Section ──────────────────────────────────── */}
+                    <section className="glass-panel-light rounded-3xl border border-teal-500/15 p-8 shadow-sm sm:p-10">
+                        <div className="mb-6 flex items-center justify-between border-b border-teal-100/60 pb-5">
+                            <div className="flex items-center gap-3">
+                                <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-600 text-white shadow-md shadow-teal-600/20">
+                                    <Clock className="size-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                                        {t('jubilee.sections.timeline')}
+                                    </h2>
+                                    <p className="text-xs font-semibold tracking-wider text-teal-700 uppercase">
+                                        গৌরবময় ৫০ বছরের ইতিহাস
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
 
                         <Deferred
                             data="milestones"
@@ -242,22 +341,58 @@ export default function JubileeIndex({
                         </Deferred>
                     </section>
 
-                    {/* ── Sponsors ──────────────────────────────────── */}
-                    <section>
-                        <h2 className="text-brand-green-900 text-2xl font-semibold">
-                            {t('jubilee.sections.sponsors')}
-                        </h2>
+                    {/* ── Sponsors Section ──────────────────────────────────── */}
+                    <section className="glass-panel-light rounded-3xl border border-teal-500/15 p-8 shadow-sm sm:p-10">
+                        <div className="mb-6 flex items-center justify-between border-b border-teal-100/60 pb-5">
+                            <div className="flex items-center gap-3">
+                                <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-md shadow-amber-500/20">
+                                    <Award className="size-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                                        {t('jubilee.sections.sponsors')}
+                                    </h2>
+                                    <p className="text-xs font-semibold tracking-wider text-teal-700 uppercase">
+                                        স্পন্সর ও সহযোগী প্রতিষ্ঠান
+                                    </p>
+                                </div>
+                            </div>
+                            <Button asChild variant="ghost" size="sm" className="text-teal-700 hover:text-teal-900">
+                                <Link href="/jubilee/sponsors" className="flex items-center gap-1 text-xs font-semibold">
+                                    <span>{t('jubilee.nav.sponsors')}</span>
+                                    <ChevronRight className="size-3.5" />
+                                </Link>
+                            </Button>
+                        </div>
 
                         <Deferred data="sponsors" fallback={<LogoSkeleton />}>
                             <SponsorWall sponsors={sponsors ?? []} />
                         </Deferred>
                     </section>
 
-                    {/* ── FAQ ───────────────────────────────────────── */}
-                    <section>
-                        <h2 className="text-brand-green-900 text-2xl font-semibold">
-                            {t('jubilee.sections.faq')}
-                        </h2>
+                    {/* ── FAQ Section ───────────────────────────────────────── */}
+                    <section className="glass-panel-light rounded-3xl border border-teal-500/15 p-8 shadow-sm sm:p-10">
+                        <div className="mb-6 flex items-center justify-between border-b border-teal-100/60 pb-5">
+                            <div className="flex items-center gap-3">
+                                <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 to-slate-800 text-white shadow-md">
+                                    <HelpCircle className="size-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                                        {t('jubilee.sections.faq')}
+                                    </h2>
+                                    <p className="text-xs font-semibold tracking-wider text-teal-700 uppercase">
+                                        সাধারণ জিজ্ঞাসা ও উত্তর
+                                    </p>
+                                </div>
+                            </div>
+                            <Button asChild variant="ghost" size="sm" className="text-teal-700 hover:text-teal-900">
+                                <Link href="/jubilee/faq" className="flex items-center gap-1 text-xs font-semibold">
+                                    <span>{t('jubilee.nav.faq')}</span>
+                                    <ChevronRight className="size-3.5" />
+                                </Link>
+                            </Button>
+                        </div>
 
                         <Deferred data="faqs" fallback={<TimelineSkeleton />}>
                             <Faqs faqs={faqs ?? []} />
@@ -274,36 +409,58 @@ function Timeline({ milestones }: { milestones: Milestone[] }) {
 
     if (milestones.length === 0) {
         return (
-            <p className="text-muted-foreground mt-4 text-sm">
+            <p className="mt-4 text-sm text-slate-500">
                 {t('common.states.empty')}
             </p>
         );
     }
 
     return (
-        <ol className="border-brand-green-100 mt-6 space-y-6 border-s-2 ps-6">
+        <ol className="relative mt-6 space-y-8 border-s-2 border-teal-200/80 ps-8">
             {milestones.map((milestone) => (
                 <li
                     key={`${milestone.year}-${milestone.title}`}
-                    className="relative"
+                    className="relative group"
                 >
+                    {/* Glowing Milestone Indicator Node */}
                     <span
                         aria-hidden="true"
                         className={
                             milestone.is_highlighted
-                                ? 'bg-brand-gold-600 absolute -start-[1.9rem] mt-1.5 size-3 rounded-full'
-                                : 'bg-brand-green-800 absolute -start-[1.9rem] mt-2 size-2 rounded-full'
+                                ? 'absolute -start-[2.55rem] top-1.5 size-5 rounded-full border-4 border-white bg-amber-500 shadow-md shadow-amber-500/30 ring-2 ring-amber-400/50'
+                                : 'absolute -start-[2.35rem] top-2 size-3.5 rounded-full border-2 border-white bg-teal-600 shadow-sm'
                         }
                     />
-                    <p className="text-brand-green-800 text-sm font-semibold tabular-nums">
-                        {milestone.date_label ?? milestone.year}
-                    </p>
-                    <p className="mt-0.5 font-medium">{milestone.title}</p>
-                    {milestone.description && (
-                        <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
-                            {milestone.description}
-                        </p>
-                    )}
+
+                    <div className="glass-card-hover rounded-2xl border border-teal-500/10 bg-white/70 p-5 shadow-xs transition-all duration-200 hover:border-teal-500/25">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                            <span
+                                className={
+                                    milestone.is_highlighted
+                                        ? 'rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-3 py-0.5 text-xs font-bold text-slate-950 shadow-xs'
+                                        : 'rounded-full bg-teal-50 px-3 py-0.5 text-xs font-semibold text-teal-800'
+                                }
+                            >
+                                {milestone.date_label ?? milestone.year}
+                            </span>
+                            {milestone.is_highlighted && (
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700">
+                                    <Sparkles className="size-3 text-amber-500" />
+                                    <span>মাইলফলক</span>
+                                </span>
+                            )}
+                        </div>
+
+                        <h3 className="mt-2 text-base font-bold text-slate-900 sm:text-lg">
+                            {milestone.title}
+                        </h3>
+
+                        {milestone.description && (
+                            <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
+                                {milestone.description}
+                            </p>
+                        )}
+                    </div>
                 </li>
             ))}
         </ol>
@@ -315,29 +472,36 @@ function SponsorWall({ sponsors }: { sponsors: Sponsor[] }) {
 
     if (sponsors.length === 0) {
         return (
-            <p className="text-muted-foreground mt-4 text-sm">
-                {t('jubilee.sponsors.empty')}
-            </p>
+            <div className="rounded-2xl border border-dashed border-teal-200 p-8 text-center">
+                <p className="text-sm font-medium text-slate-500">
+                    {t('jubilee.sponsors.empty')}
+                </p>
+            </div>
         );
     }
 
     return (
-        <ul className="mt-6 flex flex-wrap items-center gap-6">
+        <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {sponsors.map((sponsor) => (
-                <li key={sponsor.name} className="text-center">
+                <li
+                    key={sponsor.name}
+                    className="glass-card-hover flex flex-col items-center justify-center rounded-2xl border border-teal-500/15 bg-white/70 p-6 text-center shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/50 hover:shadow-md"
+                >
                     {sponsor.logo_url ? (
                         <img
                             src={sponsor.logo_url}
                             alt={sponsor.name}
-                            className="h-12 w-auto object-contain"
+                            className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                         />
                     ) : (
-                        <span className="font-medium">{sponsor.name}</span>
+                        <span className="text-sm font-bold text-slate-800">
+                            {sponsor.name}
+                        </span>
                     )}
                     {sponsor.tier_label && (
-                        <p className="text-muted-foreground mt-1 text-xs">
+                        <span className="mt-2.5 inline-block rounded-full bg-amber-50 px-2.5 py-0.5 text-[0.65rem] font-semibold tracking-wider text-amber-800 uppercase">
                             {sponsor.tier_label}
-                        </p>
+                        </span>
                     )}
                 </li>
             ))}
@@ -350,21 +514,28 @@ function Faqs({ faqs }: { faqs: Array<{ question: string; answer: string }> }) {
 
     if (faqs.length === 0) {
         return (
-            <p className="text-muted-foreground mt-4 text-sm">
-                {t('jubilee.faq.empty')}
-            </p>
+            <div className="rounded-2xl border border-dashed border-teal-200 p-8 text-center">
+                <p className="text-sm font-medium text-slate-500">
+                    {t('jubilee.faq.empty')}
+                </p>
+            </div>
         );
     }
 
     return (
-        <dl className="mt-6 space-y-5">
+        <dl className="mt-6 space-y-4">
             {faqs.map((faq) => (
                 <div
                     key={faq.question}
-                    className="bg-card rounded-lg border p-5"
+                    className="glass-card-hover rounded-2xl border border-teal-500/15 bg-white/80 p-6 shadow-xs transition-all duration-200 hover:border-teal-500/30"
                 >
-                    <dt className="font-medium">{faq.question}</dt>
-                    <dd className="text-muted-foreground mt-2 text-sm leading-relaxed">
+                    <dt className="flex items-start gap-3 text-base font-bold text-slate-900">
+                        <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-800">
+                            <span className="text-xs font-bold">Q</span>
+                        </div>
+                        <span>{faq.question}</span>
+                    </dt>
+                    <dd className="mt-2.5 ps-8 text-sm leading-relaxed text-slate-600">
                         {faq.answer}
                     </dd>
                 </div>
@@ -376,19 +547,20 @@ function Faqs({ faqs }: { faqs: Array<{ question: string; answer: string }> }) {
 function TimelineSkeleton() {
     return (
         <div className="mt-6 space-y-4">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-6 w-32 rounded-full" />
+            <Skeleton className="h-20 w-full rounded-2xl" />
+            <Skeleton className="h-20 w-full rounded-2xl" />
         </div>
     );
 }
 
 function LogoSkeleton() {
     return (
-        <div className="mt-6 flex gap-6">
-            <Skeleton className="h-12 w-28" />
-            <Skeleton className="h-12 w-28" />
-            <Skeleton className="h-12 w-28" />
+        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <Skeleton className="h-24 rounded-2xl" />
+            <Skeleton className="h-24 rounded-2xl" />
+            <Skeleton className="h-24 rounded-2xl" />
+            <Skeleton className="h-24 rounded-2xl" />
         </div>
     );
 }

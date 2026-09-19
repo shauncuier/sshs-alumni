@@ -8,6 +8,8 @@ type Props = {
     size?: 'sm' | 'md' | 'lg';
     /** Show the organisation name beside the mark. */
     withName?: boolean;
+    /** Text color theme for the name label: 'auto' | 'light' | 'dark' */
+    theme?: 'light' | 'dark' | 'auto';
     className?: string;
 };
 
@@ -36,6 +38,7 @@ export function BrandMark({
     mark = 'association',
     size = 'md',
     withName = false,
+    theme = 'auto',
     className,
 }: Props) {
     const [failed, setFailed] = useState(false);
@@ -45,15 +48,37 @@ export function BrandMark({
     const nameBn = useSetting<string>(`${group}.name_bn`);
     const nameEn = useSetting<string>(`${group}.name_en`);
 
-    const showImage = Boolean(path) && !failed;
+    // Determine the image src: use custom storage path if uploaded, or fallback to the authentic bundled logo
+    const defaultSrc = mark === 'school' ? '/brand/logo-school.png' : '/brand/logo-association.png';
+    const imageSrc = path
+        ? path.startsWith('brand/') || path.startsWith('/')
+            ? path.startsWith('/') ? path : `/${path}`
+            : `/storage/${path}`
+        : defaultSrc;
+
+    const showImage = !failed;
+
+    const nameBnColor =
+        theme === 'dark'
+            ? 'text-white font-bold'
+            : theme === 'light'
+              ? 'text-slate-900 font-bold'
+              : 'text-brand-green-900 dark:text-foreground font-semibold';
+
+    const nameEnColor =
+        theme === 'dark'
+            ? 'text-slate-300 font-medium'
+            : theme === 'light'
+              ? 'text-slate-500'
+              : 'text-muted-foreground';
 
     return (
         <span className={cn('flex items-center gap-3', className)}>
             {showImage ? (
                 <img
-                    src={`/storage/${path}`}
-                    alt={nameEn ?? ''}
-                    className={cn(SIZES[size], 'shrink-0 object-contain')}
+                    src={imageSrc}
+                    alt={nameEn ?? (mark === 'school' ? 'SSHS School Crest' : 'SSHS Alumni Crest')}
+                    className={cn(SIZES[size], 'shrink-0 object-contain drop-shadow-sm')}
                     onError={() => setFailed(true)}
                 />
             ) : (
@@ -73,13 +98,13 @@ export function BrandMark({
                     {nameBn && (
                         <span
                             lang="bn"
-                            className="text-brand-green-900 dark:text-foreground block truncate text-sm font-semibold"
+                            className={cn('block truncate text-sm', nameBnColor)}
                         >
                             {nameBn}
                         </span>
                     )}
                     {nameEn && (
-                        <span className="text-muted-foreground block truncate text-xs">
+                        <span className={cn('block truncate text-xs', nameEnColor)}>
                             {nameEn}
                         </span>
                     )}

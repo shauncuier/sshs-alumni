@@ -18,19 +18,26 @@ export default function Faq({ event, faqs }: Props) {
             title={t('jubilee.faq.title')}
         >
             {faqs.length === 0 ? (
-                <EmptyState
-                    title={t('jubilee.faq.title')}
-                    description={t('jubilee.faq.empty')}
-                />
+                <div className="rounded-2xl border border-dashed border-teal-200/80 p-10 text-center">
+                    <EmptyState
+                        title={t('jubilee.faq.title')}
+                        description={t('jubilee.faq.empty')}
+                    />
+                </div>
             ) : (
                 <dl className="space-y-4">
                     {faqs.map((faq) => (
                         <div
                             key={faq.question}
-                            className="bg-card rounded-lg border p-5"
+                            className="glass-card-hover rounded-2xl border border-teal-500/15 bg-white/80 p-6 shadow-xs transition-all duration-200 hover:border-teal-500/30"
                         >
-                            <dt className="font-medium">{faq.question}</dt>
-                            <dd className="text-muted-foreground mt-2 text-sm leading-relaxed">
+                            <dt className="flex items-start gap-3 text-base font-bold text-slate-900">
+                                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-800">
+                                    <span className="text-xs font-bold">Q</span>
+                                </div>
+                                <span>{faq.question}</span>
+                            </dt>
+                            <dd className="mt-2.5 ps-8 text-sm leading-relaxed text-slate-600">
                                 {faq.answer}
                             </dd>
                         </div>

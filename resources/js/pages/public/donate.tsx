@@ -1,6 +1,5 @@
 import { Deferred } from '@inertiajs/react';
-import { Heart, Mail, Phone } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Heart, Mail, Phone, Users } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSetting } from '@/hooks/use-setting';
 import { useTranslation } from '@/hooks/use-translation';
@@ -42,19 +41,26 @@ export default function Donate({ recent, total }: Props) {
             title={t('public.giving.donate_title')}
             description={t('public.giving.donate_subtitle')}
         >
-            <div className="bg-brand-green-900 text-white">
-                <div className="mx-auto max-w-4xl px-4 py-12">
-                    <h1 className="text-3xl font-semibold">
+            {/* Ambient Hero */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#060a17] via-[#0b1329] to-[#0d1b3a] text-white py-16 sm:py-20 border-b border-teal-500/20">
+                <div className="pointer-events-none absolute -left-20 -top-20 h-80 w-80 rounded-full bg-teal-500/15 blur-3xl" />
+                <div className="pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
+                <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-500/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-teal-300 backdrop-blur-md">
+                        <Heart className="size-3.5 text-teal-300" />
+                        Giving & Support
+                    </div>
+                    <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
                         {t('public.giving.donate_title')}
                     </h1>
-                    <p className="mt-2 text-white/70">
+                    <p className="mt-3 max-w-2xl text-base sm:text-lg text-slate-300">
                         {t('public.giving.donate_subtitle')}
                     </p>
 
                     <Deferred
                         data="total"
                         fallback={
-                            <Skeleton className="mt-8 h-16 w-64 bg-white/10" />
+                            <Skeleton className="mt-8 h-20 w-64 rounded-2xl bg-white/10" />
                         }
                     >
                         <Total total={total} />
@@ -62,75 +68,76 @@ export default function Donate({ recent, total }: Props) {
                 </div>
             </div>
 
-            <div className="bg-brand-cream">
-                <div className="mx-auto grid max-w-4xl gap-8 px-4 py-10 lg:grid-cols-3">
-                    <Card className="lg:col-span-2">
-                        <CardContent className="space-y-4 p-6">
-                            <h2 className="flex items-center gap-2 text-lg font-semibold">
-                                <Heart
-                                    className="text-brand-green-700 size-5"
-                                    aria-hidden="true"
-                                />
-                                {t('public.giving.how')}
-                            </h2>
-
-                            <p className="text-muted-foreground leading-relaxed">
-                                {t('public.giving.how_hint')}
-                            </p>
-
-                            <ul className="space-y-2 text-sm">
-                                {phone && (
-                                    <li className="flex items-center gap-2">
-                                        <Phone
-                                            className="size-4 shrink-0"
-                                            aria-hidden="true"
-                                        />
-                                        <a
-                                            href={`tel:${phone}`}
-                                            className="tabular-id hover:underline"
-                                        >
-                                            {phone}
-                                        </a>
-                                    </li>
-                                )}
-                                {email && (
-                                    <li className="flex items-center gap-2">
-                                        <Mail
-                                            className="size-4 shrink-0"
-                                            aria-hidden="true"
-                                        />
-                                        <a
-                                            href={`mailto:${email}`}
-                                            className="break-all hover:underline"
-                                        >
-                                            {email}
-                                        </a>
-                                    </li>
-                                )}
-                            </ul>
-                        </CardContent>
-                    </Card>
-
-                    <div>
-                        <h2 className="font-semibold">
-                            {t('public.giving.wall')}
+            {/* Content Section */}
+            <div className="relative bg-gradient-to-b from-slate-50 via-teal-50/15 to-white py-12 sm:py-16">
+                <div className="mx-auto grid max-w-5xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-3">
+                    <div className="glass-panel-light rounded-3xl p-6 sm:p-8 border border-teal-500/15 shadow-sm lg:col-span-2">
+                        <h2 className="flex items-center gap-2.5 text-xl font-bold text-slate-900">
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+                                <Heart className="size-4" aria-hidden="true" />
+                            </div>
+                            {t('public.giving.how')}
                         </h2>
 
+                        <p className="mt-4 text-base leading-relaxed text-slate-700">
+                            {t('public.giving.how_hint')}
+                        </p>
+
+                        <div className="mt-6 space-y-3 border-t border-slate-100 pt-6">
+                            {phone && (
+                                <div className="flex items-center gap-3 text-sm text-slate-700">
+                                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+                                        <Phone className="size-4" aria-hidden="true" />
+                                    </div>
+                                    <a
+                                        href={`tel:${phone}`}
+                                        className="tabular-id font-semibold hover:text-teal-700 transition"
+                                    >
+                                        {phone}
+                                    </a>
+                                </div>
+                            )}
+                            {email && (
+                                <div className="flex items-center gap-3 text-sm text-slate-700">
+                                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+                                        <Mail className="size-4" aria-hidden="true" />
+                                    </div>
+                                    <a
+                                        href={`mailto:${email}`}
+                                        className="break-all font-semibold hover:text-teal-700 transition"
+                                    >
+                                        {email}
+                                    </a>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="rounded-3xl border border-teal-500/15 bg-white/90 p-6 shadow-sm backdrop-blur-md">
+                        <div className="flex items-center gap-2 border-b border-slate-100 pb-4">
+                            <div className="flex size-8 items-center justify-center rounded-lg bg-amber-50 text-amber-800">
+                                <Users className="size-4" />
+                            </div>
+                            <h2 className="font-bold text-slate-900">
+                                {t('public.giving.wall')}
+                            </h2>
+                        </div>
+
                         {recent.length === 0 ? (
-                            <p className="text-muted-foreground mt-3 text-sm">
+                            <p className="mt-4 text-sm text-slate-500">
                                 {t('public.giving.wall_empty')}
                             </p>
                         ) : (
-                            <ul className="mt-3 space-y-2 text-sm">
+                            <ul className="mt-4 space-y-3 text-sm">
                                 {recent.map((donor, index) => (
                                     <li
                                         key={`${donor.donor_name}-${index}`}
-                                        className="flex justify-between gap-3"
+                                        className="flex items-center justify-between gap-3 border-b border-slate-50 pb-2.5 last:border-0"
                                     >
-                                        <span className="min-w-0 truncate">
+                                        <span className="min-w-0 truncate font-medium text-slate-800">
                                             {donor.donor_name}
                                         </span>
-                                        <span className="text-muted-foreground shrink-0 tabular-nums">
+                                        <span className="shrink-0 text-xs text-slate-400 tabular-nums">
                                             {formatDate(donor.received_at)}
                                         </span>
                                     </li>
@@ -138,7 +145,7 @@ export default function Donate({ recent, total }: Props) {
                             </ul>
                         )}
 
-                        <p className="text-muted-foreground mt-4 text-xs">
+                        <p className="mt-6 border-t border-slate-100 pt-4 text-xs text-slate-400 leading-relaxed">
                             {t('public.giving.wall_note')}
                         </p>
                     </div>
@@ -160,14 +167,14 @@ function Total({
     }
 
     return (
-        <div className="mt-8">
-            <p className="text-sm text-white/60">
+        <div className="mt-8 inline-block rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-md shadow-inner">
+            <p className="text-xs uppercase tracking-wider font-semibold text-slate-300">
                 {t('public.giving.total_raised')}
             </p>
-            <p className="text-brand-gold-500 text-4xl font-semibold tabular-nums">
+            <p className="mt-1 text-3xl sm:text-4xl font-extrabold text-amber-400 tabular-nums">
                 {formatCurrency(total.amount)}
             </p>
-            <p className="mt-1 text-sm text-white/70">
+            <p className="mt-1 text-xs sm:text-sm text-slate-300">
                 {choice('public.giving.donors', total.donors, {
                     count: formatNumber(total.donors),
                 })}
