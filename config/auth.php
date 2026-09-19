@@ -114,4 +114,20 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Super Administrator Account (Initial Provisioning)
+    |--------------------------------------------------------------------------
+    |
+    | Initial credentials used for administrative provisioning and command fallbacks.
+    |
+    */
+
+    'super_admin' => [
+        'name' => env('SUPER_ADMIN_NAME', 'Super Administrator'),
+        'email' => env('SUPER_ADMIN_EMAIL', 'admin@sshs-alumni.org'),
+        'password' => env('SUPER_ADMIN_PASSWORD', 'AdminPassword123!@#'),
+        'phone' => env('SUPER_ADMIN_PHONE', '01711223344'),
+    ],
+
 ];

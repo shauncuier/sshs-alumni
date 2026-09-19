@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
@@ -24,9 +25,11 @@ class MakeAdminCommand extends Command
     protected $signature = 'make:admin
         {--name= : Full name}
         {--email= : Email address}
-        {--role=Super Admin : Role to assign}';
+        {--password= : Password}
+        {--role=Super Admin : Role to assign}
+        {--from-env : Provision or sync admin using .env configuration}';
 
-    protected $description = 'Create an administrator account';
+    protected $description = 'Create or provision an administrator account';
 
     public function handle(): int
     {
@@ -38,27 +41,35 @@ class MakeAdminCommand extends Command
             return self::FAILURE;
         }
 
-        $name = $this->option('name') ?: $this->ask('Full name');
-        $email = $this->option('email') ?: $this->ask('Email address');
+        $fromEnv = (bool) $this->option('from-env');
+
+        $name = $this->option('name') ?: ($fromEnv ? config('auth.super_admin.name') : $this->ask('Full name'));
+        $email = $this->option('email') ?: ($fromEnv ? config('auth.super_admin.email') : $this->ask('Email address'));
         $role = (string) $this->option('role');
 
-        // secret() keeps the password off the screen and out of shell history.
-        $password = $this->secret('Password');
-        $confirmation = $this->secret('Confirm password');
+        if ($fromEnv) {
+            $password = $this->option('password') ?: (string) config('auth.super_admin.password');
+        } elseif ($this->option('password')) {
+            $password = (string) $this->option('password');
+        } else {
+            // secret() keeps the password off the screen and out of shell history.
+            $password = $this->secret('Password');
+            $confirmation = $this->secret('Confirm password');
 
-        if ($password !== $confirmation) {
-            $this->components->error('The passwords do not match.');
+            if ($password !== $confirmation) {
+                $this->components->error('The passwords do not match.');
 
-            return self::FAILURE;
+                return self::FAILURE;
+            }
         }
+
+        $existingUser = User::query()->where('email', $email)->first();
 
         $validator = Validator::make(
             ['name' => $name, 'email' => $email, 'password' => $password, 'role' => $role],
             [
                 'name' => ['required', 'string', 'max:150'],
-                'email' => ['required', 'email', 'max:191', 'unique:users,email'],
-                // Production rules apply: min 12 with mixed case, numbers,
-                // symbols, and checked against known breaches.
+                'email' => ['required', 'email', 'max:191'],
                 'password' => ['required', Password::defaults()],
                 'role' => ['required', 'exists:roles,name'],
             ],
@@ -72,10 +83,25 @@ class MakeAdminCommand extends Command
             return self::FAILURE;
         }
 
+        if ($existingUser !== null) {
+            $existingUser->update([
+                'name' => $name,
+                'password' => Hash::make($password),
+                'status' => UserStatus::Active,
+            ]);
+            $existingUser->syncRoles([$role]);
+
+            $this->newLine();
+            $this->components->info("Administrator updated: {$email} ({$role})");
+
+            return self::SUCCESS;
+        }
+
         $user = User::query()->create([
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($password),
+            'status' => UserStatus::Active,
         ]);
 
         $user->forceFill(['email_verified_at' => now()])->save();

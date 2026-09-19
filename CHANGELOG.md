@@ -6,6 +6,34 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 9 — System Settings, Audit Logs, Staff Management & Reports · 2026-09-19
+
+**Status: complete**
+
+### Added
+
+- **Initial Super Admin provisioning (`.env` & `make:admin --from-env`)** — automated administrator account seeding from environment configuration (`SUPER_ADMIN_NAME`, `SUPER_ADMIN_EMAIL`, `SUPER_ADMIN_PASSWORD`, `SUPER_ADMIN_PHONE`), with command support to provision or sync the root Super Admin account.
+- **Grouped system settings (`SettingController`, `SettingsService`)** — centralized management of 12 configuration groups (`organization`, `school`, `contact`, `social`, `registration`, `membership`, `event`, `jubilee`, `notification`, `seo`, `privacy`, `system`), preserving the strict distinction between School (est. 1976, EIIN 105070) and Association (est. 2015), with automatic cache flushing on mutation.
+- **Audit logs explorer (`AuditLogController`)** — interactive security and compliance trail with filters for action, actor, target entity, and date range, featuring JSON attribute diff inspection and automated scrubbing of sensitive credentials.
+- **Staff user management (`UserController`)** — administration interface for staff identity creation, role assignments (`Super Admin`, `Admin`, `CRM Manager`, `Finance Manager`, etc.), account status toggling, and self-deletion / lone super-admin deletion safeguards.
+- **11 Analytical reports & data extraction engine (`ReportService`, `ReportController`)** — comprehensive reporting suite across Membership, Security, Events, Finance, Operations, and Community, featuring streamed UTF-8 CSV exports with mandatory audit log trails to track bulk PII access.
+- **Inertia React administration interfaces**:
+  - `/admin/settings` — tabbed settings editor styled with Midnight Slate & Teal aesthetics.
+  - `/admin/audit-logs` — compliance audit viewer with diff modals and filter bar.
+  - `/admin/users` — staff directory, role matrix assigner, and credential manager.
+  - `/admin/reports` — visual catalog of all 11 analytical reports.
+  - `/admin/reports/{report}` — interactive data preview table with instant CSV export.
+
+### Verified
+
+- **502 tests, 1,930 assertions** (487 → 502). Full test suite passing 100%.
+- 15 new tests in `tests/Feature/Admin/` across `SettingTest`, `AuditLogTest`, `UserManagementTest`, and `ReportTest`.
+- Code style verified with Laravel Pint (`0 violations`).
+- Frontend type safety verified with TypeScript (`tsc --noEmit` clean).
+- Frontend production bundle compiled with Vite (`npm run build` exit code 0).
+
+---
+
 ## Phase 8 — Communication & Notifications · 2026-09-19
 
 **Status: complete**

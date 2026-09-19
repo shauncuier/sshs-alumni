@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AnnouncementController;
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\CheckinController;
@@ -26,11 +27,14 @@ use App\Http\Controllers\Admin\MessageTemplateController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SmsBalanceController;
 use App\Http\Controllers\Admin\SponsorController;
 use App\Http\Controllers\Admin\StoryController;
 use App\Http\Controllers\Admin\TicketTypeController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VerificationController;
 use App\Http\Controllers\Admin\VolunteerController;
 use Illuminate\Support\Facades\Route;
@@ -438,5 +442,36 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
 
         Route::middleware('can:campaigns.send')->group(function (): void {
             Route::post('campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('campaigns.send');
+        });
+
+        /*
+        | Reports
+        */
+        Route::middleware('can:reports.view')->group(function (): void {
+            Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+            Route::get('reports/{report}', [ReportController::class, 'show'])->name('reports.show');
+        });
+
+        Route::middleware(['can:reports.export', 'throttle:10,1'])->group(function (): void {
+            Route::post('reports/{report}/export', [ReportController::class, 'export'])->name('reports.export');
+        });
+
+        /*
+        | System (Settings, Staff Users, Audit Logs)
+        */
+        Route::middleware('can:settings.manage')->group(function (): void {
+            Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
+            Route::put('settings/{group}', [SettingController::class, 'update'])->name('settings.update');
+        });
+
+        Route::middleware('can:users.manage')->group(function (): void {
+            Route::get('users', [UserController::class, 'index'])->name('users.index');
+            Route::post('users', [UserController::class, 'store'])->name('users.store');
+            Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
+            Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        });
+
+        Route::middleware('can:audit.view')->group(function (): void {
+            Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit.index');
         });
     });
