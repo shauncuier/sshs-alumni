@@ -10,6 +10,7 @@ use App\Http\Controllers\Member\ContentReportController;
 use App\Http\Controllers\Member\DashboardController;
 use App\Http\Controllers\Member\DirectoryController;
 use App\Http\Controllers\Member\EventController;
+use App\Http\Controllers\Member\NotificationController;
 use App\Http\Controllers\Member\PaymentController;
 use App\Http\Controllers\Member\ProfileController;
 use App\Http\Controllers\Member\ReactionController;
@@ -31,6 +32,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'verified'])->group(function (): void {
 
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
 
     Route::prefix('my')->name('my.')->group(function (): void {
         Route::get('profile', [ProfileController::class, 'edit'])->name('profile');

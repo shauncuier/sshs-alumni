@@ -118,6 +118,11 @@ describe('navigation route names', function (): void {
         expect(Route::has('admin.faqs.index'))->toBeTrue();
         expect(Route::has('admin.media.index'))->toBeTrue();
         expect(Route::has('my.stories'))->toBeTrue();
+
+        // Phase 8.
+        expect(Route::has('admin.campaigns.index'))->toBeTrue();
+        expect(Route::has('admin.templates.index'))->toBeTrue();
+        expect(Route::has('notifications.index'))->toBeTrue();
     });
 });
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\BatchController;
+use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\CheckinController;
 use App\Http\Controllers\Admin\CommitteeController;
 use App\Http\Controllers\Admin\CommunityController;
@@ -21,10 +22,12 @@ use App\Http\Controllers\Admin\HistoryController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\MembershipFeeController;
+use App\Http\Controllers\Admin\MessageTemplateController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SmsBalanceController;
 use App\Http\Controllers\Admin\SponsorController;
 use App\Http\Controllers\Admin\StoryController;
 use App\Http\Controllers\Admin\TicketTypeController;
@@ -411,5 +414,29 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
         Route::middleware('can:roles.manage')->group(function (): void {
             Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
             Route::put('roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+        });
+
+        /*
+        | Communication (Campaigns, Templates, SMS Balance)
+        |
+        | `campaigns.manage` creates drafts and templates; `campaigns.send` dispatches.
+        */
+        Route::middleware('can:campaigns.manage')->group(function (): void {
+            Route::get('campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+            Route::get('campaigns/create', [CampaignController::class, 'create'])->name('campaigns.create');
+            Route::post('campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
+            Route::get('campaigns/{campaign}', [CampaignController::class, 'show'])->name('campaigns.show');
+            Route::delete('campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
+
+            Route::get('message-templates', [MessageTemplateController::class, 'index'])->name('templates.index');
+            Route::post('message-templates', [MessageTemplateController::class, 'store'])->name('templates.store');
+            Route::put('message-templates/{template}', [MessageTemplateController::class, 'update'])->name('templates.update');
+            Route::delete('message-templates/{template}', [MessageTemplateController::class, 'destroy'])->name('templates.destroy');
+
+            Route::get('sms/balance', SmsBalanceController::class)->name('sms.balance');
+        });
+
+        Route::middleware('can:campaigns.send')->group(function (): void {
+            Route::post('campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('campaigns.send');
         });
     });

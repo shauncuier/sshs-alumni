@@ -97,6 +97,11 @@ final readonly class SmsMessage
         return $countryCode.$digits;
     }
 
+    public static function normalizeNumber(string $number, string $countryCode = '88'): string
+    {
+        return self::normaliseNumber($number, $countryCode);
+    }
+
     /**
      * True when the body contains any character outside the GSM-7 alphabet —
      * which every Bengali character is.

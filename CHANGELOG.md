@@ -6,6 +6,42 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates ar
 
 ---
 
+## Phase 8 — Communication & Notifications · 2026-09-19
+
+**Status: complete**
+
+### Added
+
+- **BulkSMSBD outbound SMS engine (`SmsManager`, `SmsChannel`, `BulkSmsBdChannel`, `LogSmsChannel`)** — multi-driver SMS infrastructure with `log` mode by default outside production, preventing unintended SMS expenditure during development and automated tests.
+- **Bangla Unicode vs GSM-7 cost estimator (`SmsMessage`)** — accurately calculates segment counts before sending (70 chars per Unicode segment vs 160 for GSM-7), estimating total budget upfront so administrators never receive surprise invoices.
+- **Daily SMS spend cap & master switch** — rate limiter with cache-backed counter, daily maximum cap, and instant killswitch (`SMS_ENABLED`).
+- **Targeted audience resolver (`CampaignAudienceResolver`)** — dynamic cohort resolution for campaigns by audience type (`all_members`, `batch`, `status`, `role`, `custom`), strictly querying approved members and formatting phone numbers to national standards (`8801...`).
+- **Template engine (`TemplateRenderer`)** — multi-variable dynamic substitution (`{name}`, `{batch}`, `{membership_no}`) with locale-sensitive Bangla/English fallbacks.
+- **Queued campaign dispatching (`SendCampaignBatch`)** — chunked queue execution (100 recipients per batch) supporting both SMS and Email channels, recording individual recipient delivery statuses, vendor message IDs, and failure reasons.
+- **Branded transactional & campaign emails (`CampaignEmail`)** — responsive HTML and text email templates styled in Midnight Slate & Electric Teal aesthetic.
+- **Live SMS balance & quota API (`SmsBalanceController`)** — real-time balance and usage monitor for admin dashboards and status indicators.
+- **Member in-app notification center (`/notifications`)** — database-backed notification feed for membership approvals, payments, event announcements, and community mentions (`AppNotification`, `MentionNotification`, `MemberApprovedNotification`, etc.), with single-click and batch "mark as read" capabilities.
+- **Full Inertia React management interfaces**:
+  - `/admin/campaigns` — broadcast campaigns directory, status monitoring, delivery breakdowns.
+  - `/admin/campaigns/create` — campaign builder with real-time character/segment/cost estimator, audience filters, and template selector.
+  - `/admin/campaigns/{id}` — live campaign telemetry, recipient logs, retry tracking.
+  - `/admin/message-templates` — reusable SMS and Email template manager with placeholder helpers.
+  - `/notifications` — modern notification feed with status badges and deep-link routing.
+
+### Verified
+
+- **487 tests, 1,835 assertions** (475 → 487). Full test suite passing 100%.
+- 12 new comprehensive tests in `tests/Feature/Communication/` across `CampaignTest`, `TemplateTest`, and `NotificationTest`.
+- Code style verified with Laravel Pint (`0 violations`).
+- Frontend type safety verified with TypeScript (`tsc --noEmit` clean).
+- Frontend assets compiled with Vite (`npm run build` exit code 0).
+
+### Next up: Phase 9
+
+- **System Settings, Audit Logs, Backups & Production Readiness**.
+
+---
+
 ## Phase 7 — Front door, news & media, and content management · 2026-09-19
 
 **Status: complete**

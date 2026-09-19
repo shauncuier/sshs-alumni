@@ -61,6 +61,10 @@ final class Navigation
             ['key' => 'media', 'route' => 'admin.media.index', 'icon' => 'Image', 'permission' => 'content.view'],
             ['key' => 'community', 'route' => 'admin.community.posts', 'icon' => 'MessagesSquare', 'permission' => 'community.moderate'],
         ],
+        'communication' => [
+            ['key' => 'campaigns', 'route' => 'admin.campaigns.index', 'icon' => 'Send', 'permission' => 'campaigns.manage'],
+            ['key' => 'templates', 'route' => 'admin.templates.index', 'icon' => 'FileText', 'permission' => 'campaigns.manage'],
+        ],
         'system' => [
             ['key' => 'reports', 'route' => 'admin.reports.index', 'icon' => 'Award', 'permission' => 'reports.view'],
             ['key' => 'users', 'route' => 'admin.users.index', 'icon' => 'Users', 'permission' => 'users.manage'],
@@ -79,6 +83,7 @@ final class Navigation
      */
     private const MEMBER = [
         ['key' => 'dashboard', 'route' => 'dashboard', 'icon' => 'LayoutGrid'],
+        ['key' => 'notifications', 'route' => 'notifications.index', 'icon' => 'Bell'],
         ['key' => 'profile', 'route' => 'my.profile', 'icon' => 'UserCircle'],
         ['key' => 'card', 'route' => 'my.card', 'icon' => 'IdCard', 'approved' => true],
         ['key' => 'directory', 'route' => 'directory.index', 'icon' => 'Users', 'approved' => true],
