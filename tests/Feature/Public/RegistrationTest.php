@@ -7,6 +7,7 @@ use App\Enums\RelationType;
 use App\Models\Batch;
 use App\Models\Member;
 use App\Models\User;
+use App\Services\Communication\PhoneVerificationService;
 use Database\Seeders\ProductionSeeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -20,10 +21,18 @@ beforeEach(function (): void {
  */
 function basicStep(array $overrides = []): array
 {
+    $mobile = (string) ($overrides['mobile'] ?? '01712345678');
+
+    session()->put('registration.phone_verified', [
+        'phone' => app(PhoneVerificationService::class)->normalise($mobile),
+        'raw' => $mobile,
+        'verified_at' => now()->toIso8601String(),
+    ]);
+
     return [
         'full_name' => 'Rahim Uddin',
         'relation_type' => RelationType::FormerStudent->value,
-        'mobile' => '01712345678',
+        'mobile' => $mobile,
         'email' => 'rahim@example.test',
         'password' => 'CorrectHorse!7Battery',
         'password_confirmation' => 'CorrectHorse!7Battery',

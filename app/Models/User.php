@@ -47,7 +47,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  */
-#[Fillable(['name', 'email', 'password', 'phone', 'avatar_path', 'status'])]
+#[Fillable(['name', 'email', 'password', 'phone', 'phone_verified_at', 'avatar_path', 'status'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {

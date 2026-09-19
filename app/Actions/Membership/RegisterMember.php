@@ -46,6 +46,7 @@ class RegisterMember
                 'email' => (string) $draft['email'],
                 'password' => $hashedPassword,
                 'phone' => $draft['mobile'] ?? null,
+                'phone_verified_at' => ! empty($draft['phone_verified']) ? now() : null,
             ]);
 
             // Every approved alumnus is a Member; the role is assigned now so

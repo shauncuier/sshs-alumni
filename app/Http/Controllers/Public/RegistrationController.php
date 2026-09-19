@@ -12,6 +12,8 @@ use App\Enums\RelationType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\RegistrationStepRequest;
 use App\Models\Batch;
+use App\Services\Communication\PhoneVerificationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,6 +35,55 @@ class RegistrationController extends Controller
 
     private const PASSWORD_KEY = 'registration.password';
 
+    private const VERIFIED_PHONE_KEY = 'registration.phone_verified';
+
+    /**
+     * Send OTP code via SMS to applicant's phone during step 1.
+     */
+    public function sendOtp(Request $request, PhoneVerificationService $service): JsonResponse
+    {
+        $validated = $request->validate([
+            'mobile' => ['required', 'string', 'max:32'],
+        ]);
+
+        $result = $service->send($validated['mobile']);
+
+        return response()->json($result, $result['success'] ? 200 : 422);
+    }
+
+    /**
+     * Verify applicant's entered OTP code.
+     */
+    public function verifyOtp(Request $request, PhoneVerificationService $service): JsonResponse
+    {
+        $validated = $request->validate([
+            'mobile' => ['required', 'string', 'max:32'],
+            'code' => ['required', 'string', 'min:4', 'max:8'],
+        ]);
+
+        $result = $service->verify($validated['mobile'], $validated['code']);
+
+        if ($result['success']) {
+            $normalized = $service->normalise($validated['mobile']);
+            $verifiedData = [
+                'phone' => $normalized,
+                'raw' => $validated['mobile'],
+                'verified_at' => now()->toIso8601String(),
+            ];
+
+            $request->session()->put(self::VERIFIED_PHONE_KEY, $verifiedData);
+
+            /** @var array<string, mixed> $draft */
+            $draft = $request->session()->get(self::DRAFT_KEY, []);
+            $draft['mobile'] = $validated['mobile'];
+            $draft['phone_verified'] = true;
+            $draft['phone_verified_at'] = $verifiedData['verified_at'];
+            $request->session()->put(self::DRAFT_KEY, $draft);
+        }
+
+        return response()->json($result, $result['success'] ? 200 : 422);
+    }
+
     public function start(): RedirectResponse
     {
         return redirect()->route('join.step', ['step' => RegistrationStepRequest::STEPS[0]]);
@@ -46,6 +97,13 @@ class RegistrationController extends Controller
 
         /** @var array<string, mixed> $draft */
         $draft = $request->session()->get(self::DRAFT_KEY, []);
+        /** @var array<string, mixed>|null $verified */
+        $verified = $request->session()->get(self::VERIFIED_PHONE_KEY);
+
+        if (is_array($verified) && ! empty($verified['phone'])) {
+            $draft['phone_verified'] = true;
+            $draft['phone_verified_at'] = $verified['verified_at'] ?? null;
+        }
 
         // A visitor cannot deep-link past a step they have not completed —
         // otherwise the final submit would fail on fields they never saw.
@@ -93,6 +151,13 @@ class RegistrationController extends Controller
             unset($validated['password'], $validated['password_confirmation']);
         }
 
+        if ($step === 'basic') {
+            /** @var array<string, mixed>|null $verified */
+            $verified = $request->session()->get(self::VERIFIED_PHONE_KEY);
+            $validated['phone_verified'] = true;
+            $validated['phone_verified_at'] = is_array($verified) ? ($verified['verified_at'] ?? now()->toIso8601String()) : now()->toIso8601String();
+        }
+
         /** @var array<string, mixed> $draft */
         $draft = $request->session()->get(self::DRAFT_KEY, []);
 
@@ -136,6 +201,12 @@ class RegistrationController extends Controller
                 ->with('warning', __('public.join.session_expired'));
         }
 
+        if (empty($draft['phone_verified'])) {
+            return redirect()
+                ->route('join.step', ['step' => 'basic'])
+                ->with('warning', __('public.join.otp.must_verify'));
+        }
+
         $completed = $draft['completed_steps'] ?? [];
         $required = RegistrationStepRequest::STEPS;
 
@@ -147,7 +218,7 @@ class RegistrationController extends Controller
 
         $register($draft, $hashedPassword);
 
-        $request->session()->forget([self::DRAFT_KEY, self::PASSWORD_KEY]);
+        $request->session()->forget([self::DRAFT_KEY, self::PASSWORD_KEY, self::VERIFIED_PHONE_KEY]);
 
         return redirect()->route('join.done');
     }

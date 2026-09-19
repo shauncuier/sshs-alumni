@@ -40,6 +40,15 @@ Route::prefix('join')->name('join.')->group(function (): void {
     Route::get('/', [RegistrationController::class, 'start'])->name('start');
     Route::get('done', [RegistrationController::class, 'done'])->name('done');
 
+    // Phone OTP verification endpoints during onboarding.
+    Route::post('otp/send', [RegistrationController::class, 'sendOtp'])
+        ->middleware('throttle:10,1')
+        ->name('otp.send');
+
+    Route::post('otp/verify', [RegistrationController::class, 'verifyOtp'])
+        ->middleware('throttle:15,1')
+        ->name('otp.verify');
+
     Route::get('{step}', [RegistrationController::class, 'step'])->name('step');
 
     // The final step creates the account, so it gets the tighter limit.

@@ -4,14 +4,18 @@ import {
     ArrowRight,
     Briefcase,
     Check,
+    CheckCircle2,
     GraduationCap,
     Lock,
     MapPin,
+    RotateCw,
+    Send,
+    ShieldAlert,
     ShieldCheck,
     Sparkles,
     User,
 } from 'lucide-react';
-import type { FormEvent } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -77,6 +81,13 @@ const STEP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
     review: ShieldCheck,
 };
 
+function getCsrfToken(): string {
+    const meta = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null;
+    if (meta?.content) return meta.content;
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+}
+
 export default function Join({ step, steps, draft, options }: Props) {
     const { t } = useTranslation();
 
@@ -97,13 +108,135 @@ export default function Join({ step, steps, draft, options }: Props) {
         },
     });
 
-    const submit = (event: FormEvent) => {
-        event.preventDefault();
-        form.post(`/join/${step}`, { preserveScroll: true });
-    };
+    const [isVerified, setIsVerified] = useState<boolean>(Boolean(draft.phone_verified));
+    const [verifiedNumber, setVerifiedNumber] = useState<string>((draft.mobile as string) || '');
+    const [otpSent, setOtpSent] = useState<boolean>(false);
+    const [otpCode, setOtpCode] = useState<string>('');
+    const [otpSending, setOtpSending] = useState<boolean>(false);
+    const [otpVerifying, setOtpVerifying] = useState<boolean>(false);
+    const [cooldown, setCooldown] = useState<number>(0);
+    const [otpError, setOtpError] = useState<string | null>(null);
+    const [otpSuccess, setOtpSuccess] = useState<string | null>(null);
+    const [debugCode, setDebugCode] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (cooldown <= 0) return;
+        const timer = setInterval(() => {
+            setCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [cooldown]);
 
     const set = (field: string, value: JoinValue) => form.setData(field, value);
     const value = (field: string) => (form.data[field] as string) ?? '';
+
+    const handleSendOtp = async () => {
+        const mobile = value('mobile').trim();
+        if (!mobile) {
+            setOtpError(t('public.join.otp.invalid_number'));
+            return;
+        }
+
+        setOtpSending(true);
+        setOtpError(null);
+        setOtpSuccess(null);
+
+        try {
+            const res = await fetch('/join/otp/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({ mobile }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                setOtpSent(true);
+                setCooldown(data.cooldown || 60);
+                setOtpSuccess(data.message || t('public.join.otp.sent_success'));
+                if (data.debug_code) {
+                    setDebugCode(data.debug_code);
+                }
+            } else {
+                setOtpError(data.message || t('public.join.otp.send_failed'));
+                if (data.cooldown) {
+                    setCooldown(data.cooldown);
+                }
+            }
+        } catch {
+            setOtpError(t('public.join.otp.send_failed'));
+        } finally {
+            setOtpSending(false);
+        }
+    };
+
+    const handleVerifyOtp = async () => {
+        const mobile = value('mobile').trim();
+        const code = otpCode.trim();
+
+        if (!code || code.length < 4) {
+            setOtpError(t('public.join.otp.invalid_code', { remaining: 5 }));
+            return;
+        }
+
+        setOtpVerifying(true);
+        setOtpError(null);
+        setOtpSuccess(null);
+
+        try {
+            const res = await fetch('/join/otp/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({ mobile, code }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                setIsVerified(true);
+                setVerifiedNumber(mobile);
+                setOtpSent(false);
+                setOtpCode('');
+                setDebugCode(null);
+                setOtpSuccess(data.message || t('public.join.otp.verify_success'));
+                form.clearErrors('mobile');
+            } else {
+                setOtpError(data.message || t('public.join.otp.invalid_code', { remaining: 3 }));
+            }
+        } catch {
+            setOtpError(t('public.join.otp.invalid_code', { remaining: 3 }));
+        } finally {
+            setOtpVerifying(false);
+        }
+    };
+
+    const handleMobileChange = (newMobile: string) => {
+        set('mobile', newMobile);
+        if (isVerified && newMobile !== verifiedNumber) {
+            setIsVerified(false);
+            setOtpSent(false);
+            setOtpSuccess(null);
+            setOtpError(null);
+        }
+    };
+
+    const submit = (event: FormEvent) => {
+        event.preventDefault();
+        if (step === 'basic' && !isVerified) {
+            setOtpError(t('public.join.otp.must_verify'));
+            form.setError('mobile', t('public.join.otp.must_verify'));
+            return;
+        }
+        form.post(`/join/${step}`, { preserveScroll: true });
+    };
 
     return (
         <PublicLayout
@@ -313,22 +446,122 @@ export default function Join({ step, steps, draft, options }: Props) {
                                 </Field>
 
                                 <div className="grid gap-4 sm:grid-cols-2">
-                                    <Field
-                                        label={t('public.join.fields.mobile')}
-                                        error={form.errors.mobile}
-                                        required
-                                    >
-                                        <Input
-                                            inputMode="tel"
-                                            className="tabular-id"
-                                            placeholder="01XXXXXXXXX"
-                                            value={value('mobile')}
-                                            onChange={(e) =>
-                                                set('mobile', e.target.value)
-                                            }
-                                            required
-                                        />
-                                    </Field>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs font-bold text-slate-800 tracking-wide sm:text-sm">
+                                            {t('public.join.fields.mobile')}
+                                            <span className="text-rose-600 ms-1 font-bold" aria-hidden="true">*</span>
+                                        </Label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                inputMode="tel"
+                                                className="tabular-id rounded-xl border-slate-200/80 bg-white/80 shadow-xs focus-visible:border-teal-500 focus-visible:ring-2 focus-visible:ring-teal-500/20"
+                                                placeholder="01XXXXXXXXX"
+                                                value={value('mobile')}
+                                                onChange={(e) => handleMobileChange(e.target.value)}
+                                                disabled={isVerified}
+                                                required
+                                            />
+                                            {!isVerified && (
+                                                <Button
+                                                    type="button"
+                                                    onClick={handleSendOtp}
+                                                    disabled={otpSending || cooldown > 0 || !value('mobile').trim()}
+                                                    className="shrink-0 h-10 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs px-3.5 shadow-xs transition-all cursor-pointer disabled:cursor-not-allowed"
+                                                >
+                                                    {otpSending ? (
+                                                        <RotateCw className="size-3.5 animate-spin" />
+                                                    ) : (
+                                                        <Send className="size-3.5 mr-1" />
+                                                    )}
+                                                    <span>
+                                                        {cooldown > 0
+                                                            ? `${cooldown}s`
+                                                            : otpSent
+                                                              ? t('public.join.otp.resend_ready')
+                                                              : t('public.join.otp.send_code')}
+                                                    </span>
+                                                </Button>
+                                            )}
+                                        </div>
+
+                                        {isVerified ? (
+                                            <div className="mt-2 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-800 animate-in fade-in duration-200">
+                                                <div className="flex items-center gap-1.5 font-semibold">
+                                                    <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+                                                    <span>{t('public.join.otp.verified')}</span>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 underline transition-colors cursor-pointer"
+                                                    onClick={() => {
+                                                        setIsVerified(false);
+                                                        setOtpSent(false);
+                                                        setOtpSuccess(null);
+                                                    }}
+                                                >
+                                                    {t('public.join.otp.change_number')}
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                {/* OTP Code Entry Card when OTP has been sent */}
+                                                {otpSent && (
+                                                    <div className="mt-2 rounded-xl border border-teal-200 bg-teal-50/80 p-3.5 shadow-xs space-y-2.5 animate-in fade-in duration-200">
+                                                        <div className="flex items-center justify-between text-xs">
+                                                            <span className="font-medium text-slate-700">
+                                                                {t('public.join.otp.code_sent', { phone: value('mobile') })}
+                                                            </span>
+                                                            {debugCode && (
+                                                                <span className="inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-800">
+                                                                    Dev OTP: {debugCode}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <Input
+                                                                type="text"
+                                                                inputMode="numeric"
+                                                                maxLength={8}
+                                                                placeholder={t('public.join.otp.code_placeholder')}
+                                                                value={otpCode}
+                                                                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                                                                className="h-9 font-mono tracking-widest text-center text-sm font-bold bg-white rounded-lg border-teal-300"
+                                                                autoFocus
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                onClick={handleVerifyOtp}
+                                                                disabled={otpVerifying || otpCode.length < 4}
+                                                                className="h-9 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs px-4 shrink-0 shadow-xs transition-all cursor-pointer disabled:cursor-not-allowed"
+                                                            >
+                                                                {otpVerifying ? (
+                                                                    <RotateCw className="size-3.5 animate-spin" />
+                                                                ) : (
+                                                                    <Check className="size-3.5 mr-1" />
+                                                                )}
+                                                                <span>{t('public.join.otp.verify')}</span>
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {otpSuccess && (
+                                                    <p className="text-xs text-emerald-600 font-medium flex items-center gap-1 mt-1">
+                                                        <CheckCircle2 className="size-3.5 shrink-0" />
+                                                        <span>{otpSuccess}</span>
+                                                    </p>
+                                                )}
+                                                {otpError && (
+                                                    <p className="text-xs text-rose-600 font-medium flex items-center gap-1 mt-1">
+                                                        <ShieldAlert className="size-3.5 shrink-0" />
+                                                        <span>{otpError}</span>
+                                                    </p>
+                                                )}
+                                            </>
+                                        )}
+
+                                        <InputError message={form.errors.mobile} />
+                                    </div>
 
                                     <Field
                                         label={t('public.join.fields.whatsapp')}
@@ -799,8 +1032,9 @@ export default function Join({ step, steps, draft, options }: Props) {
 
                             <Button
                                 type="submit"
-                                disabled={form.processing}
-                                className="ms-auto h-11 rounded-xl bg-gradient-to-r from-teal-600 via-teal-500 to-cyan-600 px-8 font-bold text-white shadow-lg shadow-teal-500/25 transition-all duration-300 hover:from-teal-500 hover:to-cyan-500 hover:shadow-xl hover:shadow-teal-500/35 hover:-translate-y-0.5"
+                                disabled={form.processing || (step === 'basic' && !isVerified)}
+                                title={step === 'basic' && !isVerified ? t('public.join.otp.must_verify') : undefined}
+                                className="ms-auto h-11 rounded-xl bg-gradient-to-r from-teal-600 via-teal-500 to-cyan-600 px-8 font-bold text-white shadow-lg shadow-teal-500/25 transition-all duration-300 hover:from-teal-500 hover:to-cyan-500 hover:shadow-xl hover:shadow-teal-500/35 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                             >
                                 <span>
                                     {index === steps.length - 1

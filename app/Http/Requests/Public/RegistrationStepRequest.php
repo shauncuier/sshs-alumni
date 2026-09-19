@@ -8,9 +8,11 @@ use App\Enums\BloodGroup;
 use App\Enums\Gender;
 use App\Enums\MemberLinkType;
 use App\Enums\RelationType;
+use App\Services\Communication\PhoneVerificationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Validator;
 
 /**
  * Per-step validation for the public membership registration.
@@ -49,6 +51,29 @@ class RegistrationStepRequest extends FormRequest
             'review' => $this->reviewRules(),
             default => [],
         };
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            if ($this->route('step') === 'basic') {
+                $mobile = (string) $this->input('mobile');
+                /** @var array<string, mixed>|null $verified */
+                $verified = $this->session()->get('registration.phone_verified');
+
+                $normalizedInput = app(PhoneVerificationService::class)->normalise($mobile);
+
+                if (
+                    ! is_array($verified)
+                    || empty($verified['phone'])
+                    || $verified['phone'] !== $normalizedInput
+                ) {
+                    $validator->errors()->add('mobile', __('public.join.otp.must_verify', [
+                        'default' => 'Please verify your mobile number with SMS OTP before continuing.',
+                    ]));
+                }
+            }
+        });
     }
 
     /**
