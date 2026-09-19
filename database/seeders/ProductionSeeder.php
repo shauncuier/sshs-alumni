@@ -27,6 +27,7 @@ class ProductionSeeder extends Seeder
             SchoolHistorySeeder::class,
             JubileeSeeder::class,
             ReferenceDataSeeder::class,
+            SuperAdminSeeder::class,
         ]);
     }
 }
