@@ -38,6 +38,7 @@ class DirectoryMemberResource extends JsonResource
     public function toArray(Request $request): array
     {
         $privacy = $this->privacyOrDefaults();
+        $isSuperAdmin = (bool) $request->user()?->hasRole('Super Admin');
 
         return [
             // Always visible to an approved member: this is what a directory
@@ -57,26 +58,26 @@ class DirectoryMemberResource extends JsonResource
             ),
             'bio' => $this->bio,
 
-            $this->mergeWhen($privacy->show_workplace, fn (): array => [
+            $this->mergeWhen($isSuperAdmin || $privacy->show_workplace, fn (): array => [
                 'occupation' => $this->occupation,
                 'organization' => $this->organization,
                 'job_title' => $this->job_title,
                 'industry' => $this->industry,
             ]),
 
-            $this->mergeWhen($privacy->show_location, fn (): array => [
+            $this->mergeWhen($isSuperAdmin || $privacy->show_location, fn (): array => [
                 'city' => $this->city,
                 'district' => $this->district,
                 'division' => $this->division,
                 'country' => $this->country,
             ]),
 
-            $this->mergeWhen($privacy->show_phone, fn (): array => [
+            $this->mergeWhen($isSuperAdmin || $privacy->show_phone, fn (): array => [
                 'mobile' => $this->mobile,
                 'whatsapp' => $this->whatsapp,
             ]),
 
-            $this->mergeWhen($privacy->show_email, fn (): array => [
+            $this->mergeWhen($isSuperAdmin || $privacy->show_email, fn (): array => [
                 'email' => $this->email,
             ]),
 

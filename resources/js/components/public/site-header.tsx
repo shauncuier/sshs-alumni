@@ -26,8 +26,14 @@ export function SiteHeader() {
         | undefined;
     const links = nav?.publicPrimary ?? [];
 
-    const auth = page.props.auth as { user?: unknown } | undefined;
+    const auth = page.props.auth as {
+        user?: unknown;
+        roles?: string[];
+        permissions?: string[];
+    } | undefined;
     const isAuthenticated = Boolean(auth?.user);
+    const isSuperAdmin = Boolean(auth?.roles?.includes('Super Admin'));
+    const canAccessAdmin = Boolean(isSuperAdmin || auth?.permissions?.includes('admin.access'));
     const current = page.url;
 
     const isActive = (href: string) =>
@@ -81,15 +87,29 @@ export function SiteHeader() {
 
                 <div className="ms-auto flex items-center gap-2 lg:ms-0">
                     {isAuthenticated ? (
-                        <Button
-                            asChild
-                            size="sm"
-                            className="rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-4 text-xs font-bold text-slate-950 shadow-md shadow-teal-500/25 transition-all hover:from-teal-400 hover:to-cyan-400 hover:shadow-teal-400/35"
-                        >
-                            <Link href="/dashboard">
-                                {t('admin.nav.dashboard')}
-                            </Link>
-                        </Button>
+                        <>
+                            {canAccessAdmin && (
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="hidden rounded-xl border-amber-400/40 bg-amber-500/10 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 hover:text-amber-200 sm:inline-flex"
+                                >
+                                    <Link href="/admin/dashboard">
+                                        Admin Panel
+                                    </Link>
+                                </Button>
+                            )}
+                            <Button
+                                asChild
+                                size="sm"
+                                className="rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-4 text-xs font-bold text-slate-950 shadow-md shadow-teal-500/25 transition-all hover:from-teal-400 hover:to-cyan-400 hover:shadow-teal-400/35"
+                            >
+                                <Link href="/dashboard">
+                                    {t('admin.nav.dashboard')}
+                                </Link>
+                            </Button>
+                        </>
                     ) : (
                         <>
                             <Button
@@ -154,6 +174,16 @@ export function SiteHeader() {
                                         </Link>
                                     );
                                 })}
+
+                                {canAccessAdmin && (
+                                    <Link
+                                        href="/admin/dashboard"
+                                        onClick={() => setOpen(false)}
+                                        className="mt-3 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-2.5 text-sm font-semibold text-amber-300 transition-all hover:bg-amber-500/20"
+                                    >
+                                        Admin Panel
+                                    </Link>
+                                )}
                             </nav>
                         </SheetContent>
                     </Sheet>

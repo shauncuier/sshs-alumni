@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DirectoryMemberResource;
 use App\Models\Batch;
+use App\Models\Member;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -47,10 +50,45 @@ class BatchController extends Controller
         ]);
     }
 
-    public function show(Batch $batch): Response
+    public function show(Request $request, Batch $batch): Response
     {
+        $user = $request->user();
+        $isSuperAdmin = (bool) $user?->hasRole('Super Admin');
+        $isApprovedMember = (bool) ($user?->member?->isApproved());
+        $canViewMembers = $isSuperAdmin || $isApprovedMember || (bool) $user?->can('batches.view');
+
+        $members = null;
+        $coordinators = [];
+
+        if ($canViewMembers) {
+            $batch->load(['coordinators:id,ulid,full_name,membership_no,photo_path']);
+
+            $coordinators = $batch->coordinators
+                ->map(fn (Member $coordinator): array => [
+                    'ulid' => $coordinator->ulid,
+                    'name' => $coordinator->full_name,
+                    'membership_no' => $coordinator->membership_no,
+                    'photo_url' => $coordinator->photo_path === null
+                        ? null
+                        : asset('storage/'.$coordinator->photo_path),
+                ])
+                ->all();
+
+            $query = Member::query()
+                ->where('batch_id', $batch->id)
+                ->with(['batch', 'privacy']);
+
+            if (! $isSuperAdmin && ! (bool) $user?->can('members.view')) {
+                $query->directoryVisible()
+                    ->whereHas('privacy', fn ($q) => $q->where('show_in_batch_list', true));
+            }
+
+            $members = $query->orderBy('full_name')->paginate(24)->withQueryString();
+        }
+
         return Inertia::render('public/batch-show', [
             'batch' => [
+                'id' => $batch->id,
                 'slug' => $batch->slug,
                 'name' => $batch->name,
                 'description' => $batch->description,
@@ -60,6 +98,13 @@ class BatchController extends Controller
                     ? null
                     : asset('storage/'.$batch->cover_path),
             ],
+            'can_view_members' => $canViewMembers,
+            'is_super_admin' => $isSuperAdmin,
+            'members' => $members !== null ? DirectoryMemberResource::collection($members) : null,
+            'coordinators' => $coordinators,
+            'admin_batch_url' => ($isSuperAdmin || (bool) $user?->can('batches.edit'))
+                ? route('admin.batches.show', $batch, absolute: false)
+                : null,
         ]);
     }
 }

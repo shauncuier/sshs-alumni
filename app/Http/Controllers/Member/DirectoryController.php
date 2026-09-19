@@ -32,10 +32,15 @@ class DirectoryController extends Controller
 
     public function index(Request $request): Response
     {
+        $isSuperAdmin = (bool) $request->user()?->hasRole('Super Admin');
+
         $query = Member::query()
-            ->directoryVisible()
             ->with(['batch', 'privacy'])
             ->orderBy('full_name');
+
+        if (! $isSuperAdmin) {
+            $query->directoryVisible();
+        }
 
         $members = $this->search
             ->apply($query, $request)
@@ -57,10 +62,10 @@ class DirectoryController extends Controller
                 'blood_groups' => BloodGroup::options(),
                 // Built from the visible members themselves, so a filter can
                 // never offer a value that returns nothing.
-                'districts' => $this->distinctValues('district'),
-                'industries' => $this->distinctValues('industry'),
-                'countries' => $this->distinctValues('country'),
-                'occupations' => $this->distinctValues('occupation'),
+                'districts' => $this->distinctValues('district', $isSuperAdmin),
+                'industries' => $this->distinctValues('industry', $isSuperAdmin),
+                'countries' => $this->distinctValues('country', $isSuperAdmin),
+                'occupations' => $this->distinctValues('occupation', $isSuperAdmin),
             ],
         ]);
     }
@@ -70,11 +75,16 @@ class DirectoryController extends Controller
      *
      * @return array<int, string>
      */
-    private function distinctValues(string $column): array
+    private function distinctValues(string $column, bool $isSuperAdmin = false): array
     {
+        $query = Member::query();
+
+        if (! $isSuperAdmin) {
+            $query->directoryVisible();
+        }
+
         /** @var array<int, string> $values */
-        $values = Member::query()
-            ->directoryVisible()
+        $values = $query
             ->whereNotNull($column)
             ->where($column, '!=', '')
             ->distinct()
@@ -90,14 +100,15 @@ class DirectoryController extends Controller
      *
      * Bound by ULID, so profiles cannot be walked by incrementing an id.
      */
-    public function show(Member $member): Response
+    public function show(Request $request, Member $member): Response
     {
         // A member who has hidden their profile is a 404, not a 403: an
         // existence-revealing error is itself a small disclosure.
-        // MemberObserver creates the privacy row for every member, so it is
-        // always present by the time a member can be looked up.
+        // Super Admin has unrestricted access to view all member profiles.
+        $isSuperAdmin = (bool) $request->user()?->hasRole('Super Admin');
+
         abort_unless(
-            $member->isApproved() && $member->privacy->show_profile,
+            $isSuperAdmin || ($member->isApproved() && $member->privacy?->show_profile),
             404,
         );
 

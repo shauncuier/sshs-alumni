@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Enums\MemberStatus;
+use App\Models\Batch;
+use App\Models\Member;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Database\Seeders\SuperAdminSeeder;
+use Inertia\Testing\AssertableInertia;
 
 beforeEach(function (): void {
     $this->seed(RolePermissionSeeder::class);
@@ -50,4 +54,46 @@ it('allows super admin to access member areas without approval roadblock', funct
     $this->actingAs($admin)->get(route('directory.index'))->assertOk();
     $this->actingAs($admin)->get(route('community.index'))->assertOk();
     $this->actingAs($admin)->get(route('my.card'))->assertOk();
+});
+
+it('allows super admin to view batch members and hidden profiles', function (): void {
+    $admin = User::query()->where('email', config('auth.super_admin.email'))->firstOrFail();
+
+    $batch = Batch::factory()->create([
+        'slug' => 'ssc-2021',
+        'ssc_year' => 2021,
+    ]);
+
+    $member = Member::factory()->create([
+        'batch_id' => $batch->id,
+        'status' => MemberStatus::Approved,
+    ]);
+    $member->privacy()->update(['show_profile' => false]);
+
+    // Guest visiting batch show does not receive member roster
+    $this->get(route('batches.show', $batch))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('public/batch-show')
+            ->where('can_view_members', false)
+            ->where('members', null)
+        );
+
+    // Super Admin visiting batch show receives member roster
+    $this->actingAs($admin)->get(route('batches.show', $batch))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('public/batch-show')
+            ->where('can_view_members', true)
+            ->where('is_super_admin', true)
+            ->has('members.data', 1)
+        );
+
+    // Super Admin can view a profile even if show_profile is false
+    $this->actingAs($admin)->get(route('directory.show', $member))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('member/directory-show')
+            ->where('member.ulid', $member->ulid)
+        );
 });
