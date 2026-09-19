@@ -23,7 +23,13 @@ class EnsureMemberApproved
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $member = $request->user()?->member;
+        $user = $request->user();
+
+        if ($user !== null && $user->hasRole('Super Admin')) {
+            return $next($request);
+        }
+
+        $member = $user?->member;
 
         if ($member !== null && $member->isApproved()) {
             return $next($request);

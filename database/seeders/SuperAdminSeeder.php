@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\MemberStatus;
+use App\Enums\RelationType;
 use App\Enums\UserStatus;
+use App\Models\Batch;
+use App\Models\Member;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -45,5 +49,28 @@ class SuperAdminSeeder extends Seeder
         );
 
         $user->syncRoles(['Super Admin']);
+
+        // Ensure Super Admin has an approved Member record for member surfaces
+        $batch = Batch::query()->where('ssc_year', 2000)->first()
+            ?? Batch::query()->orderBy('ssc_year')->first();
+
+        Member::query()->firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'full_name' => $name,
+                'relation_type' => RelationType::FormerStudent,
+                'batch_id' => $batch?->id,
+                'ssc_year' => $batch?->ssc_year ?? 2000,
+                'email' => $user->email,
+                'mobile' => $phone ?: '01711223344',
+                'status' => MemberStatus::Approved,
+                'membership_no' => 'SSHS-ADMIN-0001',
+                'verified_at' => now(),
+                'occupation' => 'System Administrator',
+                'organization' => 'SSHS Alumni Association',
+                'district' => 'Chattogram',
+                'city' => 'Sitakunda',
+            ]
+        );
     }
 }

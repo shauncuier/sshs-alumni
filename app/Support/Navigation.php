@@ -140,9 +140,11 @@ final class Navigation
      */
     public static function for(?User $user, bool $memberApproved = false): array
     {
+        $isSuperAdmin = $user !== null && $user->hasRole('Super Admin');
+
         return [
             'admin' => self::adminGroups($user),
-            'member' => self::memberItems($user, $memberApproved),
+            'member' => self::memberItems($user, $memberApproved || $isSuperAdmin),
             'publicPrimary' => self::publicItems(self::PUBLIC_PRIMARY),
             'publicFooter' => self::publicItems(self::PUBLIC_FOOTER),
             'publicLegal' => self::publicItems(self::PUBLIC_LEGAL),
