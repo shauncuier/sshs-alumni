@@ -1,17 +1,83 @@
-import { Link } from '@inertiajs/react';
-import { ExternalLink, Eye, Search, ShieldCheck } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { ExternalLink, Eye, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { GlobalSearchModal } from '@/components/admin/global-search-modal';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
-export function AppSidebarHeader({
-    breadcrumbs = [],
-}: {
+type Props = {
+    title?: string;
     breadcrumbs?: BreadcrumbItemType[];
-}) {
+};
+
+const TITLE_MAP: Record<string, string> = {
+    admin: 'Command Center',
+    dashboard: 'Dashboard',
+    events: 'Events & Reunions',
+    fundraising: 'Fundraising Campaigns',
+    businesses: 'Alumni Businesses',
+    jobs: 'Career & Job Board',
+    certificates: 'Digital Certificates',
+    members: 'Member Directory',
+    batches: 'Batch Cohorts',
+    payments: 'Payments',
+    donations: 'Donations & Giving',
+    sponsors: 'Sponsors',
+    volunteers: 'Volunteers',
+    announcements: 'Announcements',
+    news: 'News Articles',
+    stories: 'Alumni Stories',
+    gallery: 'Photo Gallery',
+    pages: 'Static Pages',
+    faqs: 'Frequently Asked Questions',
+    history: 'Milestones & History',
+    templates: 'Message Templates',
+    users: 'Staff & Users',
+    roles: 'Roles & Permissions',
+    settings: 'System Settings',
+    audit: 'Audit Logs',
+    contacts: 'CRM Contacts',
+    tasks: 'CRM Tasks',
+    reports: 'Reports & Analytics',
+    fees: 'Membership Fees',
+    checkin: 'Event Check-in',
+    registrations: 'Event Registrations',
+    directory: 'Alumni Directory',
+    donors: 'Blood Donors Directory',
+    mentorship: 'Mentorship Network',
+    community: 'Community Feed',
+    card: 'Membership Card',
+    profile: 'My Profile',
+};
+
+function resolveHeaderTitle(url: string, explicitTitle?: string): string {
+    if (explicitTitle && explicitTitle.trim() !== '') {
+        return explicitTitle;
+    }
+
+    const cleanPath = url.split('?')[0].replace(/^\/|\/$/g, '');
+    if (!cleanPath) return 'Dashboard';
+
+    const segments = cleanPath.split('/');
+    const last = segments[segments.length - 1];
+
+    if (TITLE_MAP[last]) {
+        return TITLE_MAP[last];
+    }
+
+    return last
+        .replace(/[-_]/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export function AppSidebarHeader({
+    title,
+    breadcrumbs = [],
+}: Props) {
     const [searchOpen, setSearchOpen] = useState(false);
+    const page = usePage();
+    const resolvedTitle = resolveHeaderTitle(page.url, title);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -27,13 +93,20 @@ export function AppSidebarHeader({
 
     return (
         <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-sidebar-border/60 bg-background/85 px-4 md:px-6 backdrop-blur-xl supports-backdrop-filter:bg-background/75 shadow-2xs transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-14">
-            <div className="flex items-center gap-3">
-                <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground rounded-lg p-1.5 hover:bg-accent transition-colors" />
-                <div className="h-4 w-px bg-border/80 hidden sm:block" />
-                <Breadcrumbs breadcrumbs={breadcrumbs} />
+            <div className="flex items-center gap-3 min-w-0">
+                <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground rounded-lg p-1.5 hover:bg-accent transition-colors shrink-0" />
+                <div className="h-4 w-px bg-border/80 hidden sm:block shrink-0" />
+
+                {breadcrumbs.length > 0 ? (
+                    <Breadcrumbs breadcrumbs={breadcrumbs} />
+                ) : (
+                    <span className="text-sm font-semibold text-foreground truncate max-w-[280px] sm:max-w-none">
+                        {resolvedTitle}
+                    </span>
+                )}
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 {/* Global Search Shortcut */}
                 <button
                     type="button"

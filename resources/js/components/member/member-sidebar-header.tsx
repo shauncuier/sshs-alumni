@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { ExternalLink, Search } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem } from '@/types';
@@ -8,20 +8,60 @@ type Props = {
     breadcrumbs?: BreadcrumbItem[];
 };
 
+const TITLE_MAP: Record<string, string> = {
+    dashboard: 'Dashboard',
+    profile: 'My Profile',
+    card: 'Membership Card',
+    directory: 'Alumni Directory',
+    batch: 'My Batch Roster',
+    batches: 'Batch Cohorts',
+    community: 'Community Feed',
+    events: 'Events & Reunions',
+    donors: 'Blood Donors Directory',
+    jobs: 'Career & Job Board',
+    mentorship: 'Mentorship Network',
+    businesses: 'Alumni Business Directory',
+    certificates: 'Digital Certificates',
+    donations: 'My Donations',
+    payments: 'Payment History',
+    notifications: 'Notifications',
+};
+
+function resolveHeaderTitle(url: string, explicitTitle?: string): string {
+    if (explicitTitle && explicitTitle.trim() !== '') {
+        return explicitTitle;
+    }
+
+    const cleanPath = url.split('?')[0].replace(/^\/|\/$/g, '');
+    if (!cleanPath) return 'Dashboard';
+
+    const segments = cleanPath.split('/');
+    const last = segments[segments.length - 1];
+
+    if (TITLE_MAP[last]) {
+        return TITLE_MAP[last];
+    }
+
+    return last
+        .replace(/[-_]/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export function MemberSidebarHeader({ title, breadcrumbs = [] }: Props) {
+    const page = usePage();
+    const resolvedTitle = resolveHeaderTitle(page.url, title);
+
     return (
         <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-sidebar-border/60 bg-background/85 px-4 md:px-6 backdrop-blur-xl supports-backdrop-filter:bg-background/75 shadow-2xs transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-14">
-            <div className="flex items-center gap-3">
-                <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground rounded-lg p-1.5 hover:bg-accent transition-colors" />
-                <div className="h-4 w-px bg-border/80 hidden sm:block" />
-                {title && (
-                    <span className="text-sm font-semibold text-foreground truncate max-w-[200px] sm:max-w-none">
-                        {title}
-                    </span>
-                )}
+            <div className="flex items-center gap-3 min-w-0">
+                <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground rounded-lg p-1.5 hover:bg-accent transition-colors shrink-0" />
+                <div className="h-4 w-px bg-border/80 hidden sm:block shrink-0" />
+                <span className="text-sm font-semibold text-foreground truncate max-w-[280px] sm:max-w-none">
+                    {resolvedTitle}
+                </span>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 {/* Search directory shortcut */}
                 <Link
                     href="/directory"

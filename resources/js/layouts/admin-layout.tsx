@@ -47,7 +47,7 @@ export default function AdminLayout({
                     variant="sidebar"
                     className="min-w-0 overflow-x-clip"
                 >
-                    <AppSidebarHeader breadcrumbs={breadcrumbs} />
+                    <AppSidebarHeader title={title} breadcrumbs={breadcrumbs} />
                     <div className="p-4 md:p-6">{children}</div>
                 </AppContent>
             </AppShell>
