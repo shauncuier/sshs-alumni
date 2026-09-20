@@ -41,10 +41,16 @@ export default function CommunityPostPage({
     const { t, choice } = useTranslation();
     const [replyTo, setReplyTo] = useState<CommunityComment | null>(null);
 
+    const commentList = Array.isArray(comments)
+        ? comments
+        : Array.isArray(comments?.data)
+          ? comments.data
+          : [];
+
     return (
         <MemberLayout title={post.title ?? t('member.community.title')}>
-            <div className="mx-auto max-w-3xl space-y-4">
-                <Button variant="ghost" size="sm" asChild>
+            <div className="space-y-4">
+                <Button asChild variant="ghost" size="sm">
                     <Link href="/community">
                         <ArrowLeft
                             className="me-1 size-4 rtl:rotate-180"
@@ -66,7 +72,7 @@ export default function CommunityPostPage({
                 </h2>
 
                 <div className="space-y-3">
-                    {comments.data.map((comment) => (
+                    {commentList.map((comment) => (
                         <CommentBlock
                             key={comment.id}
                             comment={comment}
