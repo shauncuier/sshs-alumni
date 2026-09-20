@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\ContentStatus;
 use App\Enums\MediaCollection;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\NewsRequest;
 use App\Models\News;
 use App\Models\User;
 use App\Services\Media\MediaService;
@@ -76,9 +77,9 @@ class NewsController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(NewsRequest $request): RedirectResponse
     {
-        $validated = $this->validated($request);
+        $validated = $request->validated();
 
         /** @var User $actor */
         $actor = $request->user();
@@ -95,10 +96,10 @@ class NewsController extends Controller
         return back()->with('success', __('admin.content.saved_draft'));
     }
 
-    public function update(Request $request, News $news): RedirectResponse
+    public function update(NewsRequest $request, News $news): RedirectResponse
     {
         // Slug deliberately absent: see the class docblock.
-        $news->update($this->validated($request));
+        $news->update($request->validated());
 
         $this->attachCover($request, $news);
 
@@ -128,23 +129,6 @@ class NewsController extends Controller
         $news->delete();
 
         return back()->with('success', __('admin.content.deleted'));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function validated(Request $request): array
-    {
-        return $request->validate([
-            'title' => ['required', 'string', 'max:200'],
-            'excerpt' => ['nullable', 'string', 'max:500'],
-            'body' => ['required', 'string'],
-            'category' => ['nullable', 'string', 'max:60'],
-            'is_featured' => ['nullable', 'boolean'],
-            'published_at' => ['nullable', 'date'],
-            'meta_title' => ['nullable', 'string', 'max:255'],
-            'meta_description' => ['nullable', 'string', 'max:500'],
-        ]);
     }
 
     private function attachCover(Request $request, News $news): void

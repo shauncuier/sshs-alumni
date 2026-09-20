@@ -9,6 +9,7 @@ use App\Enums\AnnouncementLevel;
 use App\Enums\AudienceScope;
 use App\Enums\ContentStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AnnouncementRequest;
 use App\Models\Announcement;
 use App\Models\Batch;
 use App\Models\User;
@@ -79,19 +80,19 @@ class AnnouncementController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(AnnouncementRequest $request): RedirectResponse
     {
         Announcement::query()->create([
-            ...$this->validated($request),
+            ...$request->validated(),
             'status' => ContentStatus::Draft,
         ]);
 
         return back()->with('success', __('admin.content.saved_draft'));
     }
 
-    public function update(Request $request, Announcement $announcement): RedirectResponse
+    public function update(AnnouncementRequest $request, Announcement $announcement): RedirectResponse
     {
-        $announcement->update($this->validated($request));
+        $announcement->update($request->validated());
 
         return back()->with('success', __('common.states.saved'));
     }
@@ -120,32 +121,6 @@ class AnnouncementController extends Controller
         $announcement->delete();
 
         return back()->with('success', __('admin.content.deleted'));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function validated(Request $request): array
-    {
-        $validated = $request->validate([
-            'kind' => ['required', Rule::in(AnnouncementKind::values())],
-            'title' => ['required', 'string', 'max:200'],
-            'body' => ['required', 'string'],
-            'level' => ['required', Rule::in(AnnouncementLevel::values())],
-            'audience' => ['required', Rule::in(AudienceScope::values())],
-            'batch_id' => ['nullable', 'integer', 'exists:batches,id'],
-            'starts_at' => ['nullable', 'date'],
-            'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
-            'is_pinned' => ['nullable', 'boolean'],
-        ]);
-
-        // A batch announcement without a batch would be visible to nobody, and
-        // a batch id on an association-wide one is noise that reads as a rule.
-        if ($validated['audience'] !== AudienceScope::Batch->value) {
-            $validated['batch_id'] = null;
-        }
-
-        return $validated;
     }
 
     /**

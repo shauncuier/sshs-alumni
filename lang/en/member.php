@@ -8,9 +8,15 @@ return [
 
     'nav' => [
         'dashboard' => 'Dashboard',
+        'notifications' => 'Notifications',
         'profile' => 'My Profile',
         'card' => 'Membership Card',
         'directory' => 'Directory',
+        'donors' => 'Blood Donors',
+        'jobs' => 'Career Board',
+        'mentorship' => 'Mentorship',
+        'businesses' => 'My Businesses',
+        'certificates' => 'Certificates',
         'community' => 'Community',
         'stories' => 'My Story',
         'batch' => 'My Batch',
@@ -178,6 +184,60 @@ return [
         'published_note' => 'Published on :date.',
         'rejected_note' => 'Not published. Ask the committee if you would like to know why - your story is kept either way.',
         'view' => 'Read it on the site',
+    ],
+
+    'businesses' => [
+        'title' => 'My Businesses',
+        'subtitle' => 'Promote your venture to alumni and offer community discounts.',
+        'empty' => 'You have not registered any business listing yet.',
+        'add' => 'Add Business',
+        'edit' => 'Edit Business',
+        'delete_confirm' => 'Remove this business listing?',
+        'discount_label' => 'Alumni Discount',
+        'discount_hint' => 'e.g. 10% off with alumni card',
+    ],
+
+    'jobs' => [
+        'title' => 'Alumni Career Board',
+        'subtitle' => 'Explore employment openings or share opportunities with fellow graduates.',
+        'empty' => 'No job postings found matching your filters.',
+        'post' => 'Post Opportunity',
+        'edit' => 'Edit Posting',
+        'apply' => 'Apply for Role',
+        'deadline' => 'Application Deadline',
+        'workplace' => 'Workplace Type',
+        'employment' => 'Employment Type',
+    ],
+
+    'certificates' => [
+        'title' => 'Digital Certificates',
+        'subtitle' => 'Cryptographically verifiable credentials for event attendance, voluntary service, and honors.',
+        'empty' => 'No digital certificates issued to your account yet.',
+        'verify_hint' => 'Scan or click to verify authenticity',
+        'issued_date' => 'Issued on :date',
+        'serial' => 'Certificate No: :number',
+    ],
+
+    'mentorship' => [
+        'title' => 'Mentorship Network',
+        'subtitle' => 'Connect with industry mentors or volunteer to guide junior alumni and students.',
+        'find' => 'Find a Mentor',
+        'register_profile' => 'Become a Mentor',
+        'update_profile' => 'Update Mentor Profile',
+        'requests' => 'Mentorship Inquiries',
+        'incoming' => 'Received Inquiries',
+        'outgoing' => 'Sent Inquiries',
+        'empty_mentors' => 'No mentors currently listed in this field.',
+        'accept' => 'Accept Mentee',
+        'decline' => 'Decline',
+    ],
+
+    'donors' => [
+        'title' => 'Blood Donors Directory',
+        'subtitle' => 'Lifesaving alumni community database. Search verified blood donors or volunteer.',
+        'empty' => 'No verified blood donors found.',
+        'privacy_note' => 'Only members who have opted in to display their blood group are shown.',
+        'enable_prompt' => 'Enable "Show blood group" in your privacy settings to join this directory.',
     ],
 
 ];

@@ -11,6 +11,7 @@ use App\Http\Resources\RegistrationResource;
 use App\Models\Event;
 use App\Models\EventTicketType;
 use App\Services\Events\EventRegistrar;
+use App\Support\Paginated;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -36,7 +37,7 @@ class EventController extends Controller
             ->paginate(min(50, max(1, (int) $request->query('per_page', 20))));
 
         return response()->json([
-            'events' => $events->through(fn (Event $event): array => [
+            'events' => Paginated::from($events, fn (Event $event): array => [
                 'id' => $event->id,
                 'slug' => $event->slug,
                 'title' => $event->title,

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\SettingGroup;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SettingUpdateRequest;
 use App\Services\Settings\SettingsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,14 +38,14 @@ class SettingController extends Controller
         ]);
     }
 
-    public function update(Request $request, string $group, SettingsService $settingsService): RedirectResponse
+    public function update(SettingUpdateRequest $request, string $group, SettingsService $settingsService): RedirectResponse
     {
         $validGroup = SettingGroup::tryFrom($group);
         if ($validGroup === null) {
             abort(404, "Unknown settings group [{$group}].");
         }
 
-        $values = $request->input('settings', []);
+        $values = $request->validated()['settings'] ?? [];
         if (! is_array($values)) {
             $values = [];
         }

@@ -9,6 +9,7 @@ use App\Enums\CampaignChannel;
 use App\Enums\CampaignRecipientStatus;
 use App\Enums\CampaignStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CampaignRequest;
 use App\Jobs\SendCampaignBatch;
 use App\Models\Batch;
 use App\Models\Campaign;
@@ -19,7 +20,6 @@ use App\Services\Communication\SmsManager;
 use App\Support\Paginated;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
@@ -92,20 +92,9 @@ class CampaignController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(CampaignRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:150'],
-            'channel' => ['required', Rule::enum(CampaignChannel::class)],
-            'subject' => ['nullable', 'string', 'max:255', Rule::requiredIf($request->channel === CampaignChannel::Mail->value)],
-            'subject_bn' => ['nullable', 'string', 'max:255'],
-            'body' => ['required', 'string'],
-            'body_bn' => ['nullable', 'string'],
-            'audience_type' => ['required', Rule::enum(AudienceType::class)],
-            'audience_filters' => ['nullable', 'array'],
-            'message_template_id' => ['nullable', 'exists:message_templates,id'],
-            'scheduled_at' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         $campaign = new Campaign;
         $campaign->fill($validated);

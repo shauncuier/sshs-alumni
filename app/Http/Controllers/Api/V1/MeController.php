@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\DonationStatus;
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DirectoryMemberResource;
+use App\Http\Resources\PaymentResource;
 use App\Http\Resources\RegistrationResource;
+use App\Models\Donation;
 use App\Models\EventRegistration;
 use App\Models\Member;
+use App\Models\Payment;
+use App\Support\Paginated;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -143,6 +149,62 @@ class MeController extends Controller
         return response()->json([
             'unread_count' => $user->unreadNotifications()->count(),
             'notifications' => $notifications,
+        ]);
+    }
+
+    /**
+     * The member's payment history.
+     */
+    public function payments(Request $request): JsonResponse
+    {
+        $member = $this->resolveMember($request);
+
+        $payments = Payment::query()
+            ->where('payer_member_id', $member->id)
+            ->with(['payable', 'recorder'])
+            ->latest('id')
+            ->paginate(min(50, max(1, (int) $request->query('per_page', 20))));
+
+        return response()->json([
+            'payments' => PaymentResource::collection($payments)->response()->getData(true),
+            'totals' => [
+                'paid' => (float) Payment::query()
+                    ->where('payer_member_id', $member->id)
+                    ->where('status', PaymentStatus::Paid)
+                    ->sum('amount'),
+                'currency' => (string) config('payments.currency', 'BDT'),
+            ],
+        ]);
+    }
+
+    /**
+     * The member's donation history.
+     */
+    public function donations(Request $request): JsonResponse
+    {
+        $member = $this->resolveMember($request);
+
+        $donations = Donation::query()
+            ->where('donor_member_id', $member->id)
+            ->latest('id')
+            ->paginate(min(50, max(1, (int) $request->query('per_page', 20))));
+
+        return response()->json([
+            'donations' => Paginated::from($donations, fn (Donation $donation): array => [
+                'ulid' => $donation->ulid,
+                'amount' => (float) $donation->amount,
+                'currency' => $donation->currency,
+                'campaign' => $donation->campaign,
+                'status' => $donation->status->value,
+                'status_label' => $donation->status->label(),
+                'is_anonymous' => $donation->is_anonymous,
+                'received_at' => $donation->received_at?->toDateString(),
+            ]),
+            'total' => (float) Donation::query()
+                ->where('donor_member_id', $member->id)
+                ->where('status', DonationStatus::Received)
+                ->sum('amount'),
+            'currency' => (string) config('payments.currency', 'BDT'),
         ]);
     }
 

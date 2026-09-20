@@ -29,12 +29,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $show_location
  * @property bool $show_date_of_birth
  * @property bool $show_in_batch_list
+ * @property bool $show_blood_group
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  */
 #[Fillable([
     'member_id', 'show_profile', 'show_phone', 'show_email', 'show_workplace', 'show_location',
-    'show_date_of_birth', 'show_in_batch_list',
+    'show_date_of_birth', 'show_in_batch_list', 'show_blood_group',
 ])]
 class MemberPrivacy extends Model
 {
@@ -56,6 +57,7 @@ class MemberPrivacy extends Model
             'show_location' => 'boolean',
             'show_date_of_birth' => 'boolean',
             'show_in_batch_list' => 'boolean',
+            'show_blood_group' => 'boolean',
         ];
     }
 

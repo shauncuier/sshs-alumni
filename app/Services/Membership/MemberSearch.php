@@ -28,6 +28,7 @@ class MemberSearch
     public const FILTERS = [
         'q', 'batch_id', 'ssc_year', 'district', 'city', 'country',
         'occupation', 'industry', 'blood_group', 'relation_type', 'status',
+        'donors_only',
     ];
 
     /**
@@ -49,6 +50,11 @@ class MemberSearch
                     // of the lowercase blob in a useful way, so match directly.
                     ->orWhere('membership_no', 'like', '%'.$term.'%');
             });
+        }
+
+        if ($request->boolean('donors_only')) {
+            $query->whereHas('privacy', fn (Builder $p) => $p->where('show_blood_group', true))
+                ->whereNotNull('blood_group');
         }
 
         foreach (['batch_id', 'ssc_year', 'blood_group', 'relation_type', 'status'] as $field) {

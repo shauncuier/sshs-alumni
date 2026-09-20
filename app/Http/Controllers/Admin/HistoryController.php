@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\MediaCollection;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\MilestoneRequest;
 use App\Models\SchoolMilestone;
 use App\Services\Media\MediaService;
 use Illuminate\Http\RedirectResponse;
@@ -60,18 +61,18 @@ class HistoryController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(MilestoneRequest $request): RedirectResponse
     {
-        $milestone = SchoolMilestone::query()->create($this->validated($request));
+        $milestone = SchoolMilestone::query()->create($request->validated());
 
         $this->attachImage($request, $milestone);
 
         return back()->with('success', __('common.states.saved'));
     }
 
-    public function update(Request $request, SchoolMilestone $milestone): RedirectResponse
+    public function update(MilestoneRequest $request, SchoolMilestone $milestone): RedirectResponse
     {
-        $milestone->update($this->validated($request));
+        $milestone->update($request->validated());
 
         $this->attachImage($request, $milestone);
 
@@ -83,21 +84,6 @@ class HistoryController extends Controller
         $milestone->delete();
 
         return back()->with('success', __('admin.content.deleted'));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function validated(Request $request): array
-    {
-        return $request->validate([
-            'year' => ['required', 'integer', 'min:'.self::EARLIEST_YEAR, 'max:'.now()->addYear()->year],
-            'date_label' => ['nullable', 'string', 'max:60'],
-            'title' => ['required', 'string', 'max:200'],
-            'description' => ['nullable', 'string', 'max:2000'],
-            'display_order' => ['nullable', 'integer', 'min:0', 'max:9999'],
-            'is_highlighted' => ['nullable', 'boolean'],
-        ]);
     }
 
     private function attachImage(Request $request, SchoolMilestone $milestone): void

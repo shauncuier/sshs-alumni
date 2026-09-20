@@ -3,10 +3,13 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Public\BatchController;
+use App\Http\Controllers\Public\BusinessDirectoryController;
+use App\Http\Controllers\Public\CertificateVerifyController;
 use App\Http\Controllers\Public\CommitteeController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\ContentController;
 use App\Http\Controllers\Public\EventController;
+use App\Http\Controllers\Public\FundraisingCampaignController;
 use App\Http\Controllers\Public\GivingController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\JubileeController;
@@ -122,6 +125,16 @@ Route::get('batches/{batch:slug}', [BatchController::class, 'show'])->name('batc
 Route::get('verify/member/{ulid}', MemberVerifyController::class)
     ->middleware('throttle:30,1')
     ->name('verify.member');
+
+Route::get('verify/certificate/{ulid}', CertificateVerifyController::class)
+    ->middleware('throttle:30,1')
+    ->name('verify.certificate');
+
+Route::get('businesses', [BusinessDirectoryController::class, 'index'])->name('businesses.index');
+Route::get('businesses/{business:ulid}', [BusinessDirectoryController::class, 'show'])->name('businesses.show');
+
+Route::get('campaigns', [FundraisingCampaignController::class, 'index'])->name('campaigns.index');
+Route::get('campaigns/{campaign:slug}', [FundraisingCampaignController::class, 'show'])->name('campaigns.show');
 
 /*
 | Content.

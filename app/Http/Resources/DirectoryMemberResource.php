@@ -81,6 +81,11 @@ class DirectoryMemberResource extends JsonResource
                 'email' => $this->email,
             ]),
 
+            $this->mergeWhen($isSuperAdmin || $privacy->show_blood_group, fn (): array => [
+                'blood_group' => $this->blood_group?->value,
+                'blood_group_label' => $this->blood_group?->label(),
+            ]),
+
             'links' => MemberLinkResource::collection($this->whenLoaded('links')),
         ];
     }
@@ -102,6 +107,7 @@ class DirectoryMemberResource extends JsonResource
             'show_location' => false,
             'show_date_of_birth' => false,
             'show_in_batch_list' => false,
+            'show_blood_group' => false,
         ]);
     }
 }

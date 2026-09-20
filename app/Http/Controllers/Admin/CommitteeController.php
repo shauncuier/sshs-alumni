@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\CommitteeMemberStatus;
 use App\Enums\CommitteeType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CommitteeRequest;
 use App\Models\Committee;
 use App\Models\CommitteeMember;
 use App\Models\Member;
@@ -53,17 +54,11 @@ class CommitteeController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(CommitteeRequest $request): RedirectResponse
     {
         $this->authorize('create', Committee::class);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'type' => ['required', 'string', 'in:'.implode(',', array_column(CommitteeType::cases(), 'value'))],
-            'description' => ['nullable', 'string', 'max:2000'],
-            'term_start' => ['nullable', 'date'],
-            'term_end' => ['nullable', 'date', 'after_or_equal:term_start'],
-        ]);
+        $validated = $request->validated();
 
         Committee::query()->create([
             ...$validated,
@@ -74,19 +69,11 @@ class CommitteeController extends Controller
         return back()->with('success', __('common.states.saved'));
     }
 
-    public function update(Request $request, Committee $committee): RedirectResponse
+    public function update(CommitteeRequest $request, Committee $committee): RedirectResponse
     {
         $this->authorize('update', $committee);
 
-        $validated = $request->validate([
-            'name' => ['sometimes', 'string', 'max:120'],
-            'type' => ['sometimes', 'string', 'in:'.implode(',', array_column(CommitteeType::cases(), 'value'))],
-            'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
-            'term_start' => ['sometimes', 'nullable', 'date'],
-            'term_end' => ['sometimes', 'nullable', 'date', 'after_or_equal:term_start'],
-            'status' => ['sometimes', 'string', 'in:active,archived'],
-            'display_order' => ['sometimes', 'integer', 'min:0', 'max:999'],
-        ]);
+        $validated = $request->validated();
 
         $committee->update($validated);
 

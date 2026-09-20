@@ -1,6 +1,10 @@
 import { Deferred, Link, usePage } from '@inertiajs/react';
 import {
+    Award,
+    Briefcase,
+    Building,
     CalendarClock,
+    Gift,
     GraduationCap,
     HeartHandshake,
     ShieldCheck,
@@ -30,6 +34,10 @@ type Stats = {
     total_donations: number;
     total_sponsors: number;
     total_volunteers: number;
+    total_businesses?: number;
+    total_jobs?: number;
+    total_certificates?: number;
+    total_campaigns?: number;
 };
 
 type Jubilee = {
@@ -50,7 +58,7 @@ type Crm = {
 type Props = { stats: Stats; jubilee?: Jubilee | null; crm?: Crm | null; charts?: ChartData | null };
 
 const PRIMARY_CARDS: {
-    key: keyof Stats;
+    key: 'total_members' | 'verified_members' | 'pending_registrations' | 'new_this_month';
     label: string;
     icon: ComponentType<{ className?: string }>;
 }[] = [
@@ -152,6 +160,69 @@ export default function AdminDashboard({ stats }: Props) {
                                 {formatNumber(stats.total_volunteers)}
                             </p>
                             <p className="text-xs text-muted-foreground mt-0.5">Active team members</p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Tertiary Alumni Network & Services Highlights */}
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-xs hover:border-emerald-500/50 transition-colors">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+                            <CardTitle className="text-muted-foreground text-sm font-medium">Alumni Businesses</CardTitle>
+                            <Building className="text-emerald-500 size-4 shrink-0" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-semibold tabular-nums">
+                                {formatNumber(stats.total_businesses ?? 0)}
+                            </p>
+                            <Link href="/admin/businesses" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium mt-0.5 inline-block">
+                                Manage listings →
+                            </Link>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-xs hover:border-cyan-500/50 transition-colors">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+                            <CardTitle className="text-muted-foreground text-sm font-medium">Job Postings</CardTitle>
+                            <Briefcase className="text-cyan-500 size-4 shrink-0" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-semibold tabular-nums">
+                                {formatNumber(stats.total_jobs ?? 0)}
+                            </p>
+                            <Link href="/admin/jobs" className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline font-medium mt-0.5 inline-block">
+                                Review board →
+                            </Link>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-xs hover:border-purple-500/50 transition-colors">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+                            <CardTitle className="text-muted-foreground text-sm font-medium">Verifiable Certificates</CardTitle>
+                            <Award className="text-purple-500 size-4 shrink-0" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-semibold tabular-nums">
+                                {formatNumber(stats.total_certificates ?? 0)}
+                            </p>
+                            <Link href="/admin/certificates" className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-medium mt-0.5 inline-block">
+                                Issue & verify →
+                            </Link>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-xs hover:border-blue-500/50 transition-colors">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+                            <CardTitle className="text-muted-foreground text-sm font-medium">Fundraising Campaigns</CardTitle>
+                            <Gift className="text-blue-500 size-4 shrink-0" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-semibold tabular-nums">
+                                {formatNumber(stats.total_campaigns ?? 0)}
+                            </p>
+                            <Link href="/admin/fundraising" className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium mt-0.5 inline-block">
+                                Manage campaigns →
+                            </Link>
                         </CardContent>
                     </Card>
                 </div>

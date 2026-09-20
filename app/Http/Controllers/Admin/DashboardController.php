@@ -9,11 +9,15 @@ use App\Enums\PaymentStatus;
 use App\Enums\TaskStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
+use App\Models\BusinessListing;
+use App\Models\Certificate;
 use App\Models\CrmContact;
 use App\Models\CrmTask;
 use App\Models\Donation;
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Models\FundraisingCampaign;
+use App\Models\JobPosting;
 use App\Models\Member;
 use App\Models\Sponsor;
 use App\Models\Volunteer;
@@ -50,6 +54,10 @@ class DashboardController extends Controller
                 'total_donations' => (float) Donation::query()->where('payment_status', PaymentStatus::Paid)->sum('amount'),
                 'total_sponsors' => Sponsor::query()->count(),
                 'total_volunteers' => Volunteer::query()->count(),
+                'total_businesses' => BusinessListing::query()->count(),
+                'total_jobs' => JobPosting::query()->count(),
+                'total_certificates' => Certificate::query()->count(),
+                'total_campaigns' => FundraisingCampaign::query()->count(),
             ],
 
             // Analytical charts, deferred behind animated skeletons.

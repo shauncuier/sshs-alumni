@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PaymentRequest;
 use App\Http\Resources\PaymentResource;
 use App\Models\Donation;
 use App\Models\EventRegistration;
@@ -110,21 +111,11 @@ class PaymentController extends Controller
      * the payable's own status, an audit row, a CRM timeline entry, a
      * notification — are PaymentRecorder's job, not this controller's.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(PaymentRequest $request): RedirectResponse
     {
         $this->authorize('create', Payment::class);
 
-        $validated = $request->validate([
-            'payable_kind' => ['required', 'string', 'in:'.implode(',', array_keys(self::PAYABLES))],
-            'payable_id' => ['required', 'integer'],
-            'amount' => ['nullable', 'numeric', 'min:0.01', 'max:99999999'],
-            'method' => ['nullable', 'string', 'max:255'],
-            'reference' => ['nullable', 'string', 'max:120'],
-            // Money received last week is legitimate; money received next week
-            // has not been received.
-            'paid_at' => ['nullable', 'date', 'before_or_equal:now'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         $payable = $this->resolvePayable(
             $validated['payable_kind'],

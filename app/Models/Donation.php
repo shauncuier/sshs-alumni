@@ -40,7 +40,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $deleted_at
  */
 #[Fillable([
-    'donor_member_id', 'crm_contact_id', 'donor_name', 'donor_email', 'donor_phone', 'campaign',
+    'donor_member_id', 'crm_contact_id', 'fundraising_campaign_id', 'donor_name', 'donor_email', 'donor_phone', 'campaign',
     'event_id', 'amount', 'currency', 'is_anonymous', 'message', 'status',
     'is_public', 'received_at',
 ])]
@@ -85,6 +85,14 @@ class Donation extends Model implements Payable
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    /**
+     * @return BelongsTo<FundraisingCampaign, $this>
+     */
+    public function fundraisingCampaign(): BelongsTo
+    {
+        return $this->belongsTo(FundraisingCampaign::class);
     }
 
     /**

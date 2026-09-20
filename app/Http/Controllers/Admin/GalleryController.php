@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\ContentStatus;
 use App\Enums\MediaCollection;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\GalleryAlbumRequest;
 use App\Models\Batch;
 use App\Models\Event;
 use App\Models\GalleryAlbum;
@@ -107,9 +108,9 @@ class GalleryController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(GalleryAlbumRequest $request): RedirectResponse
     {
-        $validated = $this->validated($request);
+        $validated = $request->validated();
 
         GalleryAlbum::query()->create([
             ...$validated,
@@ -120,9 +121,9 @@ class GalleryController extends Controller
         return back()->with('success', __('admin.content.saved_draft'));
     }
 
-    public function update(Request $request, GalleryAlbum $album): RedirectResponse
+    public function update(GalleryAlbumRequest $request, GalleryAlbum $album): RedirectResponse
     {
-        $album->update($this->validated($request));
+        $album->update($request->validated());
 
         return back()->with('success', __('common.states.saved'));
     }
@@ -202,20 +203,6 @@ class GalleryController extends Controller
         $this->syncCount($album);
 
         return back()->with('success', __('admin.gallery.image_deleted'));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function validated(Request $request): array
-    {
-        return $request->validate([
-            'title' => ['required', 'string', 'max:200'],
-            'description' => ['nullable', 'string', 'max:2000'],
-            'event_id' => ['nullable', 'integer', 'exists:events,id'],
-            'batch_id' => ['nullable', 'integer', 'exists:batches,id'],
-            'display_order' => ['nullable', 'integer', 'min:0', 'max:9999'],
-        ]);
     }
 
     private function syncCount(GalleryAlbum $album): void

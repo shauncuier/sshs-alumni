@@ -30,6 +30,13 @@ class DirectoryController extends Controller
         private readonly MemberSearch $search,
     ) {}
 
+    public function donors(Request $request): Response
+    {
+        $request->merge(['donors_only' => true]);
+
+        return $this->index($request);
+    }
+
     public function index(Request $request): Response
     {
         $isSuperAdmin = (bool) $request->user()?->hasRole('Super Admin');

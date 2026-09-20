@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\AssignmentStatus;
 use App\Enums\VolunteerStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\VolunteerRequest;
 use App\Models\Event;
 use App\Models\Member;
 use App\Models\Volunteer;
@@ -96,19 +97,11 @@ class VolunteerController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(VolunteerRequest $request): RedirectResponse
     {
         $this->authorize('create', Volunteer::class);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:150'],
-            'phone' => ['nullable', 'string', 'max:32'],
-            'email' => ['nullable', 'email', 'max:191'],
-            'member_ulid' => ['nullable', 'string', 'exists:members,ulid'],
-            'availability' => ['nullable', 'string', 'max:120'],
-            'location' => ['nullable', 'string', 'max:120'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         $member = isset($validated['member_ulid'])
             ? Member::query()->where('ulid', $validated['member_ulid'])->first()
@@ -129,14 +122,11 @@ class VolunteerController extends Controller
         return back()->with('success', __('common.states.saved'));
     }
 
-    public function update(Request $request, Volunteer $volunteer): RedirectResponse
+    public function update(VolunteerRequest $request, Volunteer $volunteer): RedirectResponse
     {
         $this->authorize('update', $volunteer);
 
-        $validated = $request->validate([
-            'status' => ['required', 'string', 'in:'.implode(',', array_column(VolunteerStatus::cases(), 'value'))],
-            'notes' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         $volunteer->update($validated);
 

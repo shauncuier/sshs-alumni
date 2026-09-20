@@ -98,6 +98,31 @@ class AuthController extends Controller
     }
 
     /**
+     * Revoke the current token and issue a fresh one with the same abilities.
+     *
+     * Mobile clients call this to rotate tokens without re-authenticating.
+     */
+    public function refresh(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        abort_if($user === null, 401);
+
+        /** @var PersonalAccessToken|null $currentToken */
+        $currentToken = $user->currentAccessToken();
+        $abilities = $currentToken?->abilities ?? ['*'];
+        $device = $currentToken?->name ?? 'Mobile App';
+
+        $currentToken?->delete();
+
+        $newToken = $user->createToken($device, $abilities)->plainTextToken;
+
+        return response()->json([
+            'token' => $newToken,
+            'token_type' => 'Bearer',
+        ]);
+    }
+
+    /**
      * Details of the authenticated identity.
      */
     public function me(Request $request): JsonResponse

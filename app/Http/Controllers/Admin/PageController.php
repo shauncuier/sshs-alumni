@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ContentStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PageRequest;
 use App\Models\Page;
 use App\Models\User;
 use App\Support\SlugFactory;
@@ -49,9 +50,9 @@ class PageController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(PageRequest $request): RedirectResponse
     {
-        $validated = $this->validated($request);
+        $validated = $request->validated();
 
         /** @var User $actor */
         $actor = $request->user();
@@ -66,13 +67,13 @@ class PageController extends Controller
         return back()->with('success', __('admin.content.saved_draft'));
     }
 
-    public function update(Request $request, Page $page): RedirectResponse
+    public function update(PageRequest $request, Page $page): RedirectResponse
     {
         /** @var User $actor */
         $actor = $request->user();
 
         $page->update([
-            ...$this->validated($request),
+            ...$request->validated(),
             'updated_by' => $actor->id,
         ]);
 
@@ -99,19 +100,6 @@ class PageController extends Controller
         $page->delete();
 
         return back()->with('success', __('admin.content.deleted'));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function validated(Request $request): array
-    {
-        return $request->validate([
-            'title' => ['required', 'string', 'max:200'],
-            'body' => ['required', 'string'],
-            'meta_title' => ['nullable', 'string', 'max:255'],
-            'meta_description' => ['nullable', 'string', 'max:500'],
-        ]);
     }
 
     /**

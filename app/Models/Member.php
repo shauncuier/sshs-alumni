@@ -254,6 +254,30 @@ class Member extends Model
     }
 
     /**
+     * @return HasMany<BusinessListing, $this>
+     */
+    public function businessListings(): HasMany
+    {
+        return $this->hasMany(BusinessListing::class);
+    }
+
+    /**
+     * @return HasMany<JobPosting, $this>
+     */
+    public function jobPostings(): HasMany
+    {
+        return $this->hasMany(JobPosting::class);
+    }
+
+    /**
+     * @return HasMany<Certificate, $this>
+     */
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    /**
      * @return MorphMany<CrmActivity, $this>
      */
     public function activities(): MorphMany

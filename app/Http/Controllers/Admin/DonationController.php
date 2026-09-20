@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\DonationStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\DonationRequest;
 use App\Models\CrmContact;
 use App\Models\Donation;
 use App\Models\Event;
@@ -92,25 +93,11 @@ class DonationController extends Controller
      * Donor identity is optional in every direction: a member, a CRM contact,
      * or a bare name on an envelope. The envelope is the common case.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(DonationRequest $request): RedirectResponse
     {
         $this->authorize('create', Donation::class);
 
-        $validated = $request->validate([
-            'donor_name' => ['required', 'string', 'max:150'],
-            'donor_email' => ['nullable', 'email', 'max:191'],
-            'donor_phone' => ['nullable', 'string', 'max:32'],
-            'donor_member_ulid' => ['nullable', 'string', 'exists:members,ulid'],
-            'crm_contact_ulid' => ['nullable', 'string', 'exists:crm_contacts,ulid'],
-            'amount' => ['required', 'numeric', 'min:0.01', 'max:99999999'],
-            'campaign' => ['nullable', 'string', 'max:120'],
-            'event_id' => ['nullable', 'integer', 'exists:events,id'],
-            'is_anonymous' => ['required', 'boolean'],
-            'message' => ['nullable', 'string', 'max:2000'],
-            // Whether the money is already in hand, or merely pledged.
-            'received' => ['required', 'boolean'],
-            'method' => ['nullable', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
         $member = isset($validated['donor_member_ulid'])
             ? Member::query()->where('ulid', $validated['donor_member_ulid'])->first()

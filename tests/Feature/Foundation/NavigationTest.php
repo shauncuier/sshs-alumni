@@ -63,14 +63,8 @@ describe('navigation route names', function (): void {
     });
 
     it('has no typo in any declared route name', function (): void {
-        // A name that does not resolve is allowed ONLY while its phase is
-        // unbuilt. Anything not on this list is a typo.
-        $notBuiltYet = [
-            'admin.reports.index',
-            'admin.users.index',
-            'admin.audit.index',
-            'admin.settings.edit',
-        ];
+        // Every single declared route in navigation now resolves to a real route.
+        $notBuiltYet = [];
 
         $missing = collect(Navigation::allRouteNames())
             ->reject(fn (string $name): bool => Route::has($name))
@@ -123,6 +117,25 @@ describe('navigation route names', function (): void {
         expect(Route::has('admin.campaigns.index'))->toBeTrue();
         expect(Route::has('admin.templates.index'))->toBeTrue();
         expect(Route::has('notifications.index'))->toBeTrue();
+
+        // System & Admin.
+        expect(Route::has('admin.reports.index'))->toBeTrue();
+        expect(Route::has('admin.users.index'))->toBeTrue();
+        expect(Route::has('admin.audit.index'))->toBeTrue();
+        expect(Route::has('admin.settings.edit'))->toBeTrue();
+
+        // Advanced Alumni Services & Admin Extensions.
+        expect(Route::has('donors.index'))->toBeTrue();
+        expect(Route::has('jobs.index'))->toBeTrue();
+        expect(Route::has('mentorship.index'))->toBeTrue();
+        expect(Route::has('my.businesses'))->toBeTrue();
+        expect(Route::has('businesses.index'))->toBeTrue();
+        expect(Route::has('my.certificates'))->toBeTrue();
+        expect(Route::has('campaigns.index'))->toBeTrue();
+        expect(Route::has('admin.fundraising.index'))->toBeTrue();
+        expect(Route::has('admin.businesses.index'))->toBeTrue();
+        expect(Route::has('admin.jobs.index'))->toBeTrue();
+        expect(Route::has('admin.certificates.index'))->toBeTrue();
     });
 });
 
@@ -152,8 +165,18 @@ describe('navigation visibility', function (): void {
 
         expect($pending)->not->toContain('directory')
             ->and($pending)->not->toContain('batch')
+            ->and($pending)->not->toContain('donors')
+            ->and($pending)->not->toContain('jobs')
+            ->and($pending)->not->toContain('mentorship')
+            ->and($pending)->not->toContain('businesses')
+            ->and($pending)->not->toContain('certificates')
             ->and($approved)->toContain('directory')
-            ->and($approved)->toContain('batch');
+            ->and($approved)->toContain('batch')
+            ->and($approved)->toContain('donors')
+            ->and($approved)->toContain('jobs')
+            ->and($approved)->toContain('mentorship')
+            ->and($approved)->toContain('businesses')
+            ->and($approved)->toContain('certificates');
     });
 
     it('is shared on every Inertia response', function (): void {

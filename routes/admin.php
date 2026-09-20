@@ -5,7 +5,9 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BatchController;
+use App\Http\Controllers\Admin\BusinessListingController;
 use App\Http\Controllers\Admin\CampaignController;
+use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\CheckinController;
 use App\Http\Controllers\Admin\CommitteeController;
 use App\Http\Controllers\Admin\CommunityController;
@@ -18,9 +20,11 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DonationController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\FundraisingCampaignController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\GlobalSearchController;
 use App\Http\Controllers\Admin\HistoryController;
+use App\Http\Controllers\Admin\JobPostingController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\MembershipFeeController;
@@ -83,6 +87,15 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
 
             Route::post('members/{member}/membership-number', [VerificationController::class, 'assignNumber'])
                 ->name('members.number');
+        });
+
+        Route::middleware('can:members.view')->group(function (): void {
+            Route::get('certificates', [CertificateController::class, 'index'])->name('certificates.index');
+        });
+
+        Route::middleware('can:members.verify')->group(function (): void {
+            Route::post('certificates', [CertificateController::class, 'store'])->name('certificates.store');
+            Route::delete('certificates/{certificate:ulid}', [CertificateController::class, 'destroy'])->name('certificates.destroy');
         });
 
         /*
@@ -274,12 +287,17 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
         */
         Route::middleware('can:donations.view')->group(function (): void {
             Route::get('donations', [DonationController::class, 'index'])->name('donations.index');
+            Route::get('fundraising', [FundraisingCampaignController::class, 'index'])->name('fundraising.index');
         });
 
         Route::middleware('can:donations.manage')->group(function (): void {
             Route::post('donations', [DonationController::class, 'store'])->name('donations.store');
             Route::post('donations/{donation}/receive', [DonationController::class, 'receive'])
                 ->name('donations.receive');
+
+            Route::post('fundraising', [FundraisingCampaignController::class, 'store'])->name('fundraising.store');
+            Route::put('fundraising/{campaign}', [FundraisingCampaignController::class, 'update'])->name('fundraising.update');
+            Route::delete('fundraising/{campaign}', [FundraisingCampaignController::class, 'destroy'])->name('fundraising.destroy');
         });
 
         /*
@@ -364,6 +382,8 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
             Route::get('faqs', [FaqController::class, 'index'])->name('faqs.index');
             Route::get('stories', [StoryController::class, 'index'])->name('stories.index');
             Route::get('media', [MediaController::class, 'index'])->name('media.index');
+            Route::get('businesses', [BusinessListingController::class, 'index'])->name('businesses.index');
+            Route::get('jobs', [JobPostingController::class, 'index'])->name('jobs.index');
         });
 
         Route::middleware('can:content.manage')->group(function (): void {
@@ -401,6 +421,12 @@ Route::middleware(['auth', 'verified', 'can:admin.access'])
             Route::post('media', [MediaController::class, 'store'])->name('media.store');
             // Refuses with a 409 while a gallery still points at the file.
             Route::delete('media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
+
+            Route::put('businesses/{business:ulid}/publish', [BusinessListingController::class, 'togglePublish'])->name('businesses.publish');
+            Route::delete('businesses/{business:ulid}', [BusinessListingController::class, 'destroy'])->name('businesses.destroy');
+
+            Route::put('jobs/{job:ulid}/publish', [JobPostingController::class, 'togglePublish'])->name('jobs.publish');
+            Route::delete('jobs/{job:ulid}', [JobPostingController::class, 'destroy'])->name('jobs.destroy');
         });
 
         Route::middleware('can:content.publish')->group(function (): void {

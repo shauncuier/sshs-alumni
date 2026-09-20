@@ -1,10 +1,14 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import type { LucideIcon } from 'lucide-react';
 import {
+    Award,
+    Briefcase,
+    Building,
     CalendarDays,
     CreditCard,
     Gift,
     GraduationCap,
+    HeartHandshake,
     IdCard,
     LayoutGrid,
     MessagesSquare,
@@ -42,6 +46,10 @@ const ICONS: Record<string, LucideIcon> = {
     CalendarDays,
     CreditCard,
     Gift,
+    HeartHandshake,
+    Briefcase,
+    Building,
+    Award,
 };
 
 /**

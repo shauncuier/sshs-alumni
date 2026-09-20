@@ -3,13 +3,17 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Member\BatchController;
+use App\Http\Controllers\Member\BusinessListingController;
 use App\Http\Controllers\Member\CardController;
+use App\Http\Controllers\Member\CertificateController;
 use App\Http\Controllers\Member\CommentController;
 use App\Http\Controllers\Member\CommunityController;
 use App\Http\Controllers\Member\ContentReportController;
 use App\Http\Controllers\Member\DashboardController;
 use App\Http\Controllers\Member\DirectoryController;
 use App\Http\Controllers\Member\EventController;
+use App\Http\Controllers\Member\JobController;
+use App\Http\Controllers\Member\MentorshipController;
 use App\Http\Controllers\Member\NotificationController;
 use App\Http\Controllers\Member\PaymentController;
 use App\Http\Controllers\Member\ProfileController;
@@ -77,6 +81,16 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::get('events', [EventController::class, 'index'])->name('events');
         Route::get('events/{registration}', [EventController::class, 'show'])->name('events.ticket');
         Route::delete('events/{registration}', [EventController::class, 'destroy'])->name('events.cancel');
+
+        Route::get('businesses', [BusinessListingController::class, 'index'])->name('businesses');
+        Route::post('businesses', [BusinessListingController::class, 'store'])
+            ->middleware('throttle:10,1')
+            ->name('businesses.store');
+        Route::put('businesses/{business:ulid}', [BusinessListingController::class, 'update'])->name('businesses.update');
+        Route::delete('businesses/{business:ulid}', [BusinessListingController::class, 'destroy'])->name('businesses.destroy');
+
+        Route::get('certificates', [CertificateController::class, 'index'])->name('certificates');
+        Route::get('certificates/{certificate:ulid}', [CertificateController::class, 'show'])->name('certificates.show');
     });
 
     /*
@@ -97,6 +111,27 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     */
     Route::middleware('member.approved')->group(function (): void {
         Route::get('directory', [DirectoryController::class, 'index'])->name('directory.index');
+        Route::get('donors', [DirectoryController::class, 'donors'])->name('donors.index');
+
+        Route::prefix('jobs')->name('jobs.')->group(function (): void {
+            Route::get('/', [JobController::class, 'index'])->name('index');
+            Route::post('/', [JobController::class, 'store'])
+                ->middleware('throttle:10,1')
+                ->name('store');
+            Route::get('{job:ulid}', [JobController::class, 'show'])->name('show');
+            Route::put('{job:ulid}', [JobController::class, 'update'])->name('update');
+            Route::delete('{job:ulid}', [JobController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('mentorship')->name('mentorship.')->group(function (): void {
+            Route::get('/', [MentorshipController::class, 'index'])->name('index');
+            Route::post('profile', [MentorshipController::class, 'storeProfile'])->name('profile.store');
+            Route::post('request', [MentorshipController::class, 'requestMentorship'])
+                ->middleware('throttle:10,1')
+                ->name('request');
+            Route::patch('requests/{mentorshipRequest:ulid}', [MentorshipController::class, 'respond'])
+                ->name('requests.respond');
+        });
 
         // The member's own cohort — the directory narrowed to one batch, with
         // the extra `show_in_batch_list` opt-out honoured.

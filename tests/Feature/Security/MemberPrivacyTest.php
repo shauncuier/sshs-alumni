@@ -141,6 +141,20 @@ describe('the directory listing', function (): void {
             ->assertDontSee('Secretville');
     });
 
+    it('omits blood group by default when the member has not consented', function (): void {
+        memberWithPrivacy(['show_blood_group' => false], ['blood_group' => 'A+']);
+
+        directoryShowing($this)
+            ->assertInertia(fn ($page) => $page->missing('members.data.0.blood_group'));
+    });
+
+    it('includes blood group when the member has explicitly consented', function (): void {
+        memberWithPrivacy(['show_blood_group' => true], ['blood_group' => 'A+']);
+
+        directoryShowing($this)
+            ->assertInertia(fn ($page) => $page->where('members.data.0.blood_group', 'A+'));
+    });
+
     it('never exposes administrative fields, whatever the flags say', function (): void {
         // Address, emergency contact and student id exist for the
         // association administrative use. No privacy flag opens them to

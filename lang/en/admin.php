@@ -40,6 +40,12 @@ return [
         'users' => 'Users',
         'roles' => 'Roles & Permissions',
         'audit' => 'Audit Logs',
+        'campaigns' => 'Broadcast Campaigns',
+        'templates' => 'Message Templates',
+        'fundraising' => 'Fundraising Campaigns',
+        'businesses' => 'Business Listings',
+        'jobs' => 'Career Board',
+        'certificates' => 'Certificates',
     ],
 
     'groups' => [
@@ -47,6 +53,7 @@ return [
         'events' => 'Events',
         'money' => 'Finance',
         'content' => 'Content',
+        'communication' => 'Communication',
         'system' => 'System',
     ],
 

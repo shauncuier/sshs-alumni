@@ -33,6 +33,7 @@ class PrivacyUpdateRequest extends FormRequest
             'show_location' => ['required', 'boolean'],
             'show_date_of_birth' => ['required', 'boolean'],
             'show_in_batch_list' => ['required', 'boolean'],
+            'show_blood_group' => ['required', 'boolean'],
         ];
     }
 }

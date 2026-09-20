@@ -6,10 +6,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\FaqGroup;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\FaqRequest;
 use App\Models\Faq;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -45,16 +45,16 @@ class FaqController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(FaqRequest $request): RedirectResponse
     {
-        Faq::query()->create($this->validated($request));
+        Faq::query()->create($request->validated());
 
         return back()->with('success', __('common.states.saved'));
     }
 
-    public function update(Request $request, Faq $faq): RedirectResponse
+    public function update(FaqRequest $request, Faq $faq): RedirectResponse
     {
-        $faq->update($this->validated($request));
+        $faq->update($request->validated());
 
         return back()->with('success', __('common.states.saved'));
     }
@@ -64,20 +64,6 @@ class FaqController extends Controller
         $faq->delete();
 
         return back()->with('success', __('admin.content.deleted'));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function validated(Request $request): array
-    {
-        return $request->validate([
-            'group' => ['required', Rule::in(FaqGroup::values())],
-            'question' => ['required', 'string', 'max:300'],
-            'answer' => ['required', 'string', 'max:5000'],
-            'display_order' => ['nullable', 'integer', 'min:0', 'max:9999'],
-            'is_published' => ['nullable', 'boolean'],
-        ]);
     }
 
     /**

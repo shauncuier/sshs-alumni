@@ -6,12 +6,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\CampaignChannel;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\MessageTemplateRequest;
 use App\Models\MessageTemplate;
 use App\Support\Paginated;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -47,18 +47,9 @@ class MessageTemplateController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(MessageTemplateRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'key' => ['nullable', 'string', 'max:80', 'unique:message_templates,key'],
-            'channel' => ['required', Rule::enum(CampaignChannel::class)],
-            'subject' => ['nullable', 'string', 'max:255'],
-            'subject_bn' => ['nullable', 'string', 'max:255'],
-            'body' => ['required', 'string'],
-            'body_bn' => ['nullable', 'string'],
-            'variables' => ['nullable', 'array'],
-        ]);
+        $validated = $request->validated();
 
         if (empty($validated['key'])) {
             $validated['key'] = Str::slug($validated['name']);
@@ -70,17 +61,9 @@ class MessageTemplateController extends Controller
             ->with('success', 'Message template created successfully.');
     }
 
-    public function update(Request $request, MessageTemplate $template): RedirectResponse
+    public function update(MessageTemplateRequest $request, MessageTemplate $template): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'channel' => ['required', Rule::enum(CampaignChannel::class)],
-            'subject' => ['nullable', 'string', 'max:255'],
-            'subject_bn' => ['nullable', 'string', 'max:255'],
-            'body' => ['required', 'string'],
-            'body_bn' => ['nullable', 'string'],
-            'variables' => ['nullable', 'array'],
-        ]);
+        $validated = $request->validated();
 
         $template->update($validated);
 
